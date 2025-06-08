@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.routers.v1.alpaca_trading import alpaca_trading
+from src.router.v1.alpaca_trading import alpaca_trading
 
 
 v1 = APIRouter(

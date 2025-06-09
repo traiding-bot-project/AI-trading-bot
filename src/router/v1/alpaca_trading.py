@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+"""Alpaca trading endpoints."""
 
+from fastapi import APIRouter
 
 alpaca_trading = APIRouter(
     prefix="/alpaca",
@@ -9,10 +10,12 @@ alpaca_trading = APIRouter(
 
 
 @alpaca_trading.get("/")
-async def v1resp():
+async def alpacaresp() -> dict[str, str]:
+    """Example endpoint."""
     return {"message": "Alpaca trading"}
 
 
 @alpaca_trading.get("/{num}")
-async def v1resp(num: int):
+async def v1resp(num: int) -> dict[str, str]:
+    """Example endpoint."""
     return {"message": f"num={num}"}

@@ -86,6 +86,10 @@ jobs:
 
   security-check:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
     steps:
       - name: Perform Bandit Analysis
         uses: PyCQA/bandit-action@v1

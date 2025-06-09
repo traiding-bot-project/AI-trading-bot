@@ -8,7 +8,7 @@ alpaca_trading = APIRouter(prefix="/alpaca", tags=["alpaca"], responses={404: {"
 @alpaca_trading.get("/")
 async def alpacaresp() -> dict[str, str]:
     """Example endpoint."""
-    return {"message": 'Alpaca trading'}
+    return {"message": "Alpaca trading"}
 
 
 @alpaca_trading.get("/{num}")

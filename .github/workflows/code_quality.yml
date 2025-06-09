@@ -60,17 +60,17 @@ jobs:
           fi
 
           if [ "${{ steps.ruff_format.outcome }}" != "success" ]; then
-            echo "❌ Ruff format check failed"
+            echo "❌ Ruff format failed"
             fail=1
           else
-            echo "✅ Ruff format check passed"
+            echo "✅ Ruff format passed"
           fi
 
           if [ "$fail" -eq 1 ]; then
-            echo "🚫 One or more Ruff checks failed!"
+            echo "🚫 One or more Ruff linting checks failed!"
             exit 1
           else
-            echo "🎉 All Ruff checks passed!"
+            echo "🎉 All Ruff linting checks passed!"
           fi
 
   md-check:

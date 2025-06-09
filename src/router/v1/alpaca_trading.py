@@ -2,11 +2,7 @@
 
 from fastapi import APIRouter
 
-alpaca_trading = APIRouter(
-    prefix="/alpaca",
-    tags=["alpaca"],
-    responses={404: {"description": "Not found"}}
-)
+alpaca_trading = APIRouter(prefix="/alpaca", tags=["alpaca"], responses={404: {"description": "Not found"}})
 
 
 @alpaca_trading.get("/")

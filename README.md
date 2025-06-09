@@ -8,3 +8,5 @@
 - Check endpoint:
     - By sending requests to it
     - By checking docs at `127.0.0.1:8000/docs`
+ 
+https://github.com/kweinmeister/agentic-trading

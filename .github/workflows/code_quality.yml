@@ -36,13 +36,42 @@ jobs:
           uv sync --all-extras --all-groups
 
       - name: Ruff check linting errors
+        id: ruff_check
         uses: astral-sh/ruff-action@v3
         with:
           src: "./"
+        continue-on-error: true
 
       - name: Ruff format linting errors
+        id: ruff_format
         run: |
           uvx ruff format --check .
+        continue-on-error: true
+
+      - name: Check if either Ruff check or Ruff format failed
+        run: |
+          fail=0
+
+          if [ "$ruff_check_status" != "success" ]; then
+            echo "❌ Ruff check failed"
+            fail=1
+          else
+            echo "✅ Ruff check passed"
+          fi
+
+          if [ "$ruff_format_status" != "success" ]; then
+            echo "❌ Ruff format check failed"
+            fail=1
+          else
+            echo "✅ Ruff format check passed"
+          fi
+
+          if [ "$fail" -eq 1 ]; then
+            echo "🚫 One or more Ruff checks failed!"
+            exit 1
+          else
+            echo "🎉 All Ruff checks passed!"
+          fi
 
   md-check:
     runs-on: ubuntu-latest

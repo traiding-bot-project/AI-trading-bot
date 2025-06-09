@@ -84,5 +84,14 @@ jobs:
           config: '.github/workflows/config/.markdownlint.yml'
           globs: '**/*.md'
 
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform Bandit Analysis
+        uses: PyCQA/bandit-action@v1
+        with:
+          configfile: "pyproject.toml"
+          severity: "all"
+          confidence: "all"
 
-## add unit tests, e2e tests, coverage report, techdocs, security check (bandit)
+## add unit tests, e2e tests, coverage report, techdocs

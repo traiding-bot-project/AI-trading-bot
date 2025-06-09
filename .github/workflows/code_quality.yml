@@ -1,0 +1,59 @@
+name: Code Quality Checks
+
+on: 
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+
+      - name: Sync .venv
+        run: |
+          uv sync --all-extras --all-groups
+
+      - name: MyPy check
+        run: |
+          mypy --install-types --strict --warn-unreachable --non-interactive .
+
+  ruff-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+
+      - name: Sync .venv
+        run: |
+          uv sync --all-extras --all-groups
+
+      - name: Ruff check linting errors
+        uses: astral-sh/ruff-action@v3
+        with:
+          src: "./"
+
+      - name: Ruff format linting errors
+        run: |
+          uvx ruff format --check .
+
+  md-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Lint all Markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v20
+        with:
+          config: '.github/workflows/config/.markdownlint.yml'
+          globs: '**/*.md'
+
+
+## add unit tests, e2e tests, coverage report, techdocs, security check (bandit)

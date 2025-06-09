@@ -1,0 +1,88 @@
+name: Code Quality Checks
+
+on: 
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+
+      - name: Sync .venv
+        run: |
+          uv sync --all-extras --all-groups
+
+      - name: MyPy check
+        run: |
+          mypy --install-types --strict --warn-unreachable --non-interactive .
+
+  ruff-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+
+      - name: Sync .venv
+        run: |
+          uv sync --all-extras --all-groups
+
+      - name: Ruff check linting errors
+        id: ruff_check
+        uses: astral-sh/ruff-action@v3
+        with:
+          src: "./"
+        continue-on-error: true
+
+      - name: Ruff format linting errors
+        id: ruff_format
+        run: |
+          uvx ruff format --check .
+        continue-on-error: true
+
+      - name: Check if either Ruff check or Ruff format failed
+        run: |
+          fail=0
+
+          if [ "${{ steps.ruff_check.outcome }}" != "success" ]; then
+            echo "❌ Ruff check failed"
+            fail=1
+          else
+            echo "✅ Ruff check passed"
+          fi
+
+          if [ "${{ steps.ruff_format.outcome }}" != "success" ]; then
+            echo "❌ Ruff format failed"
+            fail=1
+          else
+            echo "✅ Ruff format passed"
+          fi
+
+          if [ "$fail" -eq 1 ]; then
+            echo "🚫 One or more Ruff linting checks failed!"
+            exit 1
+          else
+            echo "🎉 All Ruff linting checks passed!"
+          fi
+
+  md-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Lint all Markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v20
+        with:
+          config: '.github/workflows/config/.markdownlint.yml'
+          globs: '**/*.md'
+
+
+## add unit tests, e2e tests, coverage report, techdocs, security check (bandit)

@@ -1,11 +1,68 @@
 [project]
-name = "ai-trading-bot"
+name = "AI-Trading-Bot"
 version = "0.1.0"
-description = "Add your description here"
+description = "Bot that uses Agentic AI to trade"
+classifiers = ["Programming Language :: Python :: 3.12"]
 readme = "README.md"
 requires-python = ">=3.12"
+keywords = [
+    "Bot",
+    "Trading",
+    "Agentic AI",
+]
 dependencies = [
     "fastapi>=0.115.12",
     "pydantic>=2.11.5",
     "uvicorn>=0.34.3",
 ]
+
+[project.urls]
+repository = "https://github.com/traiding-bot-project/AI-trading-bot"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.16.0",
+    "ruff>=0.11.13",
+]
+
+[tool.mypy]
+exclude = ["docs/", "src/tests/"]
+
+warn_unused_configs = true
+warn_redundant_casts = true
+show_error_codes = true
+show_column_numbers = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+explicit_package_bases = true
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 119
+indent-width = 4
+exclude = [
+    "__pycache__",
+    ".git",
+    "docs"
+]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "C90", "D", "I", "A", "U", "N", "TD", "FAST"]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+quote-style = "double"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15

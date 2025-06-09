@@ -52,14 +52,14 @@ jobs:
         run: |
           fail=0
 
-          if [ "$ruff_check_status" != "success" ]; then
+          if [ "${{ steps.ruff_check.outcome }}" != "success" ]; then
             echo "❌ Ruff check failed"
             fail=1
           else
             echo "✅ Ruff check passed"
           fi
 
-          if [ "$ruff_format_status" != "success" ]; then
+          if [ "${{ steps.ruff_format.outcome }}" != "success" ]; then
             echo "❌ Ruff format check failed"
             fail=1
           else

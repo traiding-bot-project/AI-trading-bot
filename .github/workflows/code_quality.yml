@@ -21,7 +21,7 @@ jobs:
 
       - name: MyPy check
         run: |
-          mypy --install-types --strict --warn-unreachable --non-interactive .
+          uv run mypy --install-types --strict --warn-unreachable --non-interactive .
 
   ruff-check:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
       - name: Ruff format linting errors
         id: ruff_format
         run: |
-          uvx ruff format --check .
+          uv run ruff format --check .
         continue-on-error: true
 
       - name: Check if either Ruff check or Ruff format failed
@@ -84,5 +84,17 @@ jobs:
           config: '.github/workflows/config/.markdownlint.yml'
           globs: '**/*.md'
 
+  security-check:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Perform Bandit Analysis
+        uses: PyCQA/bandit-action@v1
+        with:
+          severity: "all"
+          confidence: "all"
 
-## add unit tests, e2e tests, coverage report, techdocs, security check (bandit)
+## add unit tests, e2e tests, coverage report, techdocs

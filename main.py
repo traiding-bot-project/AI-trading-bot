@@ -1,4 +1,4 @@
-"""Entrypoint to the program."""
+
 
 from fastapi import FastAPI
 

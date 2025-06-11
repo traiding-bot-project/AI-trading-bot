@@ -24,5 +24,6 @@ jobs:
           uv run mkdocs build -f ./docs/mkdocs.yml
 
       - name: Deploy MkDocs
+        if: github.event_name == 'push'
         run: |
           uv run mkdocs gh-deploy --clean --force -f ./docs/mkdocs.yml

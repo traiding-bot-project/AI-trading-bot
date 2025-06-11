@@ -1,0 +1,46 @@
+site_name: AI Trading Bot Docs
+
+repo_name: traiding-bot-project/AI-trading-bot
+repo_url: https://github.com/traiding-bot-project/AI-trading-bot
+
+docs_dir: docs
+
+theme:
+  name: "material"
+  icon:
+    repo: fontawesome/brands/github
+  logo: assets/logo.jpg
+  palette:
+    scheme: custom
+    primary: light blue
+    accent: blue
+  features:
+    - navigation.indexes
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [../src, ../main.py]
+
+markdown_extensions:
+  - admonition
+  - pymdownx.emoji
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.magiclink
+  - pymdownx.tasklist
+  - meta
+  - pymdownx.snippets:
+      auto_append: [links/links.md]
+
+nav:
+  - Introduction:
+    - introduction/index.md
+    - introduction/reference.md
+    - introduction/explanation.md
+  - How it works?:
+    - how_it_works/index.md
+    - how_it_works/agents.md

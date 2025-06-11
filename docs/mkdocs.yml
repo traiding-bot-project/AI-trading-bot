@@ -23,7 +23,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [../src, ../main.py]
+          paths: [../src]
 
 markdown_extensions:
   - admonition
@@ -45,3 +45,6 @@ nav:
   - How it works?:
     - how_it_works/index.md
     - how_it_works/agents.md
+  - Reference:
+    - reference/index.md
+    - reference/src.init.py.md

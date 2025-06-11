@@ -25,4 +25,4 @@ jobs:
 
       - name: Deploy MkDocs
         run: |
-          uv run mkdocs gh-deploy --clean -f ./docs/mkdocs.yml
+          uv run mkdocs gh-deploy --clean --force -f ./docs/mkdocs.yml

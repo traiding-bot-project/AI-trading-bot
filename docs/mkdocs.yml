@@ -47,3 +47,4 @@ nav:
     - how_it_works/agents.md
   - Reference:
     - reference/index.md
+    - reference/src.init.py.md

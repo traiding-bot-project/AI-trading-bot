@@ -13,6 +13,7 @@ ALPACA_SECRET = os.getenv("ALPACA_SECRET")
 
 trading_client = TradingClient(ALPACA_KEY, ALPACA_SECRET, paper=True)
 
+
 def get_acc_info():
     account = trading_client.get_account()
     return account
@@ -26,5 +27,3 @@ def search_assets(asset_class: AssetClass = None, status: AssetStatus = None):
 def get_orders_info(status: QueryOrderStatus, side: OrderSide):
     request_params = GetOrdersRequest(status=status, side=side)
     return trading_client.get_orders(filter=request_params)
-
-

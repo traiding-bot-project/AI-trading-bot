@@ -11,6 +11,8 @@ keywords = [
     "Agentic AI",
 ]
 dependencies = [
+    "alpaca-py>=0.40.1",
+    "mcp[cli]>=1.9.4",
     "pydantic>=2.11.5",
 ]
 

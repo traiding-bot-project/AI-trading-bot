@@ -28,17 +28,19 @@ if not ALPACA_SECRET:
     log.error("Wrong Alpaca secret")
 
 # local or remote server access
-TRANSPORT = "studio"  # ssh
+TRANSPORT = "studio"  # or "ssh"
 
 # alpaca api: paper means test acc
 trading_client = TradingClient(ALPACA_KEY, ALPACA_SECRET, paper=True)
 
 
 class MCPRouter:
+    def __init__(self):
+        pass
     mcp = FastMCP(
         name="TraidingBot", 
         host="0.0.0.0", 
-        port=)  # for HTTP servers
+        port=os.getenv("MCP_PORT"))  # for HTTP servers
 
 
     @mcp.tool()

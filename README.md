@@ -21,10 +21,12 @@ To check anything from MCP server you should run a server and use Inspector
 - Run server `python main.py`
 - Check MCP using Inspector:
   - Run Inspector `PYTHONPATH=./ mcp dev ./src/server/server.py`
-  - Open `http://127.0.0.1:6274` or `http://localhost:6274` or click on the link with
-  set `MCP_PROXY_AUTH_TOKEN` (`http://localhost:6274/?MCP_PROXY_AUTH_TOKEN=...`)
-  - In case you opened Inspector without `MCP_PROXY_AUTH_TOKEN` set `Proxy Session Token`
-  in the `Configuration` section on the left (copy session token from cli)
+  - Open `http://127.0.0.1:6274` or `http://localhost:6274` or click
+  on the link with set `MCP_PROXY_AUTH_TOKEN`
+  (`http://localhost:6274/?MCP_PROXY_AUTH_TOKEN=...`)
+  - In case you opened Inspector without `MCP_PROXY_AUTH_TOKEN` set
+  `Proxy Session Token` in the `Configuration` section on the
+  left (copy session token from cli)
   - On the left in the URL field write a route to the SSE endpoint for
   the MCP server (right now `http://localhost:8000/mcp/sse`)
   - On the left click `Connect`

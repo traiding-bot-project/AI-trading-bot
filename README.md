@@ -9,7 +9,7 @@
 
 ## How to manually test changes
 
-### To check FastAPI endpoints you should run a server and manually check links.
+### To check FastAPI endpoints you should run a server and manually check links
 
 - Run server `python main.py`
 - Check endpoint:
@@ -43,6 +43,7 @@ the MCP server (right now `http://localhost:8000/mcp`)
 - On the left click `Connect`
 
 For the `stdio`:
+
 - On the left click `Connect`
 
 For testing:

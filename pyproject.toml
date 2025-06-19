@@ -32,7 +32,6 @@ dev = [
 
 [tool.mypy]
 exclude = ["docs/", "src/tests/"]
-
 warn_unused_configs = true
 warn_redundant_casts = true
 show_error_codes = true

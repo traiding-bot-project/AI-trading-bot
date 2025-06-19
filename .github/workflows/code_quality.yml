@@ -21,7 +21,7 @@ jobs:
 
       - name: MyPy check
         run: |
-          uv run mypy --install-types --strict --warn-unreachable --non-interactive .
+          uv run mypy --install-types --no-implicit-reexport --strict --warn-unreachable --non-interactive .
 
   ruff-check:
     runs-on: ubuntu-latest

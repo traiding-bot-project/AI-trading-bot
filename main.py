@@ -1,16 +1,18 @@
 """Entrypoint to the program."""
 
-from fastapi import FastAPI
-from fastapi_mcp import FastApiMCP
+from src.server.server import app
+import uvicorn
+import os
 
-from src.router.api import api
-from src.mcp.mcp import mcp
 
-app = FastAPI()
-app.include_router(api)
-app.include_router(mcp)
+HOST = os.getenv("HOST", "0.0.0.0")
+PORT = int(os.getenv("PORT", "8000"))
 
-mcp_server = FastApiMCP(app)
 
-mcp_server.mount(mcp)
+def run():
+    """Start the FastAPI server with uvicorn."""
+    uvicorn.run(app, host=HOST, port=PORT)
 
+
+if __name__ == "__main__":
+    run()

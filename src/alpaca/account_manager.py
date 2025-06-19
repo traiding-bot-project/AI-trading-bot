@@ -1,11 +1,13 @@
+"""Account manager for Alpaca API."""
+
 import os
 
-from alpaca.trading.client import TradingClient
-from alpaca.trading.requests import GetAssetsRequest
-from alpaca.trading.enums import AssetClass, AssetStatus
-from alpaca.trading.requests import GetOrdersRequest
-from alpaca.trading.enums import OrderSide, QueryOrderStatus
 from dotenv import load_dotenv
+
+from alpaca.trading.client import RawData, TradeAccount, TradingClient
+from alpaca.trading.enums import AssetClass, AssetStatus, OrderSide, QueryOrderStatus
+from alpaca.trading.models import Asset, Order
+from alpaca.trading.requests import GetAssetsRequest, GetOrdersRequest
 
 load_dotenv()
 ALPACA_KEY = os.getenv("ALPACA_KEY")
@@ -14,16 +16,19 @@ ALPACA_SECRET = os.getenv("ALPACA_SECRET")
 trading_client = TradingClient(ALPACA_KEY, ALPACA_SECRET, paper=True)
 
 
-def get_acc_info():
+def get_acc_info() -> TradeAccount | RawData:
+    """Get account info from AlpacaAPI."""
     account = trading_client.get_account()
     return account
 
 
-def search_assets(asset_class: AssetClass = None, status: AssetStatus = None):
+def search_assets(asset_class: AssetClass | None = None, status: AssetStatus | None = None) -> list[Asset] | RawData:
+    """Search assets from AlpacaAPI."""
     search_params = GetAssetsRequest(asset_class=asset_class, status=status)
     return trading_client.get_all_assets(search_params)
 
 
-def get_orders_info(status: QueryOrderStatus, side: OrderSide):
+def get_orders_info(status: QueryOrderStatus, side: OrderSide) -> list[Order] | RawData:
+    """Get orders info from AlpacaAPI."""
     request_params = GetOrdersRequest(status=status, side=side)
     return trading_client.get_orders(filter=request_params)

@@ -1,15 +1,16 @@
 """Entrypoint to the program."""
 
-from src.server.server import app
-import uvicorn
 import os
 
+import uvicorn
 
-HOST = os.getenv("HOST", "0.0.0.0")
+from src.server.server import app
+
+HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", "8000"))
 
 
-def run():
+def run() -> None:
     """Start the FastAPI server with uvicorn."""
     uvicorn.run(app, host=HOST, port=PORT)
 

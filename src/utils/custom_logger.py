@@ -1,8 +1,11 @@
+"""Define custom formatter for logger."""
+
 import logging
 from typing import Any
 
 
 class CustomFormatter(logging.Formatter):
+    """Custom formatter class for logger."""
 
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
@@ -10,9 +13,7 @@ class CustomFormatter(logging.Formatter):
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
     # use "s" at the end to align headers
-    format_string = (
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
-    )
+    format_string = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
 
     FORMATS = {
         logging.DEBUG: grey + format_string + reset,
@@ -23,6 +24,7 @@ class CustomFormatter(logging.Formatter):
     }
 
     def format(self, record: Any) -> Any:
+        """Custom formatter for logger."""
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)

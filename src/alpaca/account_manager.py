@@ -9,6 +9,7 @@ from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import AssetClass, AssetStatus, OrderSide, QueryOrderStatus
 from alpaca.trading.models import Asset, Order, TradeAccount
 from alpaca.trading.requests import GetAssetsRequest, GetOrdersRequest
+from alpaca.common import RawData
 
 load_dotenv()
 ALPACA_KEY = os.getenv("ALPACA_KEY")

@@ -11,7 +11,11 @@ keywords = [
     "Agentic AI",
 ]
 dependencies = [
+    "alpaca-py>=0.40.1",
+    "fastapi>=0.115.13",
+    "mcp[cli]>=1.9.4",
     "pydantic>=2.11.5",
+    "uvicorn>=0.34.3",
 ]
 
 [project.urls]
@@ -28,7 +32,6 @@ dev = [
 
 [tool.mypy]
 exclude = ["docs/", "src/tests/"]
-
 warn_unused_configs = true
 warn_redundant_casts = true
 show_error_codes = true

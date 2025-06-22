@@ -11,9 +11,16 @@ load_dotenv()
 ALPACA_KEY = os.getenv("ALPACA_KEY")
 ALPACA_SECRET = os.getenv("ALPACA_SECRET")
 
+
 trading_client = TradingClient(ALPACA_KEY, ALPACA_SECRET, paper=True)
 
 def search_assets(asset_class: AssetClass | None = None, status: AssetStatus | None = None) -> list[Asset] | RawData:
     """Search assets from AlpacaAPI."""
     search_params = GetAssetsRequest(asset_class=asset_class, status=status)
     return trading_client.get_all_assets(search_params)
+
+
+def is_tradable(asset_name: str) -> bool:
+    checked_asset = trading_client.get_asset(asset_name)
+    return True if checked_asset.tradable else False
+    

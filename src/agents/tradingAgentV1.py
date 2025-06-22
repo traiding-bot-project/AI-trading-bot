@@ -1,4 +1,4 @@
-
+import asyncio
 
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
@@ -7,10 +7,11 @@ from langgraph.prebuilt import create_react_agent
 
 client = MultiServerMCPClient(
     {
-        "tool_name": {
+        "echo_tool": {
             "command": "python",
-            "args": ["/path to file"],
-            "transport": "stdio"
+            "args": ["C:\Users\Andrzej T (Standard)\Desktop\Projects\AI-trading-bot\src\router\mcp\mcp.py"],
+            #"args": "http://localhost:8000/mcp",
+            "transport": "stdio" #streamable_http
         }
     }
 )

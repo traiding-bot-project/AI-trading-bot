@@ -28,7 +28,7 @@ There are 2 ways how to check if your MCP server works correctly:
 Common part for both of these ways:
 
 - Run server `python main.py`
-- Run Inspector `PYTHONPATH=./ mcp dev ./src/server/server.py`
+- Run Inspector `PYTHONPATH=./ mcp dev ./main.py`
 - Open `http://127.0.0.1:6274` or `http://localhost:6274` or click
 on the link with set `MCP_PROXY_AUTH_TOKEN`
 (`http://localhost:6274/?MCP_PROXY_AUTH_TOKEN=...`)
@@ -39,7 +39,7 @@ left (copy session token from cli)
 For the `Streamable HTTP`:
 
 - On the left in the URL field write a route to the Streamable HTTP endpoint for
-the MCP server (right now `http://localhost:8000/mcp`)
+the MCP server (right now `http://localhost:8001/mcp`)
 - On the left click `Connect`
 
 For the `stdio`:

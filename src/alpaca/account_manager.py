@@ -16,13 +16,12 @@ ALPACA_SECRET = os.getenv("ALPACA_SECRET")
 
 trading_client = TradingClient(ALPACA_KEY, ALPACA_SECRET, paper=True)
 
-def get_acc_info(trading_client) -> TradeAccount | RawData:
+
+def get_acc_info() -> TradeAccount | RawData:
     """Get account info from AlpacaAPI."""
     account = trading_client.get_account()
-    print(account)
     return account
 
-print(get_acc_info())
 def search_assets(asset_class: AssetClass | None = None, status: AssetStatus | None = None) -> list[Asset] | RawData:
     """Search assets from AlpacaAPI."""
     search_params = GetAssetsRequest(asset_class=asset_class, status=status)

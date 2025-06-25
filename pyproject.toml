@@ -23,7 +23,7 @@ repository = "https://github.com/traiding-bot-project/AI-trading-bot"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.8.5",
+    "bandit[sarif]>=1.8.5",
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.6.14",
     "mkdocstrings[python]>=0.29.1",

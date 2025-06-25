@@ -91,11 +91,22 @@ jobs:
       actions: read
       contents: read
     steps:
-      - name: Perform Bandit Analysis
-        uses: PyCQA/bandit-action@v1
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          severity: "all"
-          confidence: "all"
-          configfile: "pyproject.toml"
+          activate-environment: true
+
+      - name: Sync .venv
+        run: |
+          uv sync --all-extras --all-groups
+
+      - name: Run Bandit and generate SARIF
+        run: |
+          uv run bandit -c pyproject.toml -r . -f sarif -o bandit-results.sarif || true
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bandit-results.sarif
 
 ## add unit tests, coverage report

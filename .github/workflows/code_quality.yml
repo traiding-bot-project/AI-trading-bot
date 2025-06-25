@@ -97,4 +97,4 @@ jobs:
           severity: "all"
           confidence: "all"
 
-## add unit tests, e2e tests, coverage report, techdocs
+## add unit tests, coverage report

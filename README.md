@@ -57,7 +57,7 @@ represent the type of component you want to get
 
 ### Run E2E tests
 
-```python
+```bash
 uv run pytest -vv ./src/tests/e2e
 ```
 

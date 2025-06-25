@@ -96,5 +96,6 @@ jobs:
         with:
           severity: "all"
           confidence: "all"
+          configfile: "pyproject.toml"
 
 ## add unit tests, coverage report

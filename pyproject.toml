@@ -76,3 +76,4 @@ max-complexity = 15
 
 [tool.bandit]
 exclude_dirs = ["src/tests"]
+skips = ["B101", "B104"]

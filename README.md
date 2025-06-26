@@ -53,4 +53,12 @@ For testing:
 represent the type of component you want to get
 - Click on the component and try to run it
 
+## Run tests using pytest
+
+### Run E2E tests
+
+```bash
+uv run pytest -vv ./src/tests/e2e
+```
+
 Example of an AI trading bot - <https://github.com/kweinmeister/agentic-trading>

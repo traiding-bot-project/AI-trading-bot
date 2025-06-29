@@ -13,7 +13,7 @@ app = FastAPI()
 @app.get("/health", status_code=status.HTTP_200_OK, response_model=HealthCheck)
 def get_health() -> Any:
     """Endpoint for checking if FastAPI server runs."""
-    return {"status": "OK"}
+    return HealthCheck()
 
 
 api = APIRouter(prefix="/api", responses={404: {"description": "Not found"}})

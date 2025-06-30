@@ -28,9 +28,11 @@ def prepare_order(symbol: str,
                   asset_qty: Optional[float],
                   asset_in_money: Optional[float], 
                   time_in_force = TimeInForce.DAY
-                  ) -> :
-    market_order_request = MarketOrderRequest(
+                  ) -> Order:
+    return MarketOrderRequest(
         symbol = symbol,
-        qty = 
-        notional = 
+        side = side,
+        qty = asset_qty,
+        notional = asset_in_money,
+        time_in_force = time_in_force
     )

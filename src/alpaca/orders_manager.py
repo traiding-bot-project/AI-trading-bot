@@ -27,12 +27,18 @@ def prepare_order(symbol: str,
                   side, 
                   asset_qty: Optional[float],
                   asset_in_money: Optional[float], 
+                  extended_hours: Optional[bool] = None,
                   time_in_force = TimeInForce.DAY
                   ) -> Order:
+    """ Funciton to create orders """
     return MarketOrderRequest(
         symbol = symbol,
         side = side,
         qty = asset_qty,
         notional = asset_in_money,
-        time_in_force = time_in_force
+        time_in_force = time_in_force,
+        extended_hours = extended_hours
     )
+
+
+#def close_all_orders()

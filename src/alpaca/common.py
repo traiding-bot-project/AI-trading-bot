@@ -1,10 +1,9 @@
 """Decorator for logging in"""
 
 import os
-
 from dotenv import load_dotenv
-
 from alpaca.trading.client import TradingClient
+
 
 def with_alpaca_trading_client(func):
     def wrapper(*args, **kwargs):

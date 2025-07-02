@@ -9,68 +9,47 @@ from alpaca.trading.enums import OrderSide, TimeInForce, AssetClass, AssetStatus
 
 
 @with_alpaca_trading_client
-def get_acc_info(trading_client) -> TradeAccount | RawData:
-    """Get account info from AlpacaAPI."""
-    account = trading_client.get_account()
-    return account
+def get_account_info(trading_client: TradingClient) -> TradeAccount | RawData:
+    return trading_client.get_account()
 
 @with_alpaca_trading_client
 def search_all_assets(trading_client: TradingClient, asset_class: AssetClass | None = None, status: AssetStatus | None = None) -> list[Asset] | RawData:
-    """Search assets from AlpacaAPI."""
     search_params = GetAssetsRequest(asset_class=asset_class, status=status)
     return trading_client.get_all_assets(search_params)
 
 @with_alpaca_trading_client
-def get_orders_info(trading_client: TradingClient, status: QueryOrderStatus = QueryOrderStatus.ALL, side: OrderSide | None = None) -> list[Order] | RawData:
-    """Get orders info from AlpacaAPI."""
-    request_params = GetOrdersRequest(status=status, side=side)
-    return trading_client.get_orders(filter=request_params)
+def get_orders_info(trading_client: TradingClient, status: QueryOrderStatus, side: OrderSide | None = None) -> list[Order] | RawData:
+    return trading_client.get_orders(filter=GetOrdersRequest(status=status, side=side))
 
 @with_alpaca_trading_client
 def cancel_open_orders(trading_client: TradingClient):
-    """Cancel all open orders"""
-    cancel_statuses = trading_client.cancel_orders()
-    return cancel_statuses
+    return trading_client.cancel_orders()
 
 @with_alpaca_trading_client
 def get_all_positions(trading_client: TradingClient):
-    """Return all open positions"""
-    positions = trading_client.get_all_positions()
-    return positions
+    return trading_client.get_all_positions()
 
 @with_alpaca_trading_client
-def close_all_positions(trading_client: TradingClient):
-    """Close all open positions"""
-    cancel_positions = trading_client.close_all_positions(cancel_orders=False)
-    return cancel_positions
-
-"""Creating an Order"""
+def close_all_positions(trading_client: TradingClient, cancel_orders: bool):
+    return trading_client.close_all_positions(cancel_orders=cancel_orders)
 
 @with_alpaca_trading_client
-def market_order(trading_client: TradingClient, symbol: str , qty: float, side: OrderSide = OrderSide.BUY, time_in_force: TimeInForce = TimeInForce.DAY):
-    """Buy or sell a stock at the best available price"""
+def create_market_order(trading_client: TradingClient, symbol: str , qty: float, side: OrderSide, time_in_force: TimeInForce):
     market_order_data = MarketOrderRequest(
-        symbol=symbol, # Ticker symbol
-        qty=qty, # Fractional shares
-        side=side, # Buying or selling (Buying by default)
-        time_in_force=time_in_force # Order expires at market close by default
+        symbol=symbol,
+        qty=qty,
+        side=side,
+        time_in_force=time_in_force
     )
-    submit_market_order = trading_client.submit_order(
-        order_data=market_order_data
-    )
-    return submit_market_order
+    return trading_client.submit_order(order_data=market_order_data)
 
 @with_alpaca_trading_client
-def limit_order(trading_client: TradingClient, symbol: str , limit_price: float, notional: float, side: OrderSide = OrderSide.BUY, time_in_force: TimeInForce = TimeInForce.GTC):
-    """Buy or sell a stock at a specific price or better"""
+def create_limit_order(trading_client: TradingClient, symbol: str , limit_price: float, notional: float, side: OrderSide, time_in_force: TimeInForce):
     limit_order_data = LimitOrderRequest(
-        symbol=symbol, # Ticker symbol
-        limit_price=limit_price, # Minimum acceptable price
-        notional=notional, #Amount to sell or buy (buy by default)
-        side=side, # Buying or selling (Buying by default)
-        time_in_force=time_in_force # Fill-or-Kill: Entire order must execute immediately by default
+        symbol=symbol,
+        limit_price=limit_price,
+        notional=notional,
+        side=side,
+        time_in_force=time_in_force
     )
-    submit_limit_order = trading_client.submit_order(
-        order_data=limit_order_data
-    )
-    return submit_limit_order
+    return trading_client.submit_order(order_data=limit_order_data)

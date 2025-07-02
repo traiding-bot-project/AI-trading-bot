@@ -1,4 +1,4 @@
-"""Decorator for logging in"""
+"""Decorator for logging in."""
 
 import os
 
@@ -8,11 +8,13 @@ from alpaca.trading.client import TradingClient
 
 
 def with_alpaca_trading_client(func):
+    """Provides Alpaca TradingClient authentication decorator."""
+
     def wrapper(*args, **kwargs):
         load_dotenv()
-        ALPACA_KEY = os.getenv("ALPACA_KEY")
-        ALPACA_SECRET = os.getenv("ALPACA_SECRET")
-        client = TradingClient(ALPACA_KEY, ALPACA_SECRET, paper=True)
+        alpaca_key = os.getenv("ALPACA_KEY")
+        alpaca_secret = os.getenv("ALPACA_SECRET")
+        client = TradingClient(alpaca_key, alpaca_secret, paper=True)
         return func(client, *args, **kwargs)
 
     return wrapper

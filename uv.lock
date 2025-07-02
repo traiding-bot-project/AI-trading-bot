@@ -49,7 +49,7 @@ dev = [
 
 [[package]]
 name = "alpaca-py"
-version = "0.40.1"
+version = "0.40.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "msgpack" },
@@ -59,9 +59,9 @@ dependencies = [
     { name = "sseclient-py" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6f/6e/6d4e85d1d9f7bd1695587adfb87ef17ba1068972b235bae4bfb6eba6a22b/alpaca_py-0.40.1.tar.gz", hash = "sha256:188adcbb7c140d6f9eebe04011a0df68e1540374e2940098f032b8f21ff34bf3", size = 97233, upload-time = "2025-05-16T10:12:05.233Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7c/6c/03b115b6582bd4ba8451b7c549e779ef0ee5d4dbeeaa0d22e1cee93af7e9/alpaca_py-0.40.2.tar.gz", hash = "sha256:d1e63b628cff4d9935a0c24c3a4419a985d4216a531c5c7b2d9fcd49e3c5fb70", size = 97289, upload-time = "2025-06-27T06:42:41.541Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9e/a5/32534ea4071c8fa34d9f4b9434c5b96cf2c12347f4d52dd086a151ebb3d4/alpaca_py-0.40.1-py3-none-any.whl", hash = "sha256:4f9dff11b8b06b7ead0e98813136adc1b0259937299b8d0697059fa13e8015b1", size = 121709, upload-time = "2025-05-16T10:12:03.775Z" },
+    { url = "https://files.pythonhosted.org/packages/fc/da/26d66cc00cb1df957ac530877d5af9deaa2808b393a155c87dec4d36935b/alpaca_py-0.40.2-py3-none-any.whl", hash = "sha256:bd21a5d290051d28ff4811b0cda2a1b45a4c6bb80f49b037c7bc2fe15302f035", size = 121771, upload-time = "2025-06-27T06:42:40.428Z" },
 ]
 
 [[package]]
@@ -176,16 +176,16 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.115.13"
+version = "0.115.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "starlette" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/20/64/ec0788201b5554e2a87c49af26b77a4d132f807a0fa9675257ac92c6aa0e/fastapi-0.115.13.tar.gz", hash = "sha256:55d1d25c2e1e0a0a50aceb1c8705cd932def273c102bff0b1c1da88b3c6eb307", size = 295680, upload-time = "2025-06-17T11:49:45.575Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ca/53/8c38a874844a8b0fa10dd8adf3836ac154082cf88d3f22b544e9ceea0a15/fastapi-0.115.14.tar.gz", hash = "sha256:b1de15cdc1c499a4da47914db35d0e4ef8f1ce62b624e94e0e5824421df99739", size = 296263, upload-time = "2025-06-26T15:29:08.21Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/4a/e17764385382062b0edbb35a26b7cf76d71e27e456546277a42ba6545c6e/fastapi-0.115.13-py3-none-any.whl", hash = "sha256:0a0cab59afa7bab22f5eb347f8c9864b681558c278395e94035a741fc10cd865", size = 95315, upload-time = "2025-06-17T11:49:44.106Z" },
+    { url = "https://files.pythonhosted.org/packages/53/50/b1222562c6d270fea83e9c9075b8e8600b8479150a18e4516a6138b980d1/fastapi-0.115.14-py3-none-any.whl", hash = "sha256:6c0c8bf9420bd58f565e585036d971872472b4f7d3f6c73b698e10cffdefb3ca", size = 95514, upload-time = "2025-06-26T15:29:06.49Z" },
 ]
 
 [[package]]
@@ -1060,15 +1060,15 @@ wheels = [
 
 [[package]]
 name = "uvicorn"
-version = "0.34.3"
+version = "0.35.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "h11" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/ad/713be230bcda622eaa35c28f0d328c3675c371238470abdea52417f17a8e/uvicorn-0.34.3.tar.gz", hash = "sha256:35919a9a979d7a59334b6b10e05d77c1d0d574c50e0fc98b8b1a0f165708b55a", size = 76631, upload-time = "2025-06-01T07:48:17.531Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/42/e0e305207bb88c6b8d3061399c6a961ffe5fbb7e2aa63c9234df7259e9cd/uvicorn-0.35.0.tar.gz", hash = "sha256:bc662f087f7cf2ce11a1d7fd70b90c9f98ef2e2831556dd078d131b96cc94a01", size = 78473, upload-time = "2025-06-28T16:15:46.058Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6d/0d/8adfeaa62945f90d19ddc461c55f4a50c258af7662d34b6a3d5d1f8646f6/uvicorn-0.34.3-py3-none-any.whl", hash = "sha256:16246631db62bdfbf069b0645177d6e8a77ba950cfedbfd093acef9444e4d885", size = 62431, upload-time = "2025-06-01T07:48:15.664Z" },
+    { url = "https://files.pythonhosted.org/packages/d2/e2/dc81b1bd1dcfe91735810265e9d26bc8ec5da45b4c0f6237e286819194c3/uvicorn-0.35.0-py3-none-any.whl", hash = "sha256:197535216b25ff9b785e29a0b79199f55222193d47f820816e7da751e9bc8d4a", size = 66406, upload-time = "2025-06-28T16:15:44.816Z" },
 ]
 
 [[package]]

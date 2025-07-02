@@ -62,3 +62,25 @@ uv run pytest -vv ./src/tests/e2e
 ```
 
 Example of an AI trading bot - <https://github.com/kweinmeister/agentic-trading>
+
+## Loggers
+
+To use custom loggers you should:
+
+- Import logging module
+- Find logger that you want to use (2 options `fastapi` and `fastmcp`)
+- Assign it to the variable
+- Use it!
+
+Example:
+
+```python
+import logging
+log = logging.getLogger("fastmcp")
+
+log.warning("Example warning log!")
+```
+
+```text
+[02/07/25 19:01:31] [MCP] WARNING  Example warning log!    src/router/api/api.py:19
+```

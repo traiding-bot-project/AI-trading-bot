@@ -9,10 +9,14 @@ from src.router.types.api import HealthCheck
 
 app = FastAPI()
 
+import logging
+log = logging.getLogger("fastmcp")
+
 
 @app.get("/health", status_code=status.HTTP_200_OK, response_model=HealthCheck)
 def get_health() -> Any:
     """Endpoint for checking if FastAPI server runs."""
+    log.warning("Example warning log!")
     return {"status": "OK"}
 
 

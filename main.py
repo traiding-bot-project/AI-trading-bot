@@ -7,6 +7,7 @@ import uvicorn
 
 from src.router.api.api import app
 from src.router.mcp.mcp import mcp
+from src.utils.logger import get_custom_logger
 
 HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", "8000"))
@@ -20,6 +21,9 @@ async def run_servers() -> None:
 
     mcp_config = uvicorn.Config(mcp.streamable_http_app(), host=HOST, port=MCP_PORT)
     mcp_server = uvicorn.Server(mcp_config)
+
+    get_custom_logger("fastmcp", "MCP")
+    get_custom_logger("fastapi", "API")
 
     await asyncio.gather(fastapi_server.serve(), mcp_server.serve())
 

@@ -18,7 +18,7 @@ def get_account_info() -> TradeAccount | RawData:
 
 
 @mcp.tool()
-def search_all_assets(asset_class: AssetClass, status: AssetStatus) -> list[Asset] | RawData:
+def search_all_assets(asset_class: AssetClass, status: AssetStatus = "active") -> list[Asset] | RawData:
     """Searches all possible assets."""
     return trading.search_all_assets(asset_class=asset_class, status=status)
 

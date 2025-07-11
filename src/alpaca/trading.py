@@ -75,3 +75,6 @@ def create_limit_order(
         symbol=symbol, limit_price=limit_price, notional=notional, side=side, time_in_force=time_in_force
     )
     return trading_client.submit_order(order_data=limit_order_data)
+
+
+#print(search_all_assets(asset_class="crypto", status="active"))

@@ -2,6 +2,8 @@ import datetime
 import os
 from typing import Optional
 
+import pandas as pd
+
 import dotenv
 
 from src.alpaca.common import with_alpaca_trading_client
@@ -68,16 +70,22 @@ def get_news_data (start: datetime,
                     exclude_contentless: (Optional[bool]) = False,
                     limit: (Optional[int])=None, # Limit of news items to be returned for given page.
                     sort: (Optional[Sort])=Sort.DESC):
-    client_news = NewsClient()(api_key = os.getenv("ALPACA_KEY"), secret_key = os.getenv("ALPACA_SECRET"))
+    client_news = NewsClient(api_key = os.getenv("ALPACA_KEY"), secret_key = os.getenv("ALPACA_SECRET"))
     request_params = NewsRequest(start=start,
                                     end=end,
                                     include_content=include_content,
                                     exclude_contentless=exclude_contentless,
                                     limit=limit,
                                     sort=sort)
-    recieved_data = client_news.get_stock_bars(request_params)
-    return recieved_data.df
+    recieved_data = client_news.get_news(request_params)
+    recieved_data_df = recieved_data.df
+    return clen_news_df(recieved_data_df)
 
-# Convert to dataframe
-#print(get_crypto_market_data(["BTC/USD"], TimeFrame.Hour, datetime.datetime(2022, 9, 1), datetime.datetime(2022, 9, 7)))
-#print(get_stock_market_data(["TSLA"], TimeFrame.Hour, datetime.datetime(2022, 9, 1), datetime.datetime(2022, 9, 7)))
+
+def clen_news_df(df):
+    #if "id" not in df.columns:
+    #    df = df.reset_index() # to fix problem with index being auto created by pandas
+    #df["full_headline"] = df["id"].astype(str) + " " + df["headline"].astype(str)
+    df = df.drop(columns=["source", "url", "images", "summary", "author", "images"])
+    return df
+

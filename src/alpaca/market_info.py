@@ -23,8 +23,8 @@ load_dotenv()
 def get_crypto_market_data(
     symbol_or_symbols: list,
     timeframe: TimeFrame,
-    start: datetime,
-    end: datetime,
+    start: datetime.datetime,
+    end: datetime.datetime,
     limit: int | None = None,
     sort: Sort | None = Sort.DESC,
 ) -> pd.DataFrame:
@@ -45,8 +45,8 @@ def get_crypto_market_data(
 def get_stock_market_data(
     symbol_or_symbols: list,
     timeframe: TimeFrame,
-    start: datetime,
-    end: datetime,
+    start: datetime.datetime,
+    end: datetime.datetime,
     limit: int | None = None,
     adjustment: Adjustment | None = None,
     feed: DataFeed | None = DataFeed.IEX,  # another possible free opiton: DELAYED_SIP
@@ -71,8 +71,8 @@ def get_stock_market_data(
 
 
 def get_news_data(
-    start: datetime,
-    end: datetime,
+    start: datetime.datetime,
+    end: datetime.datetime,
     include_content: bool | None = True,
     exclude_contentless: bool | None = False,
     limit: int | None = None,  # Limit of news items to be returned for given page.

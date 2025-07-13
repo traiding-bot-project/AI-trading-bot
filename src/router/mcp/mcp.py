@@ -1,7 +1,15 @@
 """Create MCP server with components."""
 
+import datetime
+
+import pandas as pd
+
 import src.alpaca.trading as trading
+import src.alpaca.market_info as market_info
 from alpaca.common import RawData
+from alpaca.common.enums import Sort
+from alpaca.data.enums import Adjustment, DataFeed
+from alpaca.data.timeframe import TimeFrame
 from alpaca.trading.enums import (
     AssetClass,
     AssetStatus,
@@ -92,4 +100,67 @@ def create_limit_order(
         notional=notional,
         side=side,
         time_in_force=time_in_force,
+    )
+
+
+@mcp.tool()
+def get_crypto_market_data(
+    symbol_or_symbols: list,
+    timeframe: TimeFrame,
+    start: datetime.datetime,
+    end: datetime.datetime,
+    limit: int | None = None,
+    sort: Sort | None = Sort.DESC,
+    ) -> pd.DataFrame:
+    """Get market data on crypto assets."""
+    return market_info.get_crypto_market_data(symbol_or_symbols=symbol_or_symbols,
+        timeframe=timeframe,
+        start=start,
+        end=end,
+        limit=limit,
+        sort=sort,
+    )
+
+
+@mcp.tool()
+def get_stock_market_data(
+    symbol_or_symbols: list,
+    timeframe: TimeFrame,
+    start: datetime.datetime,
+    end: datetime.datetime,
+    limit: int | None = None,
+    adjustment: Adjustment | None = None,
+    feed: DataFeed | None = DataFeed.IEX,  # another possible free opiton: DELAYED_SIP
+    sort: Sort | None = Sort.DESC,
+) -> pd.DataFrame:
+    """Get data on crypto assets."""
+    return market_info.get_stock_market_data(
+        symbol_or_symbols=symbol_or_symbols,
+        timeframe=timeframe,
+        start=start,
+        end=end,
+        limit=limit,
+        adjustment=adjustment,
+        feed=feed,
+        sort=sort,
+    )
+
+
+@mcp.tool()
+def get_news_data(
+    start: datetime.datetime,
+    end: datetime.datetime,
+    include_content: bool | None = True,
+    exclude_contentless: bool | None = False,
+    limit: int | None = None,  # Limit of news items to be returned for given page.
+    sort: Sort | None = Sort.DESC,
+) -> pd.DataFrame:
+    """Download news articles."""
+    return market_info.get_news_data(
+        start=start,
+        end=end,
+        include_content=include_content,
+        exclude_contentless=exclude_contentless,
+        limit=limit,
+        sort=sort,
     )

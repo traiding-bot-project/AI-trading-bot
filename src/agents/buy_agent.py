@@ -18,7 +18,6 @@ client = MultiServerMCPClient(
         }
     }
 )
-
 tools = client.get_tools()
 
 

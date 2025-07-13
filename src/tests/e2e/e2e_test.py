@@ -7,9 +7,15 @@ import time
 import httpx
 import pytest
 from fastapi import status
+
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
-from mcp.types import ListPromptsResult, ListResourcesResult, ListResourceTemplatesResult, ListToolsResult
+from mcp.types import (
+    ListPromptsResult,
+    ListResourcesResult,
+    ListResourceTemplatesResult,
+    ListToolsResult,
+)
 
 HOST = "127.0.0.1"
 PORT = 8000
@@ -59,7 +65,9 @@ async def test_fastapi_server_runs():
 @pytest.mark.asyncio
 async def test_mcp_server_runs():
     """Test if MCP server works."""
-    async with streamablehttp_client(create_request_link(port=MCP_PORT, endpoint="/mcp")) as (
+    async with streamablehttp_client(
+        create_request_link(port=MCP_PORT, endpoint="/mcp")
+    ) as (
         read_stream,
         write_stream,
         _,
@@ -68,5 +76,7 @@ async def test_mcp_server_runs():
             await session.initialize()
             assert isinstance(await session.list_tools(), ListToolsResult)
             assert isinstance(await session.list_prompts(), ListPromptsResult)
-            assert isinstance(await session.list_resource_templates(), ListResourceTemplatesResult)
+            assert isinstance(
+                await session.list_resource_templates(), ListResourceTemplatesResult
+            )
             assert isinstance(await session.list_resources(), ListResourcesResult)

@@ -1,38 +1,35 @@
-import asyncio
+"""Agent to analyze market data and buy stocks."""
 
-from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_core.runnables import RunnableLambda
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import create_react_agent
-from langgraph.graph import StateGraph, END
+from tradingLogic.trading_logic import trading_logic, update_memory
 
-from tradingLogic.trading_logic import update_memory, trading_logic
-
-
+# "args": "http://localhost:8000/mcp",
 client = MultiServerMCPClient(
     {
         "echo_tool": {
             "command": "python",
-            "args": ["C:\Users\Andrzej T (Standard)\Desktop\Projects\AI-trading-bot\src\router\mcp\mcp.py"],
-            #"args": "http://localhost:8000/mcp",
-            "transport": "stdio" #streamable_http
+            "args": [
+                "C:/Users/Andrzej T (Standard)/Desktop/Projects/AI-trading-bot/src/router/mcp/mcp.py"
+            ],
+            "transport": "stdio",  # streamable_http
         }
     }
 )
 
 tools = client.get_tools()
 
+
 class TradingState(dict):
-    """Custom dictionary"""
+    """Custom dictionary."""
+
     pass
-
-def get_market_data():
-    return search_all_assets() # avaliable classes: us_option, us_equity, crypto
-
-
 
 
 builder = StateGraph(TradingState)
-builder.add_node("fetch_data", RunnableLambda(get_market_data))
+builder.add_node("fetch_data", RunnableLambda())
 builder.add_node("decide", RunnableLambda(trading_logic))
 builder.add_node("log", RunnableLambda(update_memory))
 
@@ -44,8 +41,4 @@ builder.add_edge("log", END)
 graph = builder.compile()
 
 
-
-agent = create_react_agent(
-    llm = "",
-    tools=tools
-)
+agent = create_react_agent(llm="", tools=tools)

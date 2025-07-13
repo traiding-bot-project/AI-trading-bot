@@ -1,12 +1,23 @@
 """Create MCP server with components."""
 
-from mcp.server.fastmcp import FastMCP
-
 import src.alpaca.trading as trading
 from alpaca.common import RawData
-from alpaca.trading.enums import AssetClass, AssetStatus, OrderSide, QueryOrderStatus, TimeInForce
-from alpaca.trading.models import Asset, ClosePositionResponse, Order, Position, TradeAccount
+from alpaca.trading.enums import (
+    AssetClass,
+    AssetStatus,
+    OrderSide,
+    QueryOrderStatus,
+    TimeInForce,
+)
+from alpaca.trading.models import (
+    Asset,
+    ClosePositionResponse,
+    Order,
+    Position,
+    TradeAccount,
+)
 from alpaca.trading.requests import CancelOrderResponse
+from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP()
 
@@ -18,7 +29,9 @@ def get_account_info() -> TradeAccount | RawData:
 
 
 @mcp.tool()
-def search_all_assets(asset_class: AssetClass, status: AssetStatus = "active") -> list[Asset] | RawData:
+def search_all_assets(
+    asset_class: AssetClass, status: AssetStatus = "active"
+) -> list[Asset] | RawData:
     """Searches all possible assets."""
     return trading.search_all_assets(asset_class=asset_class, status=status)
 
@@ -44,17 +57,24 @@ def get_all_positions() -> list[Position] | RawData:
 
 
 @mcp.tool()
-def close_all_positions(cancel_orders: bool = False) -> list[ClosePositionResponse] | RawData:
+def close_all_positions(
+    cancel_orders: bool = False,
+) -> list[ClosePositionResponse] | RawData:
     """Close all open positions."""
     return trading.close_all_positions(cancel_orders)
 
 
 @mcp.tool()
 def create_market_order(
-    symbol: str, qty: float, side: OrderSide = OrderSide.BUY, time_in_force: TimeInForce = TimeInForce.DAY
+    symbol: str,
+    qty: float,
+    side: OrderSide = OrderSide.BUY,
+    time_in_force: TimeInForce = TimeInForce.DAY,
 ) -> Order | RawData:
     """Submit a market order."""
-    return trading.create_market_order(symbol=symbol, qty=qty, side=side, time_in_force=time_in_force)
+    return trading.create_market_order(
+        symbol=symbol, qty=qty, side=side, time_in_force=time_in_force
+    )
 
 
 @mcp.tool()
@@ -67,5 +87,9 @@ def create_limit_order(
 ) -> Order | RawData:
     """Submit a limit order."""
     return trading.create_limit_order(
-        symbol=symbol, limit_price=limit_price, notional=notional, side=side, time_in_force=time_in_force
+        symbol=symbol,
+        limit_price=limit_price,
+        notional=notional,
+        side=side,
+        time_in_force=time_in_force,
     )

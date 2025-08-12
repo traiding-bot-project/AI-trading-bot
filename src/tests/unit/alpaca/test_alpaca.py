@@ -11,10 +11,8 @@ from alpaca.trading.enums import AssetClass, AssetStatus, OrderSide, TimeInForce
 from alpaca.trading.models import Order, TradeAccount
 from src.alpaca.common import with_alpaca_trading_client
 from src.router.mcp.mcp import (
-    close_all_positions,
     create_market_order,
     get_account_info,
-    get_all_positions,
     get_orders_info,
     search_all_assets,
 )

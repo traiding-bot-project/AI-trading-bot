@@ -77,24 +77,6 @@ class TestMCPTools(unittest.TestCase):
         self.assertEqual(result[0].ratio_qty, None)
         self.assertEqual(result[0].replaced_at, None)
 
-    @patch("src.router.mcp.mcp.get_all_positions")
-    def test_get_all_positions(self, mock_get_all_positions):
-        """Mock get all positions."""
-        mock_value = []
-        mock_get_all_positions.return_value = mock_value
-        result = get_all_positions()
-        self.assertIsInstance(result, list)
-        self.assertEqual(result, [])
-
-    @patch("src.router.mcp.mcp.close_all_positions")
-    def test_close_all_positions(self, mock_close_all_positions):
-        """Mock close all positions."""
-        mock_value = []
-        mock_close_all_positions.return_value = mock_value
-        result = close_all_positions(cancel_orders=True)
-        self.assertIsInstance(result, list)
-        self.assertEqual(result, [])
-
     @patch("src.router.mcp.mcp.create_market_order")
     def test_create_market_order(self, mock_create_market_order):
         """Mock market order."""

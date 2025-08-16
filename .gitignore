@@ -195,3 +195,6 @@ cython_debug/
 
 # MkDocs
 docs/site/
+
+# JetBrains IDE
+.idea

@@ -19,9 +19,6 @@ dependencies = [
     "uvicorn>=0.34.3",
 ]
 
-[tool.pytest.ini_options]
-pythonpath = ["."]
-
 [project.urls]
 repository = "https://github.com/traiding-bot-project/AI-trading-bot"
 
@@ -35,6 +32,9 @@ dev = [
     "pytest-asyncio>=1.0.0",
     "ruff>=0.11",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
 
 [tool.mypy]
 exclude = ["docs/", "src/tests/"]

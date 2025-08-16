@@ -32,6 +32,13 @@ from src.tests.unit.alpaca.common import (
 )
 
 
+@pytest.fixture(autouse=True)
+def alpaca_env(monkeypatch):
+    """Autouse fixture. Used until overwritten using environ patch."""
+    monkeypatch.setenv("ALPACA_KEY", "test_key")
+    monkeypatch.setenv("ALPACA_SECRET", "test_secret")
+
+
 def dummy_function(client, *args, **kwargs):
     """Create function for testing decorator."""
     return "success"
@@ -50,13 +57,11 @@ def test_missing_both_vars(decorated_func):
         decorated_func()
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_existing_both_vars(decorated_func):
     """Environmental variables exist."""
     assert decorated_func() == "success"
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_get_account_info():
     """Mocking TradeAccount info."""
     response_mock = MagicMock(spec=TradeAccount)
@@ -70,7 +75,6 @@ def test_get_account_info():
     assert result.status == AccountStatus.ACTIVE
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_search_all_assets():
     """Mocking search all assets info."""
     response_mock = MagicMock(spec=list[Asset])
@@ -82,7 +86,6 @@ def test_search_all_assets():
     assert result[0].symbol == "USDG/USD"
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_get_orders_info():
     """Mocking get orders info."""
     response_mock = MagicMock(spec=list[Order])
@@ -94,7 +97,6 @@ def test_get_orders_info():
     assert result[0].limit_price == "150"
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_cancel_open_orders():
     """Mocking cancel open orders."""
     response_mock = MagicMock(spec=list[CancelOrderResponse])
@@ -106,7 +108,6 @@ def test_cancel_open_orders():
     assert hasattr(result[0], "status")
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_get_all_positions():
     """Mock get all positions."""
     response_mock = MagicMock(spec=list[Position])
@@ -118,7 +119,6 @@ def test_get_all_positions():
     assert hasattr(result[0], "asset_id")
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_close_all_positions():
     """Mock close all positions."""
     response_mock = MagicMock(spec=list[ClosePositionResponse])
@@ -130,7 +130,6 @@ def test_close_all_positions():
     assert hasattr(result[0].body, "asset_id")
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_create_market_order():
     """Mock market order."""
     response_mock = MagicMock(spec=Order)
@@ -144,7 +143,6 @@ def test_create_market_order():
     assert hasattr(result, "asset_id")
 
 
-@patch.dict(os.environ, {"ALPACA_KEY": "test_key", "ALPACA_SECRET": "test_secret"}, clear=True)
 def test_create_limit_order():
     """Mock limit order."""
     response_mock = MagicMock(spec=Order)

@@ -1,1 +1,0 @@
-"""Src as a module."""

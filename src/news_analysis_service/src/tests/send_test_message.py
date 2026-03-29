@@ -4,6 +4,30 @@ import json
 
 from pika import BlockingConnection, ConnectionParameters
 
+prompt = (
+    "Analyze the text and provide insights on what will be the impact on"
+    "the Orlen stock. Title: Venture Global discusses settling pending arbitration"
+    "cases with energy companies Text: Venture Global is holding discussions to"
+    "settle pending arbitration cases with energy companies that sued the firm for"
+    "failing to provide them with LNG from its Calcasieu Pass facility in a timely"
+    "manner, CEO Mike Sabel said on Monday during a roundtable discussion at the"
+    "CERAWeek conference in Houston. Venture Global customers including Shell, BP,"
+    "Repsol, Orlen, and Edison filed arbitration cases in 2023 after accusing Venture"
+    "Global of failing to provide them with LNG for more than two years after it first"
+    "produced the superchilled gas. BP won its case against Venture Global, while"
+    "the LNG exporter won its cases against Shell and Repsol. The other cases have"
+    "not been concluded. Sabel said while Venture Global won two of its arbitration"
+    "cases and lost one, it is open to settling the remaining arbitration cases."
+    "Venture Global expects to produce LNG from its CP2 facility at 150% of the 20"
+    "million metric tons per annum nameplate capacity, he said, adding the company"
+    "wants to sell more LNG cargoes on five-year contracts while the plant is being"
+    "commissioned. The company could add 40 million mtpa of LNG from proposed"
+    "expansions to its Plaquemines and CP2 plants, Sabel said. Sabel said that even"
+    "though the company has been granted permission by the U.S. Department of Energy"
+    "to increase its LNG exports, he does not expect any more production than what"
+    "was already planned for the rest of the year."
+)
+
 
 def main() -> None:
     """Send a test message to the news analysis tasks queue."""
@@ -43,7 +67,7 @@ def main() -> None:
     # Sample request data
     request_data = {
         "model": "docker.io/ai/llama3.2:1B-Q8_0",
-        "prompt": "Analyze the text and provide insights on what will be the impact on the Orlen stock. Title: Venture Global discusses settling pending arbitration cases with energy companies Text: Venture Global is holding discussions to settle pending arbitration cases with energy companies that sued the firm for failing to provide them with LNG from its Calcasieu Pass facility in a timely manner, CEO Mike Sabel said on Monday during a roundtable discussion at the CERAWeek conference in Houston. Venture Global customers including Shell, BP, Repsol, Orlen, and Edison filed arbitration cases in 2023 after accusing Venture Global of failing to provide them with LNG for more than two years after it first produced the superchilled gas. BP won its case against Venture Global, while the LNG exporter won its cases against Shell and Repsol. The other cases have not been concluded. Sabel said while Venture Global won two of its arbitration cases and lost one, it is open to settling the remaining arbitration cases. Venture Global expects to produce LNG from its CP2 facility at 150% of the 20 million metric tons per annum nameplate capacity, he said, adding the company wants to sell more LNG cargoes on five-year contracts while the plant is being commissioned. The company could add 40 million mtpa of LNG from proposed expansions to its Plaquemines and CP2 plants, Sabel said. Sabel said that even though the company has been granted permission by the U.S. Department of Energy to increase its LNG exports, he does not expect any more production than what was already planned for the rest of the year.",
+        "prompt": prompt,
         "stream": False,
     }
 

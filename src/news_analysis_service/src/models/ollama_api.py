@@ -1,7 +1,7 @@
 """Models for interacting with the Ollama API."""
 
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
@@ -46,8 +46,9 @@ class OllamaCompletionResponse(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
 
-    @field_serializer('created_at')
-    def serialize_dt(self, dt: datetime, _info):
+    @field_serializer("created_at")
+    def serialize_dt(self, dt: datetime, _info: Any) -> str:
+        """Serialize the datetime object to an ISO 8601 string format."""
         return dt.isoformat()
 
 
@@ -65,8 +66,9 @@ class OllamaModelsResponse(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
 
-    @field_serializer('modified_at')
-    def serialize_dt(self, dt: datetime, _info):
+    @field_serializer("modified_at")
+    def serialize_dt(self, dt: datetime, _info: Any) -> str:
+        """Serialize the datetime object to an ISO 8601 string format."""
         return dt.isoformat()
 
 

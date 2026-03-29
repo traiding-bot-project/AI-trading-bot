@@ -1,0 +1,9 @@
+[service]
+deployment = "dev"
+environment = "development"
+logging_level = "info"
+
+[ai_model]
+deployments = {ollama_deployments = { ollama_models = ["docker.io/ai/llama3.2:1B-Q8_0"], api = {compatible_api = "ollama", implemented_endpoints = ["generate", "tags"]}}}
+base_url = "http://127.0.0.1"
+base_port = 12434

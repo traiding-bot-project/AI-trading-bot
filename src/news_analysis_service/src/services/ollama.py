@@ -38,7 +38,7 @@ class OllamaService:
 
     async def _send_post_request(self, url: str, body: OllamaCompletionRequest) -> Any:
         headers = {"Content-Type": "application/json"}
-        request_data = body.model_dump(mode="json")
+        request_data = body.model_dump()
         response = await self.client.post(url, json=request_data, headers=headers)
         try:
             response.raise_for_status()

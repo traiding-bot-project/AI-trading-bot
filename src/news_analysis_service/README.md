@@ -5,6 +5,10 @@
 - docker model pull ai/llama3.2:1B-Q8_0
 - docker model run ai/llama3.2:1B-Q8_0
 
+## How to run RabbitMQ in docker
+
+- docker run --name my-rabbit -p 5672:5672 rabbitmq:4.2.4-management
+
 ## Good source materials
 
 - [litellm](https://github.com/BerriAI/litellm/tree/main)

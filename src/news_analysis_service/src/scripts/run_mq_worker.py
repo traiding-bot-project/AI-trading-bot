@@ -75,7 +75,7 @@ def main() -> None:
             asyncio.set_event_loop(loop)
             result = loop.run_until_complete(content_analyzer.analyze_content(request))
             loop.close()
-            logger.info(f"Analysis result: {result.model_dump()}")
+
             for send_queue in mq_worker_settings.send_queues:
                 ch.basic_publish(
                     exchange=mq_worker_settings.exchange.name,

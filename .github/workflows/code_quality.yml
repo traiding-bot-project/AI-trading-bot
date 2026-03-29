@@ -83,5 +83,3 @@ jobs:
         with:
           config: '.github/workflows/config/.markdownlint.yml'
           globs: '**/*.md'
-
-## coverage report

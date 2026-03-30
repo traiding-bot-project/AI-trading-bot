@@ -52,7 +52,7 @@ class OllamaService:
         logger.info(f"Sending GET request to Ollama API at {url}")
         response_data = await self._send_get_request(url)
         logger.debug(f"Response data: {response_data}")
-        return response_data
+        return OllamaTagsResponse(**response_data)
 
     async def generate_completion(self, request: OllamaCompletionRequest) -> OllamaCompletionResponse:
         """Generate a completion using the Ollama API based on the given request."""
@@ -61,4 +61,4 @@ class OllamaService:
         logger.debug(f"Request data: {request.model_dump()}")
         response_data = await self._send_post_request(url, request)
         logger.debug(f"Response data: {response_data}")
-        return response_data
+        return OllamaCompletionResponse(**response_data)

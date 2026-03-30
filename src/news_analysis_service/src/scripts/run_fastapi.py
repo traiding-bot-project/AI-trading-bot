@@ -15,7 +15,7 @@ logger = getLogger(__name__)
 
 def main() -> None:
     """Main function to run the FastAPI application."""
-    configure_logging(settings.service.logging_level.value)
+    configure_logging(settings.service.logging_level)
     fastapi_settings = load_settings(FASTAPI_SETTINGS_PATH, FastAPISettings)
     logger.info("Created FastAPI settings from configuration file")
     logger.info(f"Starting FastAPI server on {fastapi_settings.host}:{fastapi_settings.port}")

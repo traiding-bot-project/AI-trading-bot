@@ -2,8 +2,10 @@
 
 import logging
 
+from src.settings.models.settings_model import LoggingLevel
 
-def configure_logging(level: str) -> None:
+
+def configure_logging(level: LoggingLevel) -> None:
     """Configure the root logger with the specified level and optional file output."""
     numeric_level = getattr(logging, level.upper(), logging.INFO)
 

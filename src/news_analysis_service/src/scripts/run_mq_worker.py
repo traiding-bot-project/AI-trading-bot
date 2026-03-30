@@ -21,7 +21,7 @@ logger = getLogger(__name__)
 
 def main() -> None:
     """Main function to run the RabbitMQ worker."""
-    configure_logging(settings.service.logging_level.value)
+    configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
     logger.info("Created MQ worker settings from configuration file")
 

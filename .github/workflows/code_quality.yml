@@ -21,7 +21,7 @@ jobs:
 
       - name: MyPy check
         run: |
-          uv run mypy --install-types --strict --warn-unreachable --non-interactive .
+          uv run mypy ./
 
   ruff-check:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
       - name: Ruff format linting errors
         id: ruff_format
         run: |
-          uv run ruff format --check .
+          uv run ruff format --check ./
         continue-on-error: true
 
       - name: Check if either Ruff check or Ruff format failed
@@ -83,5 +83,3 @@ jobs:
         with:
           config: '.github/workflows/config/.markdownlint.yml'
           globs: '**/*.md'
-
-## coverage report

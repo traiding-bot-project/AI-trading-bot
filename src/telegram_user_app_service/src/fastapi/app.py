@@ -1,4 +1,4 @@
-"""API route definition."""
+"""FastAPI application and API router definitions for the Telegram User App Service."""
 
 import logging
 import threading
@@ -19,23 +19,21 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """Lifespan context manager to start the Telegram bot in a background thread."""
     logger.info("Starting Telegram bot in background thread...")
-
     telegram_thread = threading.Thread(target=start_telegram_application, daemon=True)
     telegram_thread.start()
-    logger.info("Telegram bot thread started.")
-
+    logger.info("Telegram bot background thread started successfully")
     yield
+    logger.info("FastAPI application shutting down")
 
-    logger.info("FastAPI shutting down.")
 
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, title="Telegram User App Service", description="Microservice for Telegram user management and notifications", version="1.0.0")
+logger.info("FastAPI application instance created with lifespan context manager")
 
 
 @app.get("/health", status_code=status.HTTP_200_OK, response_model=HealthCheck)
 def get_health() -> Any:
-    """Endpoint for checking if FastAPI server runs."""
-    logger.info("Health check called")
+    """Endpoint for checking if the FastAPI server is running."""
+    logger.debug("Health check called")
     return HealthCheck()
 
 

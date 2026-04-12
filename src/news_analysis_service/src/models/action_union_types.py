@@ -1,4 +1,4 @@
-"""Union types for AI service interactions."""
+"""Union type definitions for AI service interactions."""
 
 from typing import Annotated
 

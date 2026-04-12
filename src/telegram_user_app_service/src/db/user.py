@@ -1,17 +1,17 @@
-"""Defines the UserDB model for the Telegram User App Service."""
+"""SQLAlchemy ORM models for Telegram user database persistence."""
 
 from sqlalchemy import BigInteger, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
-    """Base class for SQLAlchemy models in the Telegram User App Service."""
+    """Base class for all SQLAlchemy ORM models in the Telegram User App Service."""
 
     pass
 
 
 class UserDB(Base):
-    """Represents a user in the database for the Telegram User App Service."""
+    """Database model representing a user in PostgreSQL."""
 
     __tablename__ = "users"
 

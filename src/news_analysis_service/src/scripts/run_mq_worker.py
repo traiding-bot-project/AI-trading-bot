@@ -1,4 +1,4 @@
-"""MQ Worker script to consume messages from RabbitMQ, process them, and publish results back to RabbitMQ."""
+"""RabbitMQ Worker script for processing content analysis tasks."""
 
 import asyncio
 import json
@@ -20,10 +20,11 @@ logger = getLogger(__name__)
 
 
 def main() -> None:
-    """Main function to run the RabbitMQ worker."""
+    """Main entry point for the RabbitMQ worker process."""
+    logger.info("Starting RabbitMQ worker for News Analysis Service")
     configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
-    logger.info("Created MQ worker settings from configuration file")
+    logger.info("MQ worker settings loaded from configuration file")
 
     connection_params = ConnectionParameters(
         host=mq_worker_settings.connector.host,
@@ -68,6 +69,7 @@ def main() -> None:
     asyncio.set_event_loop(loop)
 
     def on_message(ch: Channel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
+        """Process incoming message from RabbitMQ queue, analyze content, and publish results."""
         logger.info(f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}")
 
         try:

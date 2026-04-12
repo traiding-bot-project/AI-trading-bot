@@ -1,4 +1,4 @@
-"""Settings module for the Notification Service microservice."""
+"""Settings module for the Telegram User App Service microservice."""
 
 from logging import getLogger
 

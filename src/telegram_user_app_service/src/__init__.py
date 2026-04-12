@@ -1,1 +1,1 @@
-"""Root module for the Notification Service microservice."""
+"""Root module for the Telegram User App Service microservice."""

@@ -1,1 +1,1 @@
-"""Utilities for the Notification Service microservice."""
+"""Utilities for the Telegram User App Service microservice."""

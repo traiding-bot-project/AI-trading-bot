@@ -1,4 +1,4 @@
-"""Script to run the FastAPI application."""
+"""Script to run the FastAPI application for the Telegram User App Service."""
 
 from logging import getLogger
 
@@ -13,10 +13,13 @@ logger = getLogger(__name__)
 
 
 def main() -> None:
-    """Main function to run the FastAPI application."""
+    """Main entry point for running the FastAPI application."""
+    logger.info("Starting FastAPI application initialization")
     configure_logging(settings.service.logging_level)
+    logger.info(f"Logging configured with level: {settings.service.logging_level}")
+    
     fastapi_settings = load_settings(FASTAPI_SETTINGS_PATH, FastAPISettings)
-    logger.info("Created FastAPI settings from configuration file")
+    logger.info("FastAPI configuration loaded from settings file")
     logger.info(f"Starting FastAPI server on {fastapi_settings.host}:{fastapi_settings.port}")
 
     from src.fastapi.app import app

@@ -1,4 +1,4 @@
-"""Pydantic models for the Telegram Bot FastAPI endpoints."""
+"""Pydantic models for Telegram bot broadcast operations."""
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -12,6 +12,6 @@ class BroadcastRequest(BaseModel):
 
 
 class BroadcastResponse(BaseModel):
-    """Response model for broadcasting a message to Telegram users."""
+    """Response model for a broadcast operation."""
 
     success: bool

@@ -1,4 +1,4 @@
-"""Defines the User model for the Telegram User App Service."""
+"""Pydantic models for user-related data in the Telegram User App Service."""
 
 from typing import Annotated
 
@@ -28,7 +28,7 @@ class User(BaseModel):
 
 
 class UserFilters(BaseModel):
-    """Filters for listing users."""
+    """Filters for listing and querying users."""
 
     is_subscribed: bool | None = None
 

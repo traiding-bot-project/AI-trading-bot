@@ -1,4 +1,4 @@
-"""Defines the UserRepository protocol for the Telegram User App Service."""
+"""Protocol definitions for user repository interactions."""
 
 from typing import Protocol
 
@@ -6,24 +6,24 @@ from src.models.user import User, UserFilters
 
 
 class UserRepository(Protocol):
-    """Defines the UserRepository protocol for managing user data in the Telegram User App Service."""
+    """Protocol defining the interface for user repository operations."""
 
     async def add_user(self, user: User) -> User:
-        """Adds a new user to the repository and returns the created User object."""
+        """Add a new user to the repository and return the created User object."""
         ...
 
     async def get_user_by_chat_id(self, chat_id: int) -> User | None:
-        """Retrieves a user by their Telegram chat ID. Returns None if the user is not found."""
+        """Retrieve a user by their Telegram chat ID."""
         ...
 
     async def get_all_users(self, filters: UserFilters) -> list[User]:
-        """Returns a list of users in the repository."""
+        """Retrieve all users from the repository, optionally filtered."""
         ...
 
     async def update_user(self, user: User) -> User:
-        """Updates an existing user in the repository and returns the updated User object."""
+        """Update an existing user in the repository and return the updated User object."""
         ...
 
     async def delete_user(self, user_id: int) -> bool:
-        """Deletes a user by their ID. Returns True if deletion was successful, False otherwise."""
+        """Delete a user by their ID."""
         ...

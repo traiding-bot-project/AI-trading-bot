@@ -33,6 +33,7 @@ class BroadcastBot:
             await self._send(user.chat_id, message)
 
     async def _send(self, chat_id: int, message: str) -> None:
+        """Send a message to a single user, logging success or failure."""
         try:
             await self._bot.send_message(chat_id=chat_id, text=message)
             logger.info(f"Message sent to user {chat_id}.")

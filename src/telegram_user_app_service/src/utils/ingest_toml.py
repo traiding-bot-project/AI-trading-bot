@@ -1,11 +1,11 @@
-"""Utility functions for loading settings from a TOML file."""
+"""Utility functions for loading and parsing configuration from TOML files."""
 
 from pathlib import Path
 from tomllib import load
 
 
 def load_settings[T](config_path: str | Path, settings_model: type[T]) -> T:
-    """Load settings from a TOML file and return a Settings instance."""
+    """Load and parse settings from a TOML file using the provided Pydantic model."""
     config_path = Path(config_path)
 
     if not config_path.exists():

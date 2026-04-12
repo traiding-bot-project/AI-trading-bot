@@ -1,4 +1,4 @@
-"""Utility function to construct resource URLs."""
+"""Utility functions for constructing resource URLs with authentication."""
 
 
 def get_resource_url(
@@ -9,7 +9,7 @@ def get_resource_url(
     password: str | None = None,
     api: str | None = None,
 ) -> str:
-    """Constructs a resource URL based on the provided parameters."""
+    """Construct a complete resource URL with optional authentication credentials."""
     auth = ""
     if username:
         auth = f"{username}{f':{password}' if password else ''}@"

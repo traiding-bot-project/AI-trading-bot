@@ -1,4 +1,4 @@
-"""Constants for the Notification Service microservice."""
+"""Constants for the Telegram User App Service microservice."""
 
 BASE_SETTINGS_PATH = "src/settings"
 SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/settings.toml"

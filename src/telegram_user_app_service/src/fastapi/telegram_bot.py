@@ -18,7 +18,9 @@ bot_router = APIRouter(prefix="/bot", tags=[V1RouterTags.TELEGRAM_BOT])
 async def broadcast(
     body: Annotated[BroadcastRequest, Body(...)], bot: Annotated[BroadcastBot, Depends(get_broadcast_bot)]
 ) -> Any:
-    """Endpoint to broadcast a message to all subscribed users."""
-    logger.info("Broadcasting message to subscribed users")
+    """Endpoint to broadcast a message to all subscribed Telegram users."""
+    logger.info(f"POST /bot/broadcast - Broadcasting message to all subscribed users")
+    logger.debug(f"Message length: {len(body.message)} characters")
     await bot.broadcast(body.message)
+    logger.info("Broadcast completed successfully")
     return BroadcastResponse(success=True)

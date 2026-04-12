@@ -105,7 +105,7 @@ async def _broadcast_message(request: BroadcastRequest) -> None:
     """Broadcast a message to all subscribed Telegram users."""
     async with broadcast_bot_context() as bot:
         await bot.broadcast(request.message)
-        logger.info(f"Message broadcasted successfully: {request.message}")
+        logger.debug(f"Message broadcasted successfully: {request.message}")
 
 
 if __name__ == "__main__":

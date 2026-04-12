@@ -26,7 +26,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     logger.info("FastAPI application shutting down")
 
 
-app = FastAPI(lifespan=lifespan, title="Telegram User App Service", description="Microservice for Telegram user management and notifications", version="1.0.0")
+app = FastAPI(
+    lifespan=lifespan,
+    title="Telegram User App Service",
+    description="Microservice for Telegram user management and notifications",
+    version="1.0.0",
+)
 logger.info("FastAPI application instance created with lifespan context manager")
 
 

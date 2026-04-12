@@ -41,7 +41,7 @@ class OllamaService:
         except HTTPStatusError as e:
             logger.error(f"GET request to Ollama API failed with status {e.response.status_code}: {e}")
             raise RuntimeError(f"Request to Ollama API failed: {e}")
-        logger.debug(f"GET request successful")
+        logger.debug("GET request successful")
         return response.json()
 
     async def _send_post_request(self, url: str, body: OllamaCompletionRequest) -> Any:
@@ -56,7 +56,7 @@ class OllamaService:
         except HTTPStatusError as e:
             logger.error(f"POST request to Ollama API failed with status {e.response.status_code}: {e}")
             raise RuntimeError(f"Request to Ollama API failed: {e}")
-        logger.debug(f"POST request successful")
+        logger.debug("POST request successful")
         return response.json()
 
     async def list_models(self) -> OllamaTagsResponse:

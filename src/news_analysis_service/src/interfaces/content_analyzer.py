@@ -1,7 +1,5 @@
 """Content analyzer model for AI-powered content analysis."""
 
-import logging
-
 import asyncio
 import logging
 from typing import Self
@@ -46,7 +44,7 @@ class AIContentAnalyzer(BaseModel):
         """Analyze content using the underlying AI service."""
         logger.info(f"Analyzing content with model: {request.model}")
         result = await self.service.generate_completion(request)
-        logger.debug(f"Content analysis completed")
+        logger.debug("Content analysis completed")
         return result
 
     async def list_models(self) -> ListModelsResponse:

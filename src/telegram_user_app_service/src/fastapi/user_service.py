@@ -55,7 +55,7 @@ async def update_user(
     logger.info(f"PUT /user - Updating user with chat_id {body.chat_id}")
     logger.debug(f"Update payload: username={body.username}, subscribed={body.is_subscribed}")
     user = await user_service.update_user(body)
-    logger.info(f"User updated successfully")
+    logger.info("User updated successfully")
     return user
 
 
@@ -64,5 +64,5 @@ async def remove_user(chat_id: int, user_service: Annotated[UserService, Depends
     """Endpoint to remove a user by their Telegram chat ID."""
     logger.info(f"DELETE /user/{{{chat_id}}} - Removing user with chat_id {chat_id}")
     user = await user_service.remove_user(chat_id)
-    logger.info(f"User removed successfully")
+    logger.info("User removed successfully")
     return user

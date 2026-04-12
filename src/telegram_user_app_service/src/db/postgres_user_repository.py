@@ -70,7 +70,7 @@ class PostgresUserRepository:
             raise ValueError(f"User with chat_id {user.chat_id} not found")
 
         await self._session.commit()
-        logger.info(f"User updated successfully")
+        logger.info("User updated successfully")
         return User.model_validate(updated_user_db)
 
     async def delete_user(self, user_id: int) -> bool:
@@ -81,10 +81,10 @@ class PostgresUserRepository:
         deleted_id = result.scalar_one_or_none()
 
         await self._session.commit()
-        
+
         if deleted_id:
-            logger.info(f"User deleted successfully")
+            logger.info("User deleted successfully")
         else:
             logger.warning(f"User not found for deletion: ID {user_id}")
-        
+
         return deleted_id is not None

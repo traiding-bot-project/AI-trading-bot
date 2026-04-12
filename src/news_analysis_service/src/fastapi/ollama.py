@@ -19,7 +19,7 @@ async def generate_completion(body: Annotated[OllamaCompletionRequest, Body(...)
     logger.info("POST /ollama/generate - Received completion generation request")
     logger.debug(f"Model requested: {body.model}")
     result = await content_analyzer.analyze_content(body)
-    logger.debug(f"Completion generated successfully")
+    logger.debug("Completion generated successfully")
     return result
 
 

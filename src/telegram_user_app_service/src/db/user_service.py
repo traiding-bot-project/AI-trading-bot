@@ -1,6 +1,7 @@
 """User Service for managing user operations in the Telegram User App Service."""
 
 import logging
+from typing import cast
 
 from src.db.protocol import UserRepository
 from src.models.user import User, UserFilters
@@ -41,22 +42,22 @@ class UserService:
         """Update an existing user's information."""
         logger.info(f"Updating user with chat_id {user.chat_id}")
         result = await self._repo.update_user(user)
-        logger.debug(f"User updated successfully")
+        logger.debug("User updated successfully")
         return result
 
     async def list_users(self, filters: UserFilters) -> list[User]:
         """Retrieve a list of registered users with optional filtering."""
         logger.info(f"Listing users with filters: {filters.model_dump(exclude_none=True)}")
-        users = await self._repo.get_all_users(filters)
+        users = cast(list[User], await self._repo.get_all_users(filters))
         logger.debug(f"Retrieved {len(users)} users")
         return users
 
     async def remove_user(self, user_id: int) -> bool:
         """Delete a user by their ID."""
         logger.info(f"Removing user with ID {user_id}")
-        success = await self._repo.delete_user(user_id)
+        success = cast(bool, await self._repo.delete_user(user_id))
         if success:
-            logger.info(f"User deleted successfully")
+            logger.info("User deleted successfully")
         else:
-            logger.warning(f"User deletion failed: user not found")
+            logger.warning("User deletion failed: user not found")
         return success

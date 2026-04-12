@@ -1,22 +1,51 @@
-"""MQ Worker script to consume messages from RabbitMQ, process them, and publish results back to RabbitMQ."""
+"""MQ Worker script to consume broadcast messages from RabbitMQ and send them via Telegram bot."""
 
 import asyncio
 import json
+from collections.abc import Callable
 from logging import getLogger
 
 from pika import BlockingConnection, ConnectionParameters
 from pika.channel import Channel
 from pika.spec import Basic, BasicProperties
-
 from src.constants import MQ_WORKER_SETTINGS_PATH
-from src.interfaces import content_analyzer
-from src.models.action_union_types import AnalyzeContentRequest
+from src.models.bot import BroadcastRequest
 from src.settings import settings
-from src.settings.models.mq_worker_settings_model import MQWorkerSettings
+from src.settings.models.mq_worker_settings_model import MQWorkerReceiveQueue, MQWorkerSettings
+from src.telegram.bot import broadcast_bot_context
 from src.utils.ingest_toml import load_settings
 from src.utils.logger import configure_logging
 
 logger = getLogger(__name__)
+
+_loop = asyncio.new_event_loop()
+asyncio.set_event_loop(_loop)
+
+
+def create_message_handler(
+    queue_settings: MQWorkerReceiveQueue,
+) -> Callable[[Channel, Basic.Deliver, BasicProperties, bytes], None]:
+    """Create a message handler for a specific queue."""
+
+    def on_message(ch: Channel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
+        """Handle incoming broadcast messages."""
+        logger.info(f"New broadcast message received from queue {queue_settings.name}")
+
+        try:
+            data = json.loads(body)
+            request = BroadcastRequest(**data)
+
+            _loop.run_until_complete(_broadcast_message(request))
+
+            if queue_settings.ack:
+                ch.basic_ack(delivery_tag=method.delivery_tag)
+                logger.info(f"Message acknowledged for queue {queue_settings.name}")
+
+        except Exception as e:
+            logger.error(f"Processing or broadcasting failed: {e}")
+            ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+
+    return on_message
 
 
 def main() -> None:
@@ -36,9 +65,6 @@ def main() -> None:
     connection = BlockingConnection(connection_params)
     channel = connection.channel()
 
-    if any(send_queue.confirm for send_queue in mq_worker_settings.send_queues):
-        channel.confirm_delivery()
-
     channel.exchange_declare(
         exchange=mq_worker_settings.exchange.name,
         exchange_type=mq_worker_settings.exchange.type.value,
@@ -46,7 +72,7 @@ def main() -> None:
         auto_delete=mq_worker_settings.exchange.auto_delete,
     )
 
-    for queue in mq_worker_settings.receive_queues + mq_worker_settings.send_queues:
+    for queue in mq_worker_settings.receive_queues:
         channel.queue_declare(
             queue=queue.name,
             durable=queue.durable,
@@ -58,43 +84,12 @@ def main() -> None:
             exchange=mq_worker_settings.exchange.name,
             routing_key=queue.routing_key,
         )
-
-    for receive_queue in mq_worker_settings.receive_queues:
-        channel.basic_qos(prefetch_count=receive_queue.prefetch_count)
+        channel.basic_qos(prefetch_count=queue.prefetch_count)
 
     logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    def on_message(ch: Channel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
-        logger.info(f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}")
-
-        try:
-            data = json.loads(body)
-            request = AnalyzeContentRequest(**data)
-
-            result = loop.run_until_complete(content_analyzer.analyze_content(request))
-
-            for send_queue in mq_worker_settings.send_queues:
-                ch.basic_publish(
-                    exchange=mq_worker_settings.exchange.name,
-                    routing_key=send_queue.routing_key,
-                    body=json.dumps(result.model_dump()),
-                    properties=BasicProperties(delivery_mode=send_queue.delivery_mode),
-                )
-
-            ch.basic_ack(delivery_tag=method.delivery_tag)
-            logger.info(
-                f"Task completed and sent to output queues of the exchange {mq_worker_settings.exchange.name}."
-            )
-
-        except Exception as e:
-            logger.error(f"Processing failed: {e}")
-            ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
-
     for receive_queue in mq_worker_settings.receive_queues:
-        channel.basic_consume(queue=receive_queue.name, on_message_callback=on_message)
+        channel.basic_consume(queue=receive_queue.name, on_message_callback=create_message_handler(receive_queue))
 
     logger.info("Worker is listening. Press CTRL+C to exit.")
     try:
@@ -103,7 +98,14 @@ def main() -> None:
         logger.info("Worker interrupted. Closing connection...")
         channel.stop_consuming()
         connection.close()
-        loop.close()
+        _loop.close()
+
+
+async def _broadcast_message(request: BroadcastRequest) -> None:
+    """Broadcast a message to all subscribed Telegram users."""
+    async with broadcast_bot_context() as bot:
+        await bot.broadcast(request.message)
+        logger.info(f"Message broadcasted successfully: {request.message}")
 
 
 if __name__ == "__main__":

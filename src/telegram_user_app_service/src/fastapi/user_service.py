@@ -40,7 +40,9 @@ async def list_users(
 
 
 @user_router.get("/{chat_id}", response_model=User, status_code=status.HTTP_200_OK)
-async def get_user(chat_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_services)]) -> Any:
+async def get_user(
+    chat_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_services)]
+) -> Any:
     """Endpoint to retrieve a user by their Telegram chat ID."""
     logger.info(f"GET /user/{{{chat_id}}} - Retrieving user with chat_id {chat_id}")
     user = await user_service.get_user(chat_id)
@@ -61,7 +63,9 @@ async def update_user(
 
 
 @user_router.delete("/{chat_id}", response_model=User, status_code=status.HTTP_200_OK)
-async def remove_user(chat_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_services)]) -> Any:
+async def remove_user(
+    chat_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_services)]
+) -> Any:
     """Endpoint to remove a user by their Telegram chat ID."""
     logger.info(f"DELETE /user/{{{chat_id}}} - Removing user with chat_id {chat_id}")
     user = await user_service.remove_user(chat_id)

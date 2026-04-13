@@ -39,7 +39,7 @@ async def user_service_context() -> AsyncGenerator[UserService]:
         yield UserService(PostgresUserRepository(session))
 
 
-async def get_user_services() -> AsyncGenerator[UserService]:
+async def get_user_service() -> AsyncGenerator[UserService]:
     """Factory function to create a UserService instance."""
     async with user_service_context() as user_service:
         yield user_service

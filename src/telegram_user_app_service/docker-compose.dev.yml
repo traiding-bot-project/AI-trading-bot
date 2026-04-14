@@ -44,8 +44,8 @@ services:
       timeout: 10s
       retries: 10
   
-  db:
-    container_name: db
+  user-db:
+    container_name: user-db
     image: postgres:18.3-alpine3.23
     restart: always
     env_file: .db.env

@@ -12,6 +12,6 @@ def get_env_var(var_name: str) -> str:
     var = os.getenv(var_name)
     if var is None:
         logger.error(f"Environment variable '{var_name}' is not set")
-        raise OSError(f"Environment variable '{var_name}' is not set and no default value provided.")
+        raise OSError(f"Environment variable '{var_name}' is not set.")
     logger.debug(f"Successfully retrieved environment variable: {var_name}")
     return var

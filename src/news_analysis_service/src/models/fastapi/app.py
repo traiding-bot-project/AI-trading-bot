@@ -6,12 +6,12 @@ from pydantic import BaseModel
 
 
 class V1RouterTags(StrEnum):
-    """Tags for the v1 API router."""
+    """Enum for FastAPI router tags used for API documentation."""
 
     OLLAMA = "Ollama"
 
 
 class HealthCheck(BaseModel):
-    """Response model to validate and return when performing a health check."""
+    """Response model for health check endpoint."""
 
     status: str = "OK"

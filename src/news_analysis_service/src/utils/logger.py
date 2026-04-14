@@ -1,4 +1,4 @@
-"""Logging configuration for the news analysis service."""
+"""Logging configuration for the News Analysis Service."""
 
 import logging
 
@@ -6,7 +6,7 @@ from src.settings.models.settings_model import LoggingLevel
 
 
 def configure_logging(level: LoggingLevel) -> None:
-    """Configure the root logger with the specified level and optional file output."""
+    """Configure the root logger with the specified logging level and console output."""
     numeric_level = getattr(logging, level.upper(), logging.INFO)
 
     logger = logging.getLogger()

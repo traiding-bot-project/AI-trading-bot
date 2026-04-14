@@ -1,7 +1,7 @@
 [project]
-name = "sentiment_analysis_service"
+name = "news_analysis_service"
 version = "0.1.0"
-description = "Sentiment analysis service"
+description = "News analysis service"
 classifiers = ["Programming Language :: Python :: 3.14"]
 readme = "README.md"
 requires-python = ">=3.14"

@@ -1,0 +1,21 @@
+[connector]
+host = "127.0.0.1"
+port = 5672
+virtual_host = "/"
+heartbeat = 600
+socket_timeout = 60000
+
+[exchange]
+name = "news_analysis"
+type = "direct"
+durable = true
+auto_delete = false
+
+[[receive_queues]]
+name = "news_analysis_results"
+durable = true
+auto_delete = false
+exclusive = false
+routing_key = "results"
+prefetch_count = 1
+ack = true

@@ -1,4 +1,4 @@
-"""Models for interacting with the Ollama API."""
+"""Pydantic models for Ollama API interactions."""
 
 from datetime import datetime
 from typing import Annotated, Any

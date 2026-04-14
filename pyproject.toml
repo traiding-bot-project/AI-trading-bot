@@ -52,7 +52,7 @@ docstring-code-format = true
 [dependency-groups]
 dev = [
     "mypy>=1.20.1",
-    "ruff>=0.15.7",
+    "ruff>=0.15.10",
 ]
 
 [tool.ruff.lint.pydocstyle]

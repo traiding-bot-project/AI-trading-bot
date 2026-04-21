@@ -1,4 +1,4 @@
-"""Constants for the Sentiment Analysis Service microservice."""
+"""Constants for the News Analysis Service."""
 
 BASE_SETTINGS_PATH = "src/settings"
 SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/settings.toml"

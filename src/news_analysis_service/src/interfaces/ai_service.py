@@ -6,7 +6,7 @@ from src.models.action_union_types import AnalyzeContentRequest, AnalyzeContentR
 
 
 class AIService(Protocol):
-    """Protocol for AI service interactions. Defines the expected interface for AI model interactions."""
+    """Protocol defining the interface for AI service interactions."""
 
     async def list_models(self) -> ListModelsResponse:
         """Get the list of available models from the AI service."""

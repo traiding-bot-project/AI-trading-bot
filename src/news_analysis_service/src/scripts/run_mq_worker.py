@@ -1,4 +1,4 @@
-"""MQ Worker script to consume messages from RabbitMQ, process them, and publish results back to RabbitMQ."""
+"""RabbitMQ Worker script for processing content analysis tasks."""
 
 import asyncio
 import json
@@ -20,10 +20,11 @@ logger = getLogger(__name__)
 
 
 def main() -> None:
-    """Main function to run the RabbitMQ worker."""
+    """Main entry point for the RabbitMQ worker process."""
+    logger.info("Starting RabbitMQ worker for News Analysis Service")
     configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
-    logger.info("Created MQ worker settings from configuration file")
+    logger.info("MQ worker settings loaded from configuration file")
 
     connection_params = ConnectionParameters(
         host=mq_worker_settings.connector.host,
@@ -64,17 +65,18 @@ def main() -> None:
 
     logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
 
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
     def on_message(ch: Channel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
+        """Process incoming message from RabbitMQ queue, analyze content, and publish results."""
         logger.info(f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}")
 
         try:
             data = json.loads(body)
             request = AnalyzeContentRequest(**data)
 
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
             result = loop.run_until_complete(content_analyzer.analyze_content(request))
-            loop.close()
 
             for send_queue in mq_worker_settings.send_queues:
                 ch.basic_publish(
@@ -97,7 +99,13 @@ def main() -> None:
         channel.basic_consume(queue=receive_queue.name, on_message_callback=on_message)
 
     logger.info("Worker is listening. Press CTRL+C to exit.")
-    channel.start_consuming()
+    try:
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        logger.info("Worker interrupted. Closing connection...")
+        channel.stop_consuming()
+        connection.close()
+        loop.close()
 
 
 if __name__ == "__main__":

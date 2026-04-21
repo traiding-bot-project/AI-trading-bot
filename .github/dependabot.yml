@@ -9,3 +9,7 @@ updates:
     directory: "/src/news_analysis_service"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "uv"
+    directory: "/src/telegram_user_app_service"
+    schedule:
+      interval: "weekly"

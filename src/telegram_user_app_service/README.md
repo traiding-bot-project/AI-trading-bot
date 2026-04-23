@@ -15,21 +15,19 @@
 ## Architecture and workflow
 
 ### Overview
-The Telegram User App Service handles Telegram user registration, subscription management, and message broadcasting.
-It consists of:
-- a FastAPI HTTP API for user management and broadcasts
-- a Telegram bot poller for `/subscribe` and `/unsubscribe` commands
-- a RabbitMQ worker for queued broadcast delivery
-- database persistence for user records
-- Infisical secrets management for the bot token and DB password
+The Telegram User App Service supports:
+- Telegram user registration and subscription management
+- broadcast delivery through HTTP, Telegram polling, and RabbitMQ
+- PostgreSQL-backed user persistence
+- Infisical-based secret retrieval for bot tokens and database credentials
 
 ### FastAPI workflow
-- `src/scripts/run_fastapi.py` loads settings and starts the FastAPI app.
-- `src/fastapi/app.py` exposes `/health`, `/api/user`, and `/api/bot` routes.
-- `src/fastapi/user_service.py` manages user CRUD operations using `UserService`.
-- `src/fastapi/telegram_bot.py` sends broadcast messages via `BroadcastBot`.
-- `src/db/__init__.py` creates `UserService` instances from `PostgresUserRepository`.
-- `src/db/postgres_user_repository.py` persists data to PostgreSQL.
+- `src/scripts/run_fastapi.py` loads settings and starts the FastAPI server.
+- `src/fastapi/app.py` creates the FastAPI application and mounts `/api/user` and `/api/bot`.
+- `src/fastapi/user_service.py` implements user CRUD endpoints using `UserService`.
+- `src/fastapi/telegram_bot.py` implements the broadcast endpoint using `BroadcastBot`.
+- `src/db/__init__.py` creates `UserService` instances backed by `PostgresUserRepository`.
+- `src/db/postgres_user_repository.py` persists and queries user records in PostgreSQL.
 
 ```mermaid
 flowchart LR
@@ -37,20 +35,21 @@ flowchart LR
     B --> C[/health]
     B --> D[/api/user/*]
     B --> E[/api/bot/broadcast]
-    E --> F[BroadcastBot]
     D --> G[UserService]
+    E --> F[BroadcastBot]
     F --> G
     G --> H[PostgresUserRepository]
     H --> I[Postgres DB]
-    A --> J[settings TOML + Infisical secrets]
-    J --> B
+    J[settings TOML + Infisical secrets] --> B
+    J --> F
+    J --> G
 ```
 
 ### Telegram bot workflow
-- On startup, `src/fastapi/app.py` launches `src.telegram.app.start_telegram_application` in a background thread.
-- The Telegram bot handles `/subscribe` and `/unsubscribe` commands.
-- Both commands use `user_service_context()` to access the same `UserService` and database repository.
-- Subscription state is stored in the `users` table.
+- `src/fastapi/app.py` starts `src.telegram.app.start_telegram_application()` in a background thread on FastAPI startup.
+- `src/telegram/app/telegram_application.py` registers `/subscribe` and `/unsubscribe` handlers.
+- Handlers use `user_service_context()` to query or update the same `UserService`.
+- Subscription updates persist to the `users` table in PostgreSQL.
 
 ```mermaid
 flowchart LR
@@ -65,9 +64,10 @@ flowchart LR
 ```
 
 ### RabbitMQ broadcast workflow
-- `src/scripts/run_mq_worker.py` consumes `BroadcastRequest` messages from RabbitMQ.
-- `src/telegram.bot.broadcast_bot_context` creates a `BroadcastBot` instance.
-- `BroadcastBot.broadcast()` queries subscribed users and sends Telegram messages.
+- `src/scripts/run_mq_worker.py` loads MQ settings and listens for broadcast messages.
+- Incoming messages are converted to `BroadcastRequest` objects.
+- `src/telegram.bot.broadcast_bot_context` creates `BroadcastBot` with `UserService`.
+- `BroadcastBot.broadcast()` queries subscribed users and sends messages through the Telegram Bot API.
 
 ```mermaid
 flowchart LR
@@ -83,8 +83,8 @@ flowchart LR
 
 ### Configuration
 - `src/settings/settings.toml` stores service, Infisical, and database configuration.
-- `src/settings/fastapi_settings.toml` configures the FastAPI host and port.
+- `src/settings/fastapi_settings.toml` configures FastAPI host and port.
 - `src/settings/mq_worker_settings.toml` configures RabbitMQ connectivity and queues.
 - `src/.db.env` and `src/.infisical.env` hold local development secrets.
 
-This design gives a consistent user management and broadcast pipeline across HTTP, Telegram polling, and message queue delivery.
+This service organizes user management, Telegram polling, and broadcast delivery through a shared database and secret-management foundation.

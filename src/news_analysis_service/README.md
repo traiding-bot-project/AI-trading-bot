@@ -25,19 +25,20 @@ wsl --shutdown
 ## Architecture and workflow
 
 ### Overview
-The News Analysis Service is built around two runtime modes:
-- `FastAPI` web server for live API requests
-- `RabbitMQ` worker for queued content analysis tasks
+The News Analysis Service contains two execution modes:
+- `FastAPI` server for synchronous API requests
+- RabbitMQ worker for asynchronous queued processing
 
-Both modes share the same core AI analysis pipeline:
-- request input -> `AIContentAnalyzer` -> `OllamaService` -> external Ollama API
+Both entrypoints share the same AI analysis pipeline:
+- request -> `AIContentAnalyzer` -> `OllamaService` -> external Ollama API
 
 ### FastAPI workflow
-- `src/scripts/run_fastapi.py` loads settings and starts the FastAPI server.
-- `src/fastapi/app.py` exposes `/health` and `/api/ollama` routes.
-- `/api/ollama/generate` and `/api/ollama/tags` call `src.interfaces.content_analyzer`.
-- `src/interfaces/content_analyzer.py` wraps the `OllamaService` implementation.
-- `src/services/ollama.py` sends requests to the Ollama API and returns results.
+- `src/scripts/run_fastapi.py` loads application and FastAPI settings.
+- `src/fastapi/app.py` creates the FastAPI application and mounts `/api/ollama`.
+- `src/fastapi/ollama.py` defines `/generate` and `/tags` endpoints.
+- `src/interfaces/__init__.py` creates `AIContentAnalyzer` with the selected AI service.
+- `src/interfaces/content_analyzer.py` forwards requests to `src/services/ollama.py`.
+- `src/services/ollama.py` calls the configured Ollama API and returns the parsed response.
 
 ```mermaid
 flowchart LR
@@ -54,11 +55,11 @@ flowchart LR
 ```
 
 ### RabbitMQ worker workflow
-- `src/scripts/run_mq_worker.py` loads RabbitMQ settings and starts a consuming worker.
-- Messages arrive on the configured input queue(s).
-- The worker deserializes a `AnalyzeContentRequest`.
-- It uses the same `AIContentAnalyzer` pipeline to generate a response.
-- The result is published back to the configured send queue(s).
+- `src/scripts/run_mq_worker.py` loads RabbitMQ settings and connects to the broker.
+- It declares the exchange and bind queues from `mq_worker_settings.toml`.
+- Incoming messages are deserialized to `AnalyzeContentRequest`.
+- `content_analyzer.analyze_content()` uses the same AI pipeline and `OllamaService`.
+- The worker publishes the `AnalyzeContentResponse` to configured send queue(s).
 
 ```mermaid
 flowchart LR
@@ -73,8 +74,8 @@ flowchart LR
 ```
 
 ### Configuration
-- `src/settings/settings.toml` holds general service settings and AI model connection details.
-- `src/settings/fastapi_settings.toml` holds FastAPI host/port configuration.
-- `src/settings/mq_worker_settings.toml` holds RabbitMQ connection and queue settings.
+- `src/settings/settings.toml` contains the general service and AI model configuration.
+- `src/settings/fastapi_settings.toml` defines FastAPI host/port settings.
+- `src/settings/mq_worker_settings.toml` defines RabbitMQ connection and queue settings.
 
-This architecture makes the service easy to use for both synchronous HTTP requests and asynchronous queued tasks.
+This service design keeps synchronous HTTP analysis and asynchronous RabbitMQ processing consistent through the same AI service abstraction.

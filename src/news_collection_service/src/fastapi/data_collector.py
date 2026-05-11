@@ -24,7 +24,7 @@ data_collector_router = APIRouter(prefix="/data-collector", tags=[V1RouterTags.D
     status_code=status.HTTP_200_OK,
 )
 async def monitor(
-    limit: Annotated[int, Query(gt=0, description="Stop after this many items.")] = 100,
+    limit: Annotated[int, Query(gt=0, description="Stop after this many items.")] = 10,
 ) -> StreamingResponse:
     """Endpoint to monitor the data collection process and stream parsed news items as NDJSON."""
 

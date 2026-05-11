@@ -1,19 +1,16 @@
-"""FastAPI application and API router definitions for the News Analysis Service."""
+"""FastAPI application and API router definitions for the News Collection Service."""
 
 import logging
 from typing import Any
 
-from src.fastapi.data_collector import ollama_router
-
 from fastapi import APIRouter, FastAPI, status
+from src.fastapi.data_collector import data_collector_router
 from src.models.fastapi.app import HealthCheck
 
 logger = logging.getLogger(__name__)
-logger.info("Initializing News Analysis Service FastAPI application")
+logger.info("Initializing News Collection Service FastAPI application")
 
-app = FastAPI(
-    title="News Analysis Service", description="Microservice for analyzing news content using AI", version="1.0.0"
-)
+app = FastAPI(title="News Collection Service", description="Microservice for collecting news content", version="1.0.0")
 logger.info("FastAPI application instance created")
 
 
@@ -26,6 +23,6 @@ def get_health() -> Any:
 
 api = APIRouter(prefix="/api")
 
-api.include_router(ollama_router)
+api.include_router(data_collector_router)
 
 app.include_router(api)

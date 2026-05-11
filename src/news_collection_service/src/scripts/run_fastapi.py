@@ -1,4 +1,4 @@
-"""Script to run the FastAPI application for the News Analysis Service."""
+"""Script to run the FastAPI application for the News Collection Service."""
 
 from logging import getLogger
 

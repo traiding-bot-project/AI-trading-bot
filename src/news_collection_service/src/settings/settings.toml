@@ -3,11 +3,32 @@ deployment = "dev"
 environment = "development"
 logging_level = "info"
 
-[datasource.pl.pap]
-name = "pap"
+[datasource.pl.pap_mediaroom]
 language = "pl"
 type = "rss"
 url_schema = "https"
-root_url = "pap-mediaroom.pl"
+domain = "pap-mediaroom.pl"
 data_route = "kategoria"
 available_categories = ["biznes-i-finanse", "nauka-i-technologie", "polityka-i-społeczenstwo"]
+ignore_routes = []
+endpoint = "/rss.xml"
+
+[datasource.pl.bankier]
+language = "pl"
+type = "rss"
+url_schema = "https"
+domain = "www.bankier.pl"
+data_route = "rss"
+available_categories = ["wiadomosci", "finanse", "firma", "gielda", "waluty", "espi"]
+ignore_routes = []
+endpoint = ".xml"
+
+[datasource.pl.money]
+language = "pl"
+type = "rss"
+url_schema = "https"
+domain = "www.money.pl"
+data_route = "rss"
+available_categories = ["rss"]
+ignore_routes = ["pieniadze", "waluty"]
+endpoint = ".xml"

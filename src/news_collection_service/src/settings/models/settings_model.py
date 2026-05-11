@@ -46,6 +46,8 @@ class DatasourceType(StrEnum):
     """Datasource types supported by the service."""
 
     RSS = "rss"
+    API = "api"
+    TEXT = "text"
 
 
 class URLSchema(StrEnum):
@@ -55,13 +57,10 @@ class URLSchema(StrEnum):
     HTTPS = "https"
 
 
-class RegionCode(StrEnum):
-    """Region codes for datasource organization.
+class SupportedLanguages(StrEnum):
+    """Supported languages for the datasources."""
 
-    Represents geographic or logical regions where data sources are available.
-    """
-
-    PL = "pl"
+    POLISH = "pl"
 
 
 class ServiceSettings(StrictBaseModel):
@@ -96,16 +95,8 @@ class ServiceSettings(StrictBaseModel):
 class DatasourceConfig(StrictBaseModel):
     """Configuration for a single datasource within a region."""
 
-    name: Annotated[
-        str,
-        Field(
-            ...,
-            title="Datasource Name",
-            description="Unique name identifier for the datasource.",
-        ),
-    ]
     language: Annotated[
-        str,
+        SupportedLanguages,
         Field(
             ...,
             title="Language",
@@ -128,12 +119,12 @@ class DatasourceConfig(StrictBaseModel):
             description="URL schema to use for requests (http, https).",
         ),
     ]
-    root_url: Annotated[
+    domain: Annotated[
         str,
         Field(
             ...,
-            title="Root URL",
-            description="Base URL for the datasource.",
+            title="Domain",
+            description="Domain name for the datasource.",
         ),
     ]
     data_route: Annotated[
@@ -152,17 +143,49 @@ class DatasourceConfig(StrictBaseModel):
             description="List of available categories for this datasource.",
         ),
     ]
+    ignore_routes: Annotated[
+        list[str],
+        Field(
+            None,
+            title="Ignore Routes",
+            description="List of routes to ignore for this datasource.",
+        ),
+    ]
+    endpoint: Annotated[
+        str | None,
+        Field(
+            None,
+            title="Endpoint",
+            description="Specific endpoint for fetching data, if the request scheme is unconventional.",
+        ),
+    ]
 
 
 class PolandDatasourcesConfig(StrictBaseModel):
     """Configuration for datasources specific to the Poland region."""
 
-    pap: Annotated[
+    pap_mediaroom: Annotated[
         DatasourceConfig,
         Field(
             ...,
             title="PAP Datasource",
             description="Configuration for the PAP datasource in Poland.",
+        ),
+    ]
+    bankier: Annotated[
+        DatasourceConfig,
+        Field(
+            ...,
+            title="Bankier Datasource",
+            description="Configuration for the Bankier datasource in Poland.",
+        ),
+    ]
+    money: Annotated[
+        DatasourceConfig,
+        Field(
+            ...,
+            title="Money.pl Datasource",
+            description="Configuration for the Money.pl datasource in Poland.",
         ),
     ]
 

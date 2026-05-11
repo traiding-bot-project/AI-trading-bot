@@ -55,15 +55,6 @@ class MQWorkerConnector(StrictBaseModel):
             description="Heartbeat interval for the RabbitMQ connection.",
         ),
     ]
-    socket_timeout: Annotated[
-        int,
-        Field(
-            ...,
-            ge=0,
-            title="Socket Timeout",
-            description="Socket timeout for the RabbitMQ connection.",
-        ),
-    ]
 
 
 class MQWorkerExchange(StrictBaseModel):

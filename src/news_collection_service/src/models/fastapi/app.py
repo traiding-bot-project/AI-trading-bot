@@ -8,7 +8,7 @@ from pydantic import BaseModel
 class V1RouterTags(StrEnum):
     """Enum for FastAPI router tags used for API documentation."""
 
-    OLLAMA = "Ollama"
+    DATA_COLLECTOR = "Data Collector"
 
 
 class HealthCheck(BaseModel):

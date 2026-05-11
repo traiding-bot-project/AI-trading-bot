@@ -55,15 +55,6 @@ class MQWorkerConnector(StrictBaseModel):
             description="Heartbeat interval for the RabbitMQ connection.",
         ),
     ]
-    socket_timeout: Annotated[
-        int,
-        Field(
-            ...,
-            ge=0,
-            title="Socket Timeout",
-            description="Socket timeout for the RabbitMQ connection.",
-        ),
-    ]
 
 
 class MQWorkerExchange(StrictBaseModel):
@@ -148,28 +139,6 @@ class MQWorkerQueue(StrictBaseModel):
     ]
 
 
-class MQWorkerReceiveQueue(MQWorkerQueue):
-    """Settings model for RabbitMQ receive queue parameters."""
-
-    prefetch_count: Annotated[
-        int,
-        Field(
-            ...,
-            ge=0,
-            title="Prefetch Count",
-            description="Prefetch count for the receive queue.",
-        ),
-    ]
-    ack: Annotated[
-        bool,
-        Field(
-            ...,
-            title="Acknowledge",
-            description="Whether to acknowledge messages in the receive queue.",
-        ),
-    ]
-
-
 class MQWorkerSendQueue(MQWorkerQueue):
     """Settings model for RabbitMQ send queue parameters."""
 
@@ -210,14 +179,6 @@ class MQWorkerSettings(StrictBaseModel):
             ...,
             title="Exchange",
             description="RabbitMQ exchange parameters.",
-        ),
-    ]
-    receive_queues: Annotated[
-        list[MQWorkerReceiveQueue],
-        Field(
-            ...,
-            title="Receive Queues",
-            description="List of receive queues for the worker.",
         ),
     ]
     send_queues: Annotated[

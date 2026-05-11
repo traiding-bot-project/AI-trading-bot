@@ -3,9 +3,8 @@
 import logging
 from typing import Any
 
-from src.fastapi.ollama import ollama_router
-
 from fastapi import APIRouter, FastAPI, status
+from src.fastapi.ollama import ollama_router
 from src.models.fastapi.app import HealthCheck
 
 logger = logging.getLogger(__name__)

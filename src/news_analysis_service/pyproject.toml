@@ -17,12 +17,12 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "mypy>=1.20.1",
-    "ruff>=0.15.11",
+    "mypy>=1.20.2",
+    "ruff>=0.15.12",
 ]
 fastapi = [
-    "fastapi>=0.135.2",
-    "uvicorn>=0.42.0",
+    "fastapi>=0.136.1",
+    "uvicorn>=0.46.0",
 ]
 rabbitmq = [
     "aio-pika>=9.6.2",

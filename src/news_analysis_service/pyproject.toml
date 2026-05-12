@@ -12,12 +12,12 @@ keywords = [
 ]
 dependencies = [
     "httpx>=0.28.1",
-    "pydantic>=2.13.3",
+    "pydantic>=2.13.4",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=1.20.2",
+    "mypy>=2.1.0",
     "ruff>=0.15.12",
 ]
 fastapi = [

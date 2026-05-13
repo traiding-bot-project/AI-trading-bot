@@ -1,9 +1,9 @@
 """Generic prompt builder utilities."""
 
-import pathlib
+from pathlib import Path
 
 
-def load_and_format_prompt(template_name: str, **kwargs) -> str:
+def load_and_format_prompt(prompt_path: Path, **kwargs) -> str:
     """
     Load a markdown prompt template and format it with the provided keyword arguments.
     
@@ -15,7 +15,6 @@ def load_and_format_prompt(template_name: str, **kwargs) -> str:
     Returns:
         The formatted prompt string.
     """
-    prompt_path = pathlib.Path(__file__).parent / template_name
     with open(prompt_path, "r", encoding="utf-8") as f:
         prompt_template = f.read()
         

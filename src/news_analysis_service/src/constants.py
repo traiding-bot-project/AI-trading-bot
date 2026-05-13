@@ -6,3 +6,5 @@ FASTAPI_SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/fastapi_settings.toml"
 MQ_WORKER_SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/mq_worker_settings.toml"
 
 SERVICE_CLIENT_SESSION_TIMEOUT = 60 * 5
+
+ANALYZE_NEWS_PROMPT = "src/prompts/analyze_news.md"

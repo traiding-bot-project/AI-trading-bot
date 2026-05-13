@@ -2,16 +2,17 @@
 
 import asyncio
 import json
+from pathlib import Path
 from logging import getLogger
 
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
 
-from src.constants import MQ_WORKER_SETTINGS_PATH
+from src.constants import MQ_WORKER_SETTINGS_PATH, ANALYZE_NEWS_PROMPT
 from src.interfaces import content_analyzer
 from src.models.action_union_types import AnalyzeContentRequest
 from src.models.news_items import NewsItem
-from src.prompts.financial_analysis_prompt import build_financial_analysis_prompt
+from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
 from src.utils.ingest_toml import load_settings
@@ -65,18 +66,26 @@ async def main() -> None:
             async with message.process(requeue=False):
                 try:
                     data = NewsItem.model_validate(json.loads(message.body))
-                    prompt = build_financial_analysis_prompt(data)
+                    model=settings.ai_model.deployments.ollama_deployments.ollama_models[0]
+                    prompt = load_and_format_prompt(
+                        Path(ANALYZE_NEWS_PROMPT),
+                        news_item=data,
+                        metadata=data.metadata,
+                        description=data.description or "N/A",
+                        prepared_content=data.prepared_content or "N/A"
+                    )
                     logger.info("Prompt built for content analysis task")
                     request = AnalyzeContentRequest(
-                        model=settings.ai_model.deployments.ollama_deployments.ollama_models[0], prompt=prompt
+                        model=model, prompt=prompt
                     )
 
-                    result = await content_analyzer.analyze_content(request)
-
+                    data.response = await content_analyzer.analyze_content(request)
+                    data.metadata.model_used = model
+                    
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(
                             Message(
-                                body=json.dumps(result.model_dump()).encode(),
+                                body=json.dumps(data.response.model_dump()).encode(),
                                 delivery_mode=DeliveryMode(send_queue_config.delivery_mode),
                             ),
                             routing_key=send_queue_config.routing_key,

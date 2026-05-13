@@ -10,20 +10,11 @@ type = "direct"
 durable = true
 auto_delete = false
 
-[[receive_queues]]
+[[send_queues]]
 name = "news_analysis_tasks"
 durable = true
 auto_delete = false
 exclusive = false
 routing_key = "tasks"
-prefetch_count = 1
-ack = true
-
-[[send_queues]]
-name = "news_analysis_results"
-durable = true
-auto_delete = false
-exclusive = false
-routing_key = "results"
 confirm = false
 delivery_mode = 2

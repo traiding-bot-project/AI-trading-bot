@@ -4,13 +4,14 @@ import asyncio
 import json
 from logging import getLogger
 
-from pika import BlockingConnection, ConnectionParameters
-from pika.channel import Channel
-from pika.spec import Basic, BasicProperties
+from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
+from aio_pika.abc import AbstractIncomingMessage
 
 from src.constants import MQ_WORKER_SETTINGS_PATH
 from src.interfaces import content_analyzer
 from src.models.action_union_types import AnalyzeContentRequest
+from src.models.news_items import NewsItem
+from src.prompts.financial_analysis_prompt import build_financial_analysis_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
 from src.utils.ingest_toml import load_settings
@@ -19,94 +20,91 @@ from src.utils.logger import configure_logging
 logger = getLogger(__name__)
 
 
-def main() -> None:
+async def main() -> None:
     """Main entry point for the RabbitMQ worker process."""
     logger.info("Starting RabbitMQ worker for News Analysis Service")
     configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
     logger.info("MQ worker settings loaded from configuration file")
 
-    connection_params = ConnectionParameters(
+    connection = await connect_robust(
         host=mq_worker_settings.connector.host,
         port=mq_worker_settings.connector.port,
-        virtual_host=mq_worker_settings.connector.virtual_host,
+        virtualhost=mq_worker_settings.connector.virtual_host,
         heartbeat=mq_worker_settings.connector.heartbeat,
-        socket_timeout=mq_worker_settings.connector.socket_timeout,
     )
 
-    connection = BlockingConnection(connection_params)
-    channel = connection.channel()
+    async with connection:
+        channel = await connection.channel()
 
-    if any(send_queue.confirm for send_queue in mq_worker_settings.send_queues):
-        channel.confirm_delivery()
-
-    channel.exchange_declare(
-        exchange=mq_worker_settings.exchange.name,
-        exchange_type=mq_worker_settings.exchange.type.value,
-        durable=mq_worker_settings.exchange.durable,
-        auto_delete=mq_worker_settings.exchange.auto_delete,
-    )
-
-    for queue in mq_worker_settings.receive_queues + mq_worker_settings.send_queues:
-        channel.queue_declare(
-            queue=queue.name,
-            durable=queue.durable,
-            auto_delete=queue.auto_delete,
-            exclusive=queue.exclusive,
-        )
-        channel.queue_bind(
-            queue=queue.name,
-            exchange=mq_worker_settings.exchange.name,
-            routing_key=queue.routing_key,
+        exchange = await channel.declare_exchange(
+            name=mq_worker_settings.exchange.name,
+            type=ExchangeType(mq_worker_settings.exchange.type.value),
+            durable=mq_worker_settings.exchange.durable,
+            auto_delete=mq_worker_settings.exchange.auto_delete,
         )
 
-    for receive_queue in mq_worker_settings.receive_queues:
-        channel.basic_qos(prefetch_count=receive_queue.prefetch_count)
-
-    logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
-
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    def on_message(ch: Channel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
-        """Process incoming message from RabbitMQ queue, analyze content, and publish results."""
-        logger.info(f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}")
-
-        try:
-            data = json.loads(body)
-            request = AnalyzeContentRequest(**data)
-
-            result = loop.run_until_complete(content_analyzer.analyze_content(request))
-
-            for send_queue in mq_worker_settings.send_queues:
-                ch.basic_publish(
-                    exchange=mq_worker_settings.exchange.name,
-                    routing_key=send_queue.routing_key,
-                    body=json.dumps(result.model_dump()),
-                    properties=BasicProperties(delivery_mode=send_queue.delivery_mode),
-                )
-
-            ch.basic_ack(delivery_tag=method.delivery_tag)
-            logger.info(
-                f"Task completed and sent to output queues of the exchange {mq_worker_settings.exchange.name}."
+        for queue_config in mq_worker_settings.receive_queues + mq_worker_settings.send_queues:
+            queue = await channel.declare_queue(
+                name=queue_config.name,
+                durable=queue_config.durable,
+                auto_delete=queue_config.auto_delete,
+                exclusive=queue_config.exclusive,
             )
+            await queue.bind(exchange=exchange, routing_key=queue_config.routing_key)
 
-        except Exception as e:
-            logger.error(f"Processing failed: {e}")
-            ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+        for receive_queue_config in mq_worker_settings.receive_queues:
+            await channel.set_qos(prefetch_count=receive_queue_config.prefetch_count)
 
-    for receive_queue in mq_worker_settings.receive_queues:
-        channel.basic_consume(queue=receive_queue.name, on_message_callback=on_message)
+        logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
 
-    logger.info("Worker is listening. Press CTRL+C to exit.")
-    try:
-        channel.start_consuming()
-    except KeyboardInterrupt:
-        logger.info("Worker interrupted. Closing connection...")
-        channel.stop_consuming()
-        connection.close()
-        loop.close()
+        async def on_message(message: AbstractIncomingMessage) -> None:
+            """Process incoming message, analyze content, and publish results."""
+            logger.info(f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}")
+
+            async with message.process(requeue=False):
+                try:
+                    data = NewsItem.model_validate(json.loads(message.body))
+                    prompt = build_financial_analysis_prompt(data)
+                    logger.info("Prompt built for content analysis task")
+                    request = AnalyzeContentRequest(
+                        model=settings.ai_model.deployments.ollama_deployments.ollama_models[0], prompt=prompt
+                    )
+
+                    result = await content_analyzer.analyze_content(request)
+
+                    for send_queue_config in mq_worker_settings.send_queues:
+                        await exchange.publish(
+                            Message(
+                                body=json.dumps(result.model_dump()).encode(),
+                                delivery_mode=DeliveryMode(send_queue_config.delivery_mode),
+                            ),
+                            routing_key=send_queue_config.routing_key,
+                        )
+
+                    logger.info(
+                        f"Task completed and sent to output queues of the exchange {mq_worker_settings.exchange.name}."
+                    )
+
+                except Exception as e:
+                    logger.error(f"Processing failed: {e}")
+                    raise
+
+        for receive_queue_config in mq_worker_settings.receive_queues:
+            queue = await channel.get_queue(receive_queue_config.name)
+            await queue.consume(on_message)
+
+        logger.info("Worker is listening. Press CTRL+C to exit.")
+        try:
+            await asyncio.get_event_loop().create_future()
+        except asyncio.CancelledError:
+            logger.info("Worker cancelled. Closing connection...")
+
+
+def run() -> None:
+    """Sync entry point for use as a pyproject.toml entrypoint."""
+    asyncio.run(main())
 
 
 if __name__ == "__main__":
-    main()
+    run()

@@ -28,6 +28,7 @@ async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     chat_id = update.effective_user.id
+    logger.info(f"User: {update.effective_user}")
 
     try:
         async with user_service_context() as user_service:

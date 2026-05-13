@@ -79,13 +79,14 @@ async def main() -> None:
                         model=model, prompt=prompt
                     )
 
-                    data.response = await content_analyzer.analyze_content(request)
+                    result = await content_analyzer.analyze_content(request)
+                    data.response = result.response
                     data.metadata.model_used = model
                     
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(
                             Message(
-                                body=json.dumps(data.response.model_dump()).encode(),
+                                body=data.response.encode(),
                                 delivery_mode=DeliveryMode(send_queue_config.delivery_mode),
                             ),
                             routing_key=send_queue_config.routing_key,

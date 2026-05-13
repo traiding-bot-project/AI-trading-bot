@@ -1,8 +1,11 @@
-"""Constants for the News Analysis Service."""
+"""Constants for the News Collection Service."""
 
 BASE_SETTINGS_PATH = "src/settings"
 SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/settings.toml"
 FASTAPI_SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/fastapi_settings.toml"
 MQ_WORKER_SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/mq_worker_settings.toml"
 
-SERVICE_CLIENT_SESSION_TIMEOUT = 60 * 5
+SERVICE_CLIENT_SESSION_TIMEOUT = 30
+
+DATA_COLLECTOR_DOMAIN_DELAY_SECONDS = 60 * 5
+DATA_COLLECTOR_SLEEP_SECONDS = 10

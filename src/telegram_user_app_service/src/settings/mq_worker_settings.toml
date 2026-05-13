@@ -3,7 +3,6 @@ host = "127.0.0.1"
 port = 5672
 virtual_host = "/"
 heartbeat = 600
-socket_timeout = 60000
 
 [exchange]
 name = "news_analysis"

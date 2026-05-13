@@ -1,6 +1,5 @@
 """Content analyzer model for AI-powered content analysis."""
 
-import asyncio
 import logging
 
 from pydantic import BaseModel, ConfigDict, SkipValidation
@@ -20,17 +19,6 @@ class AIContentAnalyzer(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     service: SkipValidation[AIService]
-
-    async def log_available_models(self) -> None:
-        """Log available models — call this from inside an async context."""
-        try:
-            response = await asyncio.wait_for(self.service.list_models(), timeout=VALIDATE_AVAILABLE_MODELS_TIMEOUT)
-            model_names = [model.name for model in response.models]
-            logger.info(f"Available models for AI Content Analyzer: {model_names}")
-        except TimeoutError:
-            logger.error("Timeout while fetching available models")
-        except Exception as e:
-            logger.error(f"Failed to log available models: {e}")
 
     async def analyze_content(self, request: AnalyzeContentRequest) -> AnalyzeContentResponse:
         """Analyze content using the underlying AI service."""

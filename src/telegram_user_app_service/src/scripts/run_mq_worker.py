@@ -2,12 +2,12 @@
 
 import asyncio
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from logging import getLogger
+from typing import Any
 
-from pika import BlockingConnection, ConnectionParameters
-from pika.channel import Channel
-from pika.spec import Basic, BasicProperties
+from aio_pika import ExchangeType, connect_robust
+from aio_pika.abc import AbstractIncomingMessage
 from src.constants import MQ_WORKER_SETTINGS_PATH
 from src.models.bot import BroadcastRequest
 from src.settings import settings
@@ -18,87 +18,79 @@ from src.utils.logger import configure_logging
 
 logger = getLogger(__name__)
 
-_loop = asyncio.new_event_loop()
-asyncio.set_event_loop(_loop)
-
 
 def create_message_handler(
-    queue_settings: MQWorkerReceiveQueue,
-) -> Callable[[Channel, Basic.Deliver, BasicProperties, bytes], None]:
+    queue_config: MQWorkerReceiveQueue,
+) -> Callable[[AbstractIncomingMessage], Coroutine[Any, Any, None]]:
     """Create a message handler for a specific queue."""
 
-    def on_message(ch: Channel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
+    async def on_message(message: AbstractIncomingMessage) -> None:
         """Handle incoming broadcast messages."""
-        logger.info(f"New broadcast message received from queue {queue_settings.name}")
+        logger.info(f"New broadcast message received from queue {queue_config.name}")
 
         try:
-            data = json.loads(body)
+            data = json.loads(message.body)
+            logger.debug(f"Message data parsed from JSON: {data}")
             request = BroadcastRequest(**data)
 
-            _loop.run_until_complete(_broadcast_message(request))
+            await _broadcast_message(request)
 
-            if queue_settings.ack:
-                ch.basic_ack(delivery_tag=method.delivery_tag)
-                logger.info(f"Message acknowledged for queue {queue_settings.name}")
+            if queue_config.ack:
+                await message.ack()
+                logger.info(f"Message acknowledged for queue {queue_config.name}")
 
         except Exception as e:
             logger.error(f"Processing or broadcasting failed: {e}")
-            ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+            await message.nack(requeue=False)
 
     return on_message
 
 
-def main() -> None:
+async def main() -> None:
     """Main function to run the RabbitMQ worker."""
     configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
     logger.info("Created MQ worker settings from configuration file")
 
-    connection_params = ConnectionParameters(
+    connection = await connect_robust(
         host=mq_worker_settings.connector.host,
         port=mq_worker_settings.connector.port,
-        virtual_host=mq_worker_settings.connector.virtual_host,
+        virtualhost=mq_worker_settings.connector.virtual_host,
         heartbeat=mq_worker_settings.connector.heartbeat,
-        socket_timeout=mq_worker_settings.connector.socket_timeout,
     )
 
-    connection = BlockingConnection(connection_params)
-    channel = connection.channel()
+    async with connection:
+        channel = await connection.channel()
 
-    channel.exchange_declare(
-        exchange=mq_worker_settings.exchange.name,
-        exchange_type=mq_worker_settings.exchange.type.value,
-        durable=mq_worker_settings.exchange.durable,
-        auto_delete=mq_worker_settings.exchange.auto_delete,
-    )
-
-    for queue in mq_worker_settings.receive_queues:
-        channel.queue_declare(
-            queue=queue.name,
-            durable=queue.durable,
-            auto_delete=queue.auto_delete,
-            exclusive=queue.exclusive,
+        await channel.declare_exchange(
+            name=mq_worker_settings.exchange.name,
+            type=ExchangeType(mq_worker_settings.exchange.type.value),
+            durable=mq_worker_settings.exchange.durable,
+            auto_delete=mq_worker_settings.exchange.auto_delete,
         )
-        channel.queue_bind(
-            queue=queue.name,
-            exchange=mq_worker_settings.exchange.name,
-            routing_key=queue.routing_key,
-        )
-        channel.basic_qos(prefetch_count=queue.prefetch_count)
 
-    logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
+        for queue_config in mq_worker_settings.receive_queues:
+            await channel.set_qos(prefetch_count=queue_config.prefetch_count)
 
-    for receive_queue in mq_worker_settings.receive_queues:
-        channel.basic_consume(queue=receive_queue.name, on_message_callback=create_message_handler(receive_queue))
+            queue = await channel.declare_queue(
+                name=queue_config.name,
+                durable=queue_config.durable,
+                auto_delete=queue_config.auto_delete,
+                exclusive=queue_config.exclusive,
+            )
+            await queue.bind(
+                exchange=mq_worker_settings.exchange.name,
+                routing_key=queue_config.routing_key,
+            )
+            await queue.consume(create_message_handler(queue_config))
 
-    logger.info("Worker is listening. Press CTRL+C to exit.")
-    try:
-        channel.start_consuming()
-    except KeyboardInterrupt:
-        logger.info("Worker interrupted. Closing connection...")
-        channel.stop_consuming()
-        connection.close()
-        _loop.close()
+        logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
+        logger.info("Worker is listening. Press CTRL+C to exit.")
+
+        try:
+            await asyncio.get_event_loop().create_future()
+        except asyncio.CancelledError:
+            logger.info("Worker cancelled. Closing connection...")
 
 
 async def _broadcast_message(request: BroadcastRequest) -> None:
@@ -108,5 +100,10 @@ async def _broadcast_message(request: BroadcastRequest) -> None:
         logger.debug(f"Message broadcasted successfully: {request.message}")
 
 
+def run() -> None:
+    """Sync entry point for use as a pyproject.toml entrypoint."""
+    asyncio.run(main())
+
+
 if __name__ == "__main__":
-    main()
+    run()

@@ -8,77 +8,47 @@ on:
       - main
 
 jobs:
-  type-check:
+  quality-checks:
+    name: Check ${{ matrix.service }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: 
+          - "src/telegram_user_app_service"
+          - "src/news_analysis_service"
+          - "src/news_collection_service"
+    
+    defaults:
+      run:
+        working-directory: ${{ matrix.service }}
+
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-        with:
-          activate-environment: true
 
-      - name: Sync .venv
-        run: |
-          uv sync --all-extras --all-groups
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Sync dependencies
+        run: uv sync --all-extras
 
       - name: MyPy check
+        run: uv run mypy .
+
+      - name: Ruff check (Lint + Format)
         run: |
-          uv run mypy ./
-
-  ruff-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-        with:
-          activate-environment: true
-
-      - name: Sync .venv
-        run: |
-          uv sync --all-extras --all-groups
-
-      - name: Ruff check linting errors
-        id: ruff_check
-        uses: astral-sh/ruff-action@v3
-        with:
-          src: "./"
-        continue-on-error: true
-
-      - name: Ruff format linting errors
-        id: ruff_format
-        run: |
-          uv run ruff format --check ./
-        continue-on-error: true
-
-      - name: Check if either Ruff check or Ruff format failed
-        run: |
-          fail=0
-
-          if [ "${{ steps.ruff_check.outcome }}" != "success" ]; then
-            echo "❌ Ruff check failed"
-            fail=1
-          else
-            echo "✅ Ruff check passed"
-          fi
-
-          if [ "${{ steps.ruff_format.outcome }}" != "success" ]; then
-            echo "❌ Ruff format failed"
-            fail=1
-          else
-            echo "✅ Ruff format passed"
-          fi
-
-          if [ "$fail" -eq 1 ]; then
-            echo "🚫 One or more Ruff linting checks failed!"
-            exit 1
-          else
-            echo "🎉 All Ruff linting checks passed!"
-          fi
+          uv run ruff check .
+          uv run ruff format --check .
 
   md-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
       - name: Lint all Markdown files
         uses: DavidAnson/markdownlint-cli2-action@v20
         with:

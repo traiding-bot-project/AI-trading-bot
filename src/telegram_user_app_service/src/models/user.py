@@ -8,7 +8,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 class User(BaseModel):
     """Represents a user in the Telegram User App Service."""
 
-    id: Annotated[int | None, Field(default=None, title="User ID", description="Unique identifier for the user.")]
+    id: Annotated[int | None, Field(default=None, title="User ID", description="Unique identifier for the user.")] = (
+        None
+    )
     first_name: Annotated[str, Field(..., title="First Name", description="User's first name.")]
     last_name: Annotated[str, Field(..., title="Last Name", description="User's last name.")]
     username: Annotated[str, Field(..., title="Username", description="User's username.")]

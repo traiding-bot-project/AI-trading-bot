@@ -2,7 +2,9 @@
 
 import logging
 
-from src.db.protocol import UserRepository
+from src.db.subscriptions.protocol import SubscriptionTokenRepository
+from src.db.users.protocol import UserRepository
+from src.models.subscription_token import SubscriptionToken
 from src.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
@@ -11,26 +13,27 @@ logger = logging.getLogger(__name__)
 class UserService:
     """Provides high-level operations for managing users in the Telegram User App Service."""
 
-    def __init__(self, repository: UserRepository) -> None:
+    def __init__(self, user_repository: UserRepository, subscription_repository: SubscriptionTokenRepository) -> None:
         """Initialize UserService with a given UserRepository."""
-        self._repo = repository
+        self._user_repo = user_repository
+        self._subscription_repo = subscription_repository
         logger.debug("UserService initialized with repository")
 
     async def register_user(self, user: User) -> User:
         """Register a new user in the system."""
         logger.info(f"Registering new user with chat_id {user.chat_id}")
-        existing = await self._repo.get_user_by_chat_id(user.chat_id)
+        existing = await self._user_repo.get_user_by_chat_id(user.chat_id)
         if existing:
             logger.warning(f"User registration failed: user with chat_id {user.chat_id} already exists")
             raise ValueError(f"User with chat_id {user.chat_id} already exists")
-        result = await self._repo.add_user(user)
+        result = await self._user_repo.add_user(user)
         logger.info(f"User registered successfully with ID {result.id}")
         return result
 
     async def get_user(self, chat_id: int) -> User:
         """Retrieve a user by their Telegram chat ID."""
         logger.info(f"Retrieving user with chat_id {chat_id}")
-        user = await self._repo.get_user_by_chat_id(chat_id)
+        user = await self._user_repo.get_user_by_chat_id(chat_id)
         if not user:
             logger.warning(f"User not found: chat_id {chat_id}")
             raise ValueError(f"User with chat_id {chat_id} not found")
@@ -40,23 +43,30 @@ class UserService:
     async def update_user(self, user: User) -> User:
         """Update an existing user's information."""
         logger.info(f"Updating user with chat_id {user.chat_id}")
-        result = await self._repo.update_user(user)
+        result = await self._user_repo.update_user(user)
         logger.debug("User updated successfully")
         return result
 
     async def list_users(self, filters: UserFilters) -> list[User]:
         """Retrieve a list of registered users with optional filtering."""
         logger.info(f"Listing users with filters: {filters.model_dump(exclude_none=True)}")
-        users = await self._repo.get_all_users(filters)
+        users = await self._user_repo.get_all_users(filters)
         logger.debug(f"Retrieved {len(users)} users")
         return users
 
     async def remove_user(self, user_id: int) -> bool:
         """Delete a user by their ID."""
         logger.info(f"Removing user with ID {user_id}")
-        success = await self._repo.delete_user(user_id)
+        success = await self._user_repo.delete_user(user_id)
         if success:
             logger.info("User deleted successfully")
         else:
             logger.warning("User deletion failed: user not found")
         return success
+
+    async def list_user_subscriptions(self, chat_id: int) -> list[SubscriptionToken]:
+        """List all active subscription tokens for a given user's chat ID."""
+        logger.info(f"Listing subscriptions for user with chat_id {chat_id}")
+        tokens = await self._subscription_repo.list_tokens_by_chat_id(chat_id)
+        logger.debug(f"Retrieved {len(tokens)} subscription tokens for user {chat_id}")
+        return tokens

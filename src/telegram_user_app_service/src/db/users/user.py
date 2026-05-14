@@ -1,13 +1,13 @@
 """SQLAlchemy ORM models for Telegram user database persistence."""
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import BigInteger, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.db.declarative_base import Base
 
-
-class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy ORM models in the Telegram User App Service."""
-
-    pass
+if TYPE_CHECKING:
+    from src.db.subscriptions.subscription_token import SubscriptionTokenDB
 
 
 class UserDB(Base):
@@ -21,6 +21,8 @@ class UserDB(Base):
     username: Mapped[str] = mapped_column(String(32), unique=True, nullable=False)
     chat_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
     is_subscribed: Mapped[bool] = mapped_column(default=False, nullable=False)
+
+    tokens: Mapped[list[SubscriptionTokenDB]] = relationship(back_populates="user", lazy="select")
 
     def __repr__(self) -> str:
         """Returns a string representation of the UserDB instance."""

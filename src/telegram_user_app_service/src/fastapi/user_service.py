@@ -6,8 +6,9 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Body, Depends, status
 from pydantic import Field
 from src.db import get_user_service
-from src.db.user_service import UserService
+from src.db.users.user_service import UserService
 from src.models.fastapi.app import V1RouterTags
+from src.models.subscription_token import SubscriptionToken
 from src.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
@@ -62,12 +63,22 @@ async def update_user(
     return user
 
 
-@user_router.delete("/{chat_id}", response_model=User, status_code=status.HTTP_200_OK)
+@user_router.delete("/{user_id}", response_model=bool, status_code=status.HTTP_200_OK)
 async def remove_user(
-    chat_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_service)]
+    user_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_service)]
 ) -> Any:
     """Endpoint to remove a user by their Telegram chat ID."""
-    logger.info(f"DELETE /user/{{{chat_id}}} - Removing user with chat_id {chat_id}")
-    user = await user_service.remove_user(chat_id)
-    logger.info("User removed successfully")
-    return user
+    logger.info(f"DELETE /user/{{{user_id}}} - Removing user with chat_id {user_id}")
+    removed = await user_service.remove_user(user_id)
+    return removed
+
+
+@user_router.get("/subs/{chat_id}", response_model=list[SubscriptionToken], status_code=status.HTTP_200_OK)
+async def list_user_subscriptions(
+    chat_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_service)]
+) -> Any:
+    """Endpoint to get the list of subscription tokens for a given user."""
+    logger.info(f"GET /user/subs - Listing subscription tokens for user with chat_id {chat_id}")
+    token = await user_service.list_user_subscriptions(chat_id)
+    logger.debug(f"Retrieved subscription tokens for user {chat_id}: {token}")
+    return token

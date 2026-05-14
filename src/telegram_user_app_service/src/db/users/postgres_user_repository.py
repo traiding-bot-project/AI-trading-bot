@@ -4,7 +4,7 @@ import logging
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.db.user import UserDB
+from src.db.users.user import UserDB
 from src.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,18 @@ class PostgresUserRepository:
         await self._session.refresh(user_db)
         logger.debug(f"User added with ID {user_db.id}")
         return User.model_validate(user_db)
+
+    async def get_user_by_id(self, user_id: int) -> User | None:
+        """Retrieve a user from the database by their ID."""
+        logger.debug(f"Querying database for user with ID {user_id}")
+        stmt = select(UserDB).where(UserDB.id == user_id)
+        result = await self._session.execute(stmt)
+        user_db = result.scalar_one_or_none()
+        if user_db:
+            logger.debug(f"Found user: {user_db.username}")
+        else:
+            logger.debug(f"User not found with ID {user_id}")
+        return User.model_validate(user_db) if user_db else None
 
     async def get_user_by_chat_id(self, chat_id: int) -> User | None:
         """Retrieve a user from the database by their Telegram chat ID."""

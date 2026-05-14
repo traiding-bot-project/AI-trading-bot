@@ -10,6 +10,7 @@ class V1RouterTags(StrEnum):
 
     TELEGRAM_BOT = "Telegram Bot"
     USER_SERVICE = "User Service"
+    SUBSCRIPTION_SERVICE = "Subscription Service"
 
 
 class HealthCheck(BaseModel):

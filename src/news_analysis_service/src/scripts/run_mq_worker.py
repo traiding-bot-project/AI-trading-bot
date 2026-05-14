@@ -81,7 +81,7 @@ async def main() -> None:
 
                     result = await content_analyzer.analyze_content(request)
                     data.response = result.response
-                    data.metadata.model_used = model
+                    data.metadata.model_used = model.LLAMA32_1B_Q8_0
                     
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(

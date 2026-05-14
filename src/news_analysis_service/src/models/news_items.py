@@ -43,7 +43,7 @@ class DataSourceMetadata(BaseModel):
             description="The method used to extract the news item content",
         ),
     ] = ExtractionMethods.NONE
-    model_used: Annotated[str, Field(title="Model", description="LLM model used to generate response")]
+    model_used: Annotated[str | None, Field(title="Model", description="LLM model used to generate response")] = None
 
 
 class NewsItem(BaseModel):

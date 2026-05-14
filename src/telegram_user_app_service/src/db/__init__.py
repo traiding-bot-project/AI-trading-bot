@@ -27,7 +27,9 @@ def _get_session_factory() -> Any:
     """Return a session factory scoped to the current thread (and its event loop)."""
     if not hasattr(_thread_local, "session_factory"):
         engine = create_async_engine(_db_url)
-        _thread_local.session_factory = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+        _thread_local.session_factory = async_sessionmaker(
+            bind=engine, class_=AsyncSession, expire_on_commit=False
+        )
     return _thread_local.session_factory
 
 

@@ -48,7 +48,9 @@ async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     except ValueError:
         logger.warning(f"Unauthorized access attempt by user {chat_id}.")
-        await update.message.reply_text("Sorry, you are not authorized to use this bot.")
+        await update.message.reply_text(
+            "Sorry, you are not authorized to use this bot."
+        )
     except Exception as e:
         logger.error(f"Error in subscribe command: {e}")
         await update.message.reply_text("An internal error occurred.")
@@ -82,7 +84,9 @@ async def unsubscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
     except ValueError:
         logger.warning(f"Unauthorized access attempt by user {chat_id}.")
-        await update.message.reply_text("Sorry, you are not authorized to use this bot.")
+        await update.message.reply_text(
+            "Sorry, you are not authorized to use this bot."
+        )
     except Exception as e:
         logger.error(f"Error in unsubscribe command: {e}")
         await update.message.reply_text("An internal error occurred.")
@@ -99,7 +103,9 @@ def start_telegram_application() -> None:
     application = Application.builder().token(token).post_init(post_init).build()
 
     application.add_handler(CommandHandler(TelegramAppHandlers.SUBSCRIBE, subscribe))
-    application.add_handler(CommandHandler(TelegramAppHandlers.UNSUBSCRIBE, unsubscribe))
+    application.add_handler(
+        CommandHandler(TelegramAppHandlers.UNSUBSCRIBE, unsubscribe)
+    )
 
     logger.info("Bot started and listening...")
     application.run_polling(allowed_updates=Update.ALL_TYPES, stop_signals=None)

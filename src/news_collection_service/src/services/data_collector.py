@@ -29,8 +29,12 @@ class DataCollectorService:
         """Initialize the DataCollector."""
         self.visited_urls: set[str] = set()
         self.domain_last_fetched: dict[str, float] = {}
-        self.client = httpx.AsyncClient(timeout=SERVICE_CLIENT_SESSION_TIMEOUT, follow_redirects=True)
-        self.targets_by_domain: dict[str, list[CollectionTarget]] = self._build_targets_by_domain()
+        self.client = httpx.AsyncClient(
+            timeout=SERVICE_CLIENT_SESSION_TIMEOUT, follow_redirects=True
+        )
+        self.targets_by_domain: dict[str, list[CollectionTarget]] = (
+            self._build_targets_by_domain()
+        )
 
         total_targets = sum(len(t) for t in self.targets_by_domain.values())
         logger.info(
@@ -65,12 +69,19 @@ class DataCollectorService:
                             region=region_name,
                         ),
                     )
-                    targets_by_domain.setdefault(source_metadata.domain, []).append(target)
+                    targets_by_domain.setdefault(source_metadata.domain, []).append(
+                        target
+                    )
 
         return targets_by_domain
 
     def _build_feed_url(
-        self, url_schema: str, domain: str, data_route: str, category: str, endpoint: str | None
+        self,
+        url_schema: str,
+        domain: str,
+        data_route: str,
+        category: str,
+        endpoint: str | None,
     ) -> str:
         """Helper method to construct an RSS feed URL."""
         url = f"{url_schema}://{domain}/{data_route}/{category}{f'{endpoint}' if endpoint else ''}"
@@ -87,17 +98,28 @@ class DataCollectorService:
                 "Chrome/91.0.4472.124 Safari/537.36"
             ),
         }
-        content_type_mapping: dict[DatasourceType, tuple[dict[str, str], Callable[[Response], Any]]] = {
-            DatasourceType.API: (browser_headers | {"Accept": "application/json"}, (lambda r: r.json())),
+        content_type_mapping: dict[
+            DatasourceType, tuple[dict[str, str], Callable[[Response], Any]]
+        ] = {
+            DatasourceType.API: (
+                browser_headers | {"Accept": "application/json"},
+                (lambda r: r.json()),
+            ),
             DatasourceType.RSS: (
-                browser_headers | {"Accept": "application/rss+xml, application/xml, text/xml"},
+                browser_headers
+                | {"Accept": "application/rss+xml, application/xml, text/xml"},
                 (lambda r: r.text),
             ),
-            DatasourceType.TEXT: (browser_headers | {"Accept": "text/plain, text/html"}, (lambda r: r.text)),
+            DatasourceType.TEXT: (
+                browser_headers | {"Accept": "text/plain, text/html"},
+                (lambda r: r.text),
+            ),
         }
         return content_type_mapping[content_type]
 
-    async def _send_get_request(self, url: str, content_type: DatasourceType = DatasourceType.API) -> Any:
+    async def _send_get_request(
+        self, url: str, content_type: DatasourceType = DatasourceType.API
+    ) -> Any:
         """Helper method to send a GET request and return the JSON response."""
         logger.debug(f"Sending GET request to: {url}")
         headers, response_handler = self._get_content_type_config(content_type)
@@ -105,7 +127,9 @@ class DataCollectorService:
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as e:
-            logger.error(f"GET request to {url} failed with status {e.response.status_code}: {e}")
+            logger.error(
+                f"GET request to {url} failed with status {e.response.status_code}: {e}"
+            )
             raise RuntimeError(f"Request to {url} failed: {e}")
         logger.debug("GET request successful")
         return response_handler(response)
@@ -115,7 +139,9 @@ class DataCollectorService:
         logger.debug(f"Fetching feed: {target.url}")
         parser = get_parser(target.datasource_type)
         try:
-            feed_data = await self._send_get_request(target.url, content_type=target.datasource_type)
+            feed_data = await self._send_get_request(
+                target.url, content_type=target.datasource_type
+            )
             items = parser.parse(feed_data, target)
             logger.debug(f"Parsed {len(items)} items from feed {target.url}")
             return items
@@ -127,7 +153,9 @@ class DataCollectorService:
         """Fetch the raw content from the page."""
         logger.debug(f"Fetching raw content: {url}")
         try:
-            response: str = await self._send_get_request(url, content_type=DatasourceType.TEXT)
+            response: str = await self._send_get_request(
+                url, content_type=DatasourceType.TEXT
+            )
             return response
         except Exception as e:
             logger.error(f"Failed to fetch raw content from {url}: {e}")
@@ -139,7 +167,8 @@ class DataCollectorService:
         return {
             domain: targets
             for domain, targets in self.targets_by_domain.items()
-            if now - self.domain_last_fetched.get(domain, 0) >= DATA_COLLECTOR_DOMAIN_DELAY_SECONDS
+            if now - self.domain_last_fetched.get(domain, 0)
+            >= DATA_COLLECTOR_DOMAIN_DELAY_SECONDS
         }
 
     async def _process_feed_item(self, item: NewsItem) -> NewsItem:
@@ -149,7 +178,9 @@ class DataCollectorService:
         item.raw_content = await self._fetch_raw_content(item.link)
         return item
 
-    async def _poll_domain(self, domain: str, targets: list[CollectionTarget]) -> AsyncGenerator[NewsItem]:
+    async def _poll_domain(
+        self, domain: str, targets: list[CollectionTarget]
+    ) -> AsyncGenerator[NewsItem]:
         """Fetch all targets for a domain concurrently, then yield any unseen items."""
         logger.info(f"Polling {len(targets)} target(s) for domain '{domain}'")
         results: list[list[NewsItem] | BaseException] = await asyncio.gather(
@@ -165,7 +196,9 @@ class DataCollectorService:
                 if item.link not in self.visited_urls:
                     if any(f"/{route}" in item.link for route in target.ignore_routes):
                         self.visited_urls.add(item.link)
-                        logger.debug(f"Ignoring item based on route: {item.title} ({item.link})")
+                        logger.debug(
+                            f"Ignoring item based on route: {item.title} ({item.link})"
+                        )
                         continue
                     yield await self._process_feed_item(item)
 

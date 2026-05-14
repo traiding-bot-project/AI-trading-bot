@@ -2,13 +2,13 @@
 
 import asyncio
 import json
-from pathlib import Path
 from logging import getLogger
+from pathlib import Path
 
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
 
-from src.constants import MQ_WORKER_SETTINGS_PATH, ANALYZE_NEWS_PROMPT
+from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.interfaces import content_analyzer
 from src.models.action_union_types import AnalyzeContentRequest
 from src.models.news_items import NewsItem
@@ -45,7 +45,9 @@ async def main() -> None:
             auto_delete=mq_worker_settings.exchange.auto_delete,
         )
 
-        for queue_config in mq_worker_settings.receive_queues + mq_worker_settings.send_queues:
+        for queue_config in (
+            mq_worker_settings.receive_queues + mq_worker_settings.send_queues
+        ):
             queue = await channel.declare_queue(
                 name=queue_config.name,
                 durable=queue_config.durable,
@@ -57,37 +59,45 @@ async def main() -> None:
         for receive_queue_config in mq_worker_settings.receive_queues:
             await channel.set_qos(prefetch_count=receive_queue_config.prefetch_count)
 
-        logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
+        logger.info(
+            "MQ worker connected to RabbitMQ and queues are set up. Waiting for messages..."
+        )
 
         async def on_message(message: AbstractIncomingMessage) -> None:
             """Process incoming message, analyze content, and publish results."""
-            logger.info(f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}")
+            logger.info(
+                f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}"
+            )
 
             async with message.process(requeue=False):
                 try:
                     data = NewsItem.model_validate(json.loads(message.body))
-                    model=settings.ai_model.deployments.ollama_deployments.ollama_models[0]
+                    model = (
+                        settings.ai_model.deployments.ollama_deployments.ollama_models[
+                            0
+                        ]
+                    )
                     prompt = load_and_format_prompt(
                         Path(ANALYZE_NEWS_PROMPT),
                         news_item=data,
                         metadata=data.metadata,
                         description=data.description or "N/A",
-                        prepared_content=data.prepared_content or "N/A"
+                        prepared_content=data.prepared_content or "N/A",
                     )
                     logger.info("Prompt built for content analysis task")
-                    request = AnalyzeContentRequest(
-                        model=model, prompt=prompt
-                    )
+                    request = AnalyzeContentRequest(model=model, prompt=prompt)
 
                     result = await content_analyzer.analyze_content(request)
                     data.response = result.response
                     data.metadata.model_used = model.LLAMA32_1B_Q8_0
-                    
+
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(
                             Message(
                                 body=data.response.encode(),
-                                delivery_mode=DeliveryMode(send_queue_config.delivery_mode),
+                                delivery_mode=DeliveryMode(
+                                    send_queue_config.delivery_mode
+                                ),
                             ),
                             routing_key=send_queue_config.routing_key,
                         )

@@ -36,7 +36,9 @@ class ArticleParser:
             if text:
                 return text, ExtractionMethods.BEAUTIFULSOUP
 
-            logger.warning(f"Both extractors returned empty for {item.link} — falling back to description")
+            logger.warning(
+                f"Both extractors returned empty for {item.link} — falling back to description"
+            )
 
         logger.warning(f"No extractable content for {item.link}")
         return "", ExtractionMethods.NONE
@@ -59,7 +61,18 @@ class ArticleParser:
         try:
             soup = BeautifulSoup(html, "lxml")
             for tag in soup(
-                ["script", "style", "nav", "header", "footer", "aside", "form", "button", "svg", "noscript"]
+                [
+                    "script",
+                    "style",
+                    "nav",
+                    "header",
+                    "footer",
+                    "aside",
+                    "form",
+                    "button",
+                    "svg",
+                    "noscript",
+                ]
             ):
                 tag.decompose()
             text = soup.get_text(separator="\n", strip=True)

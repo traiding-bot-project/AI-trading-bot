@@ -50,7 +50,9 @@ async def main() -> None:
             )
             await queue.bind(exchange=exchange, routing_key=queue_config.routing_key)
 
-        logger.info("Connected to RabbitMQ and queues are set up. Starting collection...")
+        logger.info(
+            "Connected to RabbitMQ and queues are set up. Starting collection..."
+        )
 
         collector = DataCollectorService()
         article_parser = ArticleParser()
@@ -72,7 +74,9 @@ async def main() -> None:
                         routing_key=queue_config.routing_key,
                     )
 
-                logger.info(f"Published: [{item.metadata.region}/{item.metadata.name}] {item.title}")
+                logger.info(
+                    f"Published: [{item.metadata.region}/{item.metadata.name}] {item.title}"
+                )
 
             except Exception as e:
                 logger.error(f"Failed to publish item '{item.title}': {e}")

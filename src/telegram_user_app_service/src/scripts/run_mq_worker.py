@@ -1,7 +1,6 @@
 """MQ Worker script to consume broadcast messages from RabbitMQ and send them via Telegram bot."""
 
 import asyncio
-import json
 from collections.abc import Callable, Coroutine
 from logging import getLogger
 from typing import Any
@@ -11,7 +10,10 @@ from aio_pika.abc import AbstractIncomingMessage
 from src.constants import MQ_WORKER_SETTINGS_PATH
 from src.models.bot import BroadcastRequest
 from src.settings import settings
-from src.settings.models.mq_worker_settings_model import MQWorkerReceiveQueue, MQWorkerSettings
+from src.settings.models.mq_worker_settings_model import (
+    MQWorkerReceiveQueue,
+    MQWorkerSettings,
+)
 from src.telegram.bot import broadcast_bot_context
 from src.utils.ingest_toml import load_settings
 from src.utils.logger import configure_logging
@@ -84,7 +86,9 @@ async def main() -> None:
             )
             await queue.consume(create_message_handler(queue_config))
 
-        logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
+        logger.info(
+            "MQ worker connected to RabbitMQ and queues are set up. Waiting for messages..."
+        )
         logger.info("Worker is listening. Press CTRL+C to exit.")
 
         try:

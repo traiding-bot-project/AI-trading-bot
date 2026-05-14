@@ -10,7 +10,11 @@ from src.models.fastapi.app import HealthCheck
 logger = logging.getLogger(__name__)
 logger.info("Initializing News Collection Service FastAPI application")
 
-app = FastAPI(title="News Collection Service", description="Microservice for collecting news content", version="1.0.0")
+app = FastAPI(
+    title="News Collection Service",
+    description="Microservice for collecting news content",
+    version="1.0.0",
+)
 logger.info("FastAPI application instance created")
 
 

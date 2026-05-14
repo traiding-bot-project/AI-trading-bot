@@ -5,7 +5,11 @@ import logging
 from pydantic import BaseModel, ConfigDict, SkipValidation
 
 from src.interfaces.ai_service import AIService
-from src.models.action_union_types import AnalyzeContentRequest, AnalyzeContentResponse, ListModelsResponse
+from src.models.action_union_types import (
+    AnalyzeContentRequest,
+    AnalyzeContentResponse,
+    ListModelsResponse,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +24,9 @@ class AIContentAnalyzer(BaseModel):
 
     service: SkipValidation[AIService]
 
-    async def analyze_content(self, request: AnalyzeContentRequest) -> AnalyzeContentResponse:
+    async def analyze_content(
+        self, request: AnalyzeContentRequest
+    ) -> AnalyzeContentResponse:
         """Analyze content using the underlying AI service."""
         logger.info(f"Analyzing content with model: {request.model}")
         result = await self.service.generate_completion(request)

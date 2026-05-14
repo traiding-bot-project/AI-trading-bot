@@ -6,7 +6,6 @@ from datetime import UTC, datetime, timedelta
 
 from src.constants import SUBSCRIPTION_TOKEN_EXPIRATION_SECONDS
 from src.db.subscriptions.protocol import SubscriptionTokenRepository
-from src.db.users.protocol import UserRepository
 from src.models.subscription_token import SubscriptionToken
 from src.models.user import User
 
@@ -19,11 +18,9 @@ class SubscriptionTokenService:
     def __init__(
         self,
         repository: SubscriptionTokenRepository,
-        user_repository: UserRepository,
     ) -> None:
         """Initialize the SubscriptionTokenService with the given repository."""
         self._repo = repository
-        self._user_repo = user_repository
         logger.debug("SubscriptionTokenService initialized")
 
     async def create_token(self, expires_in_seconds: int = SUBSCRIPTION_TOKEN_EXPIRATION_SECONDS) -> SubscriptionToken:
@@ -41,17 +38,13 @@ class SubscriptionTokenService:
         logger.info(f"Generating new subscription token that expires at {expires_at.isoformat()}")
         return await self._repo.create_token(token)
 
-    async def get_token_by_value(self, token_value: str) -> SubscriptionToken | None:
-        """Retrieve a subscription token by its exact token value."""
-        return await self._repo.get_token_by_value(token_value)
-
     async def list_tokens(self) -> list[SubscriptionToken]:
         """List all subscription tokens."""
         return await self._repo.list_tokens()
 
-    async def list_tokens_for_user_id(self, user_id: int) -> list[SubscriptionToken]:
-        """List all subscription tokens for a given user ID."""
-        return await self._repo.list_tokens_by_user_id(user_id)
+    async def get_token_by_value(self, token_value: str) -> SubscriptionToken | None:
+        """Retrieve a subscription token by its exact token value."""
+        return await self._repo.get_token_by_value(token_value)
 
     async def list_tokens_for_username(self, username: str) -> list[SubscriptionToken]:
         """List all subscription tokens for a given username."""
@@ -84,17 +77,3 @@ class SubscriptionTokenService:
         token.activated_at = now
 
         return await self._repo.update_token(token)
-
-    async def get_user_by_token(self, token_value: str) -> User:
-        """Retrieve the user associated with a given subscription token."""
-        token = await self.get_token_by_value(token_value)
-        if not token or not token.user_id:
-            logger.warning("User retrieval failed: token invalid or not activated")
-            raise ValueError("Invalid or inactive token")
-
-        user = await self._user_repo.get_user_by_id(token.user_id)
-        if not user:
-            logger.warning("User retrieval failed: user not found for token")
-            raise ValueError("User not found for this token")
-
-        return user

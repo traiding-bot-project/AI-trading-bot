@@ -38,7 +38,7 @@ async def user_service_context() -> AsyncGenerator[UserService]:
     """Async context manager for providing a UserService instance."""
     session_factory = _get_session_factory()
     async with session_factory() as session:
-        yield UserService(PostgresUserRepository(session), PostgresSubscriptionTokenRepository(session))
+        yield UserService(PostgresUserRepository(session))
 
 
 async def get_user_service() -> AsyncGenerator[UserService]:
@@ -52,10 +52,7 @@ async def subscription_token_service_context() -> AsyncGenerator[SubscriptionTok
     """Async context manager for providing a SubscriptionTokenService instance."""
     session_factory = _get_session_factory()
     async with session_factory() as session:
-        yield SubscriptionTokenService(
-            PostgresSubscriptionTokenRepository(session),
-            PostgresUserRepository(session),
-        )
+        yield SubscriptionTokenService(PostgresSubscriptionTokenRepository(session))
 
 
 async def get_subscription_token_service() -> AsyncGenerator[SubscriptionTokenService]:

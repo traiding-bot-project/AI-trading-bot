@@ -44,24 +44,6 @@ class PostgresSubscriptionTokenRepository:
         token_db = result.scalar_one_or_none()
         return SubscriptionToken.model_validate(token_db) if token_db else None
 
-    async def list_tokens_by_user_id(self, user_id: int) -> list[SubscriptionToken]:
-        """List all subscription tokens associated with a given user ID."""
-        logger.debug(f"Listing subscription tokens for user_id {user_id}")
-        stmt = select(SubscriptionTokenDB).where(SubscriptionTokenDB.user_id == user_id)
-        result = await self._session.execute(stmt)
-        return [SubscriptionToken.model_validate(token_db) for token_db in result.scalars().all()]
-
-    async def list_tokens_by_chat_id(self, chat_id: int) -> list[SubscriptionToken]:
-        """List all subscription tokens associated with a given Telegram chat ID."""
-        logger.debug(f"Listing subscription tokens for chat_id {chat_id}")
-        stmt = (
-            select(SubscriptionTokenDB)
-            .join(UserDB, SubscriptionTokenDB.user_id == UserDB.id)
-            .where(UserDB.chat_id == chat_id)
-        )
-        result = await self._session.execute(stmt)
-        return [SubscriptionToken.model_validate(token_db) for token_db in result.scalars().all()]
-
     async def list_tokens_by_username(self, username: str) -> list[SubscriptionToken]:
         """List all subscription tokens associated with a given username."""
         logger.debug(f"Listing subscription tokens for username {username}")

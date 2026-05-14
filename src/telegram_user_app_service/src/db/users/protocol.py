@@ -2,6 +2,7 @@
 
 from typing import Protocol
 
+from src.models.subscription_token import SubscriptionToken
 from src.models.user import User, UserFilters
 
 
@@ -12,15 +13,11 @@ class UserRepository(Protocol):
         """Add a new user to the repository and return the created User object."""
         ...
 
-    async def get_user_by_id(self, user_id: int) -> User | None:
-        """Retrieve a user by their unique ID."""
-        ...
-
     async def get_user_by_chat_id(self, chat_id: int) -> User | None:
         """Retrieve a user by their Telegram chat ID."""
         ...
 
-    async def get_all_users(self, filters: UserFilters) -> list[User]:
+    async def list_users(self, filters: UserFilters) -> list[User]:
         """Retrieve all users from the repository, optionally filtered."""
         ...
 
@@ -30,4 +27,8 @@ class UserRepository(Protocol):
 
     async def delete_user(self, user_id: int) -> bool:
         """Delete a user by their ID."""
+        ...
+
+    async def list_users_subscriptions(self, chat_id: int) -> list[SubscriptionToken]:
+        """List all subscription tokens associated with a user's Telegram chat ID."""
         ...

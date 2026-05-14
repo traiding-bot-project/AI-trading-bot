@@ -79,6 +79,6 @@ async def list_user_subscriptions(
 ) -> Any:
     """Endpoint to get the list of subscription tokens for a given user."""
     logger.info(f"GET /user/subs - Listing subscription tokens for user with chat_id {chat_id}")
-    token = await user_service.list_user_subscriptions(chat_id)
-    logger.debug(f"Retrieved subscription tokens for user {chat_id}: {token}")
-    return token
+    tokens = await user_service.list_user_subscriptions(chat_id)
+    logger.debug(f"Retrieved subscription tokens for user {chat_id}: {tokens}")
+    return tokens

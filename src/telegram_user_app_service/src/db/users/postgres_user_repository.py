@@ -4,7 +4,9 @@ import logging
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.db.subscriptions.subscription_token import SubscriptionTokenDB
 from src.db.users.user import UserDB
+from src.models.subscription_token import SubscriptionToken
 from src.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
@@ -28,18 +30,6 @@ class PostgresUserRepository:
         logger.debug(f"User added with ID {user_db.id}")
         return User.model_validate(user_db)
 
-    async def get_user_by_id(self, user_id: int) -> User | None:
-        """Retrieve a user from the database by their ID."""
-        logger.debug(f"Querying database for user with ID {user_id}")
-        stmt = select(UserDB).where(UserDB.id == user_id)
-        result = await self._session.execute(stmt)
-        user_db = result.scalar_one_or_none()
-        if user_db:
-            logger.debug(f"Found user: {user_db.username}")
-        else:
-            logger.debug(f"User not found with ID {user_id}")
-        return User.model_validate(user_db) if user_db else None
-
     async def get_user_by_chat_id(self, chat_id: int) -> User | None:
         """Retrieve a user from the database by their Telegram chat ID."""
         logger.debug(f"Querying database for user with chat_id {chat_id}")
@@ -52,7 +42,7 @@ class PostgresUserRepository:
             logger.debug(f"User not found with chat_id {chat_id}")
         return User.model_validate(user_db) if user_db else None
 
-    async def get_all_users(self, filters: UserFilters) -> list[User]:
+    async def list_users(self, filters: UserFilters) -> list[User]:
         """Retrieve all users from the database with optional filtering."""
         logger.debug(f"Querying all users with filters: {filters.model_dump(exclude_none=True)}")
         stmt = select(UserDB)
@@ -100,3 +90,14 @@ class PostgresUserRepository:
             logger.warning(f"User not found for deletion: ID {user_id}")
 
         return deleted_id is not None
+
+    async def list_users_subscriptions(self, chat_id: int) -> list[SubscriptionToken]:
+        """List all subscription tokens associated with a user's Telegram chat ID."""
+        logger.info(f"Listing subscriptions for user with chat_id {chat_id}")
+        stmt = (
+            select(SubscriptionTokenDB)
+            .join(UserDB, SubscriptionTokenDB.user_id == UserDB.id)
+            .where(UserDB.chat_id == chat_id)
+        )
+        result = await self._session.execute(stmt)
+        return [SubscriptionToken.model_validate(token_db) for token_db in result.scalars().all()]

@@ -29,9 +29,9 @@ def create_message_handler(
         logger.info(f"New broadcast message received from queue {queue_config.name}")
 
         try:
-            data = json.loads(message.body)
-            logger.debug(f"Message data parsed from JSON: {data}")
-            request = BroadcastRequest(**data)
+            text_data = message.body.decode("utf-8")
+            logger.debug(f"Message data received as string: {text_data}")
+            request = BroadcastRequest(response=text_data)
 
             await _broadcast_message(request)
 

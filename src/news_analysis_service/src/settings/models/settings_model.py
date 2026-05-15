@@ -73,9 +73,7 @@ class OllamaSupportedModels(StrEnum):
 class ModelApi(StrictBaseModel):
     """API compatibility and implemented endpoints for a specific AI model."""
 
-    compatible_api: Annotated[
-        CompatibleAPI, Field(..., title="Compatible API provider for the model")
-    ]
+    compatible_api: Annotated[CompatibleAPI, Field(..., title="Compatible API provider for the model")]
     implemented_endpoints: Annotated[
         list[OllamaImplementedEndpoints],
         Field(
@@ -91,9 +89,7 @@ class OllamaSupportedDeployments(StrictBaseModel):
     These should correspond to the model identifiers used by the Ollama API.
     """
 
-    ollama_models: Annotated[
-        list[OllamaSupportedModels], Field(..., title="Ollama Models")
-    ]
+    ollama_models: Annotated[list[OllamaSupportedModels], Field(..., title="Ollama Models")]
     api: Annotated[
         ModelApi,
         Field(..., title="API compatibility and implemented endpoints for the model"),

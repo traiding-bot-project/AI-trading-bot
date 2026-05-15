@@ -16,8 +16,6 @@ class AIService(Protocol):
         """Get the list of available models from the AI service."""
         ...
 
-    async def generate_completion(
-        self, request: AnalyzeContentRequest
-    ) -> AnalyzeContentResponse:
+    async def generate_completion(self, request: AnalyzeContentRequest) -> AnalyzeContentResponse:
         """Generate a completion based on the given request and return the response."""
         ...

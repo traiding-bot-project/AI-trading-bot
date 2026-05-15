@@ -45,9 +45,7 @@ async def main() -> None:
             auto_delete=mq_worker_settings.exchange.auto_delete,
         )
 
-        for queue_config in (
-            mq_worker_settings.receive_queues + mq_worker_settings.send_queues
-        ):
+        for queue_config in mq_worker_settings.receive_queues + mq_worker_settings.send_queues:
             queue = await channel.declare_queue(
                 name=queue_config.name,
                 durable=queue_config.durable,
@@ -59,24 +57,16 @@ async def main() -> None:
         for receive_queue_config in mq_worker_settings.receive_queues:
             await channel.set_qos(prefetch_count=receive_queue_config.prefetch_count)
 
-        logger.info(
-            "MQ worker connected to RabbitMQ and queues are set up. Waiting for messages..."
-        )
+        logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
 
         async def on_message(message: AbstractIncomingMessage) -> None:
             """Process incoming message, analyze content, and publish results."""
-            logger.info(
-                f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}"
-            )
+            logger.info(f"New task received from input queue of the exchange {mq_worker_settings.exchange.name}")
 
             async with message.process(requeue=False):
                 try:
                     data = NewsItem.model_validate(json.loads(message.body))
-                    model = (
-                        settings.ai_model.deployments.ollama_deployments.ollama_models[
-                            0
-                        ]
-                    )
+                    model = settings.ai_model.deployments.ollama_deployments.ollama_models[0]
                     prompt = load_and_format_prompt(
                         Path(ANALYZE_NEWS_PROMPT),
                         news_item=data,
@@ -95,9 +85,7 @@ async def main() -> None:
                         await exchange.publish(
                             Message(
                                 body=data.response.encode(),
-                                delivery_mode=DeliveryMode(
-                                    send_queue_config.delivery_mode
-                                ),
+                                delivery_mode=DeliveryMode(send_queue_config.delivery_mode),
                             ),
                             routing_key=send_queue_config.routing_key,
                         )

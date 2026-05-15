@@ -22,9 +22,7 @@ class BroadcastBot:
 
     async def broadcast(self, message: str) -> None:
         """Broadcast a message to all subscribed users."""
-        subscribed_users = await self._user_service.list_users(
-            filters=UserFilters(is_subscribed=True)
-        )
+        subscribed_users = await self._user_service.list_users(filters=UserFilters(is_subscribed=True))
 
         if not subscribed_users:
             logger.info("No subscribed users to broadcast to.")

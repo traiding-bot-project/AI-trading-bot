@@ -22,9 +22,7 @@ async def register_user(
 ) -> Any:
     """Endpoint to register a new Telegram user."""
     logger.info(f"POST /user - Registering new user with chat_id {body.chat_id}")
-    logger.debug(
-        f"User details - username: {body.username}, first_name: {body.first_name}"
-    )
+    logger.debug(f"User details - username: {body.username}, first_name: {body.first_name}")
     user = await user_service.register_user(body)
     logger.info(f"User registered successfully with ID {user.id}")
     return user
@@ -62,9 +60,7 @@ async def update_user(
 ) -> Any:
     """Endpoint to update an existing user's information."""
     logger.info(f"PUT /user - Updating user with chat_id {body.chat_id}")
-    logger.debug(
-        f"Update payload: username={body.username}, subscribed={body.is_subscribed}"
-    )
+    logger.debug(f"Update payload: username={body.username}, subscribed={body.is_subscribed}")
     user = await user_service.update_user(body)
     logger.info("User updated successfully")
     return user

@@ -15,9 +15,7 @@ from src.services.data_collector import DataCollectorService
 
 logger = logging.getLogger(__name__)
 
-data_collector_router = APIRouter(
-    prefix="/data-collector", tags=[V1RouterTags.DATA_COLLECTOR]
-)
+data_collector_router = APIRouter(prefix="/data-collector", tags=[V1RouterTags.DATA_COLLECTOR])
 
 
 @data_collector_router.get(

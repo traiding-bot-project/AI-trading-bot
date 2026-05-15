@@ -18,16 +18,34 @@ class OllamaCompletionRequest(BaseModel):
 
     model: Annotated[OllamaSupportedModels, Field(..., title="Ollama Model")]
     prompt: Annotated[str, Field(..., title="Prompt for the model to generate a response to")]
-    suffix: Annotated[str | None, Field(None, title="Optional suffix to append to the generated response")] = None
+    suffix: Annotated[
+        str | None,
+        Field(None, title="Optional suffix to append to the generated response"),
+    ] = None
     images: Annotated[
-        list[Base64Str] | None, Field(None, title="Optional list of Base64-encoded images to include in the prompt")
+        list[Base64Str] | None,
+        Field(
+            None,
+            title="Optional list of Base64-encoded images to include in the prompt",
+        ),
     ] = None
     think: Annotated[
-        bool, Field(False, title="Whether to include 'thinking' steps in the response generation process")
+        bool,
+        Field(
+            False,
+            title="Whether to include 'thinking' steps in the response generation process",
+        ),
     ] = False
-    format: Annotated[str | None, Field(None, title="The format of the response. Check docs for examples.")] = None
+    format: Annotated[
+        str | None,
+        Field(None, title="The format of the response. Check docs for examples."),
+    ] = None
     stream: Annotated[
-        bool, Field(False, title="Whether to stream the response as it's generated (if supported by the model)")
+        bool,
+        Field(
+            False,
+            title="Whether to stream the response as it's generated (if supported by the model)",
+        ),
     ] = False
 
     model_config = ConfigDict(extra="ignore")
@@ -60,7 +78,10 @@ class OllamaModelsResponse(BaseModel):
 
     name: Annotated[str, Field(..., title="The name of the model deployment")]
     model: Annotated[OllamaSupportedModels, Field(..., title="The name of the model")]
-    modified_at: Annotated[datetime, Field(..., title="The timestamp when the model deployment was last modified")]
+    modified_at: Annotated[
+        datetime,
+        Field(..., title="The timestamp when the model deployment was last modified"),
+    ]
     size: Annotated[int, Field(..., title="The size of the model deployment")]
     digest: Annotated[str, Field(..., title="The digest of the model deployment")]
 
@@ -78,6 +99,9 @@ class OllamaTagsResponse(BaseModel):
     References: https://github.com/ollama/ollama/blob/main/docs/api.md#list-local-models
     """
 
-    models: Annotated[list[OllamaModelsResponse], Field(..., title="The list of available model deployments")]
+    models: Annotated[
+        list[OllamaModelsResponse],
+        Field(..., title="The list of available model deployments"),
+    ]
 
     model_config = ConfigDict(extra="ignore")

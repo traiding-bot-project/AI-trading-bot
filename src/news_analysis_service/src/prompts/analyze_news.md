@@ -152,6 +152,7 @@ Unrelated to financial markets}}
 {{Write one short sentence explaining the sentiment classification.}}
 
 ### Formatting Constraints
+
 - The article title MUST always be wrapped in * *.
 - Section names MUST always be wrapped in * *.
 - "Sectors:" MUST remain on a single line.
@@ -159,7 +160,6 @@ Unrelated to financial markets}}
 - Do not output placeholders.
 - Do not repeat the title inside the summary.
 - Do not use promotional or conversational language.
-
 
 ## Language Style
 

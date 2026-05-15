@@ -95,6 +95,7 @@ If information is uncertain or incomplete, explicitly state this.
 ### Definition of finantially relevant
 
 Financially relevant information includes:
+
 - Earnings, revenue, margins, guidance
 - Central bank policy, inflation, rates, bond markets
 - M&A, regulation, litigation, tariffs, sanctions
@@ -104,7 +105,6 @@ Financially relevant information includes:
 - Sector-wide implications
 - Geopolitical developments affecting markets
 - Changes in investor sentiment or risk appetite
-
 
 ## Output Format
 
@@ -125,7 +125,7 @@ Financially relevant information includes:
 
 *{{Article Title}}*
 
-Source: {{metadata.name}} | Published: {{pub_date}} | [Link]({{link}})
+Source: {{metadata.name}} | Published: {{pub_date}} | [Article link]({{link}})
 
 *Summary*
 
@@ -167,23 +167,27 @@ Use English language.
 Write in a concise, professional, institutional-quality tone.
 
 Avoid:
+
 - generic market commentary,
 - filler phrases,
 - speculation without evidence,
 - and vague statements about investor sentiment or market reactions.
 
 Do not use phrases such as:
+
 - "Investors will watch closely"
 - "Markets may react"
 - "This could impact sentiment"
 - "The situation remains uncertain"
 
 Instead, state directly:
+
 - which assets, sectors, companies, or markets are affected,
 - the likely directional impact,
 - and the specific driver behind it.
 
 Prefer precise language:
+
 - "Treasury yields rose on stronger inflation data"
 - "Oil prices declined after OPEC signaled higher supply"
 - "Bank stocks weakened on lower net interest margin expectations"

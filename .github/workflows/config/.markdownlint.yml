@@ -1,6 +1,4 @@
 default: true
-{
-  "MD036": false,
-  "MD037": false,
-  "MD032": false
-}
+MD032: false
+MD036: false
+MD037: false

@@ -70,7 +70,12 @@ class DataCollectorService:
         return targets_by_domain
 
     def _build_feed_url(
-        self, url_schema: str, domain: str, data_route: str, category: str, endpoint: str | None
+        self,
+        url_schema: str,
+        domain: str,
+        data_route: str,
+        category: str,
+        endpoint: str | None,
     ) -> str:
         """Helper method to construct an RSS feed URL."""
         url = f"{url_schema}://{domain}/{data_route}/{category}{f'{endpoint}' if endpoint else ''}"
@@ -88,12 +93,18 @@ class DataCollectorService:
             ),
         }
         content_type_mapping: dict[DatasourceType, tuple[dict[str, str], Callable[[Response], Any]]] = {
-            DatasourceType.API: (browser_headers | {"Accept": "application/json"}, (lambda r: r.json())),
+            DatasourceType.API: (
+                browser_headers | {"Accept": "application/json"},
+                (lambda r: r.json()),
+            ),
             DatasourceType.RSS: (
                 browser_headers | {"Accept": "application/rss+xml, application/xml, text/xml"},
                 (lambda r: r.text),
             ),
-            DatasourceType.TEXT: (browser_headers | {"Accept": "text/plain, text/html"}, (lambda r: r.text)),
+            DatasourceType.TEXT: (
+                browser_headers | {"Accept": "text/plain, text/html"},
+                (lambda r: r.text),
+            ),
         }
         return content_type_mapping[content_type]
 

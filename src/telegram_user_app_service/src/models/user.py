@@ -17,7 +17,11 @@ class User(BaseModel):
     chat_id: Annotated[int, Field(..., title="Chat ID", description="Telegram chat ID for the user.")]
     is_subscribed: Annotated[
         bool,
-        Field(default=False, title="Is Subscribed", description="Indicates if the user is subscribed to the bot."),
+        Field(
+            default=False,
+            title="Is Subscribed",
+            description="Indicates if the user is subscribed to the bot.",
+        ),
     ]
 
     @field_validator("last_name", mode="before")

@@ -6,7 +6,11 @@ from typing import Any
 from httpx import AsyncClient, HTTPStatusError
 
 from src.constants import SERVICE_CLIENT_SESSION_TIMEOUT
-from src.models.ollama_api import OllamaCompletionRequest, OllamaCompletionResponse, OllamaTagsResponse
+from src.models.ollama_api import (
+    OllamaCompletionRequest,
+    OllamaCompletionResponse,
+    OllamaTagsResponse,
+)
 from src.settings import settings
 from src.settings.models.settings_model import OllamaImplementedEndpoints
 

@@ -2,7 +2,11 @@
 
 from typing import Protocol
 
-from src.models.action_union_types import AnalyzeContentRequest, AnalyzeContentResponse, ListModelsResponse
+from src.models.action_union_types import (
+    AnalyzeContentRequest,
+    AnalyzeContentResponse,
+    ListModelsResponse,
+)
 
 
 class AIService(Protocol):

@@ -5,7 +5,11 @@ import logging
 from pydantic import BaseModel, ConfigDict, SkipValidation
 
 from src.interfaces.ai_service import AIService
-from src.models.action_union_types import AnalyzeContentRequest, AnalyzeContentResponse, ListModelsResponse
+from src.models.action_union_types import (
+    AnalyzeContentRequest,
+    AnalyzeContentResponse,
+    ListModelsResponse,
+)
 
 logger = logging.getLogger(__name__)
 

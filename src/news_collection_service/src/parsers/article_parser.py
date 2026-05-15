@@ -59,7 +59,18 @@ class ArticleParser:
         try:
             soup = BeautifulSoup(html, "lxml")
             for tag in soup(
-                ["script", "style", "nav", "header", "footer", "aside", "form", "button", "svg", "noscript"]
+                [
+                    "script",
+                    "style",
+                    "nav",
+                    "header",
+                    "footer",
+                    "aside",
+                    "form",
+                    "button",
+                    "svg",
+                    "noscript",
+                ]
             ):
                 tag.decompose()
             text = soup.get_text(separator="\n", strip=True)

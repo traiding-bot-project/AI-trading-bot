@@ -60,11 +60,14 @@ boilerplate text. Focus only on the core story. Ignore:
 
 1) Read the article carefully and filter out any irrelevant or noisy content.
 
-2) Identify the core topic and all financially relevant facts, figures, statements, and signals.
+2) Identify the core topic and all financially relevant
+facts, figures, statements, and signals.
 
 3) Think like an experienced buy-side analyst:
-    - Assess implications for companies, sectors, asset classes, countries, currencies, and macroeconomic trends.
-    - Highlight risks, opportunities, and potential market reactions where relevant.
+    - Assess implications for companies, sectors,
+    asset classes, countries, currencies, and macroeconomic trends.
+    - Highlight risks, opportunities, and potential
+    market reactions where relevant.
 
 4) Be concise but precise.
 
@@ -85,8 +88,9 @@ boilerplate text. Focus only on the core story. Ignore:
     - market expectations,
     - and inferred implications.
 
-9) Do not invent facts, figures, quotes, or implications that are not supported by the provided article content. If information is uncertain or incomplete, explicitly state this.
-
+9) Do not invent facts, figures, quotes, or implications
+that are not supported by the provided article content.
+If information is uncertain or incomplete, explicitly state this.
 
 ### Definition of finantially relevant
 

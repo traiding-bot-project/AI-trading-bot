@@ -2,7 +2,8 @@
 
 import logging
 
-from src.db.protocol import UserRepository
+from src.db.users.protocol import UserRepository
+from src.models.subscription_token import SubscriptionToken
 from src.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ class UserService:
     async def list_users(self, filters: UserFilters) -> list[User]:
         """Retrieve a list of registered users with optional filtering."""
         logger.info(f"Listing users with filters: {filters.model_dump(exclude_none=True)}")
-        users = await self._repo.get_all_users(filters)
+        users = await self._repo.list_users(filters)
         logger.debug(f"Retrieved {len(users)} users")
         return users
 
@@ -60,3 +61,10 @@ class UserService:
         else:
             logger.warning("User deletion failed: user not found")
         return success
+
+    async def list_user_subscriptions(self, chat_id: int) -> list[SubscriptionToken]:
+        """List all active subscription tokens for a given user's chat ID."""
+        logger.info(f"Listing subscriptions for user with chat_id {chat_id}")
+        tokens = await self._repo.list_users_subscriptions(chat_id)
+        logger.debug(f"Retrieved {len(tokens)} subscription tokens for user {chat_id}")
+        return tokens

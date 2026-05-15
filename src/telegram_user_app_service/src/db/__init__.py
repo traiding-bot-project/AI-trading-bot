@@ -6,8 +6,10 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from src.db.postgres_user_repository import PostgresUserRepository
-from src.db.user_service import UserService
+from src.db.subscriptions.postgres_subscription_token_repository import PostgresSubscriptionTokenRepository
+from src.db.subscriptions.subscription_token_service import SubscriptionTokenService
+from src.db.users.postgres_user_repository import PostgresUserRepository
+from src.db.users.user_service import UserService
 from src.models.infisical import InfisicalSecretsKeys
 from src.secrets import secrets_manager
 from src.settings import settings
@@ -43,3 +45,17 @@ async def get_user_service() -> AsyncGenerator[UserService]:
     """Factory function to create a UserService instance."""
     async with user_service_context() as user_service:
         yield user_service
+
+
+@asynccontextmanager
+async def subscription_token_service_context() -> AsyncGenerator[SubscriptionTokenService]:
+    """Async context manager for providing a SubscriptionTokenService instance."""
+    session_factory = _get_session_factory()
+    async with session_factory() as session:
+        yield SubscriptionTokenService(PostgresSubscriptionTokenRepository(session))
+
+
+async def get_subscription_token_service() -> AsyncGenerator[SubscriptionTokenService]:
+    """Factory function to create a SubscriptionTokenService instance."""
+    async with subscription_token_service_context() as token_service:
+        yield token_service

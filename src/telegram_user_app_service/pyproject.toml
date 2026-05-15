@@ -58,6 +58,10 @@ ignore_missing_imports = true
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[[tool.mypy.overrides]]
+module = "migrations.versions.*"
+ignore_errors = true
+
 [tool.uv]
 package = true
 

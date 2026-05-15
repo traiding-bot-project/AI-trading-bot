@@ -24,7 +24,8 @@ Focus on what matters for understanding the story.
 - **Source:** `{metadata.name}`
 - **Language:** `{metadata.language}`
 - **Region:** `{metadata.region}`
-- **Extraction Method:** `{metadata.extraction_method}` *(technical detail — skip if irrelevant to analysis)*
+- **Extraction Method:** `{metadata.extraction_method}`
+*(technical detail — skip if irrelevant to analysis)*
 
 ---
 
@@ -56,29 +57,39 @@ boilerplate text. Focus only on the core story. Ignore:
 ---
 
 ## Instructions
+
 1) Read the article carefully and filter out any irrelevant or noisy content.
+
 2) Identify the core topic and all financially relevant facts, figures, statements, and signals.
+
 3) Think like an experienced buy-side analyst:
     - Assess implications for companies, sectors, asset classes, countries, currencies, and macroeconomic trends.
     - Highlight risks, opportunities, and potential market reactions where relevant.
+
 4) Be concise but precise.
+
 5) Avoid generic commentary or filler language.
+
 6) Keep the total output under 2048 characters.
+
 7) Focus only on information that could materially affect:
     - asset prices,
     - company fundamentals,
     - macroeconomic expectations,
     - investor positioning,
     - or market sentiment.
+
 8) Distinguish between:
     - factual developments,
     - management/political statements,
     - market expectations,
     - and inferred implications.
+
 9) Do not invent facts, figures, quotes, or implications that are not supported by the provided article content. If information is uncertain or incomplete, explicitly state this.
 
 
 ### Definition of finantially relevant
+
 Financially relevant information includes:
 - Earnings, revenue, margins, guidance
 - Central bank policy, inflation, rates, bond markets

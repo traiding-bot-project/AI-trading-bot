@@ -13,3 +13,10 @@ ollama_models = ["docker.io/ai/llama3.2:1B-Q8_0"]
 [ai_model.deployments.ollama_deployments.api]
 compatible_api = "ollama"
 implemented_endpoints = ["generate", "tags"]
+
+[ai_model.deployments.qwen_deployments]
+qwen_models = ["docker.io/ai/qwen3:8B-Q4_K_M"]
+
+[ai_model.deployments..api]
+compatible_api = "qwen"
+implemented_endpoints = ["generate", "tags"]

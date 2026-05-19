@@ -11,6 +11,7 @@ from src.parsers.article_parser import ArticleParser
 from src.services.data_collector import DataCollectorService
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
+from src.utils.file_storage import FileStorageFolder, FileStorageService
 from src.utils.ingest_toml import load_settings
 from src.utils.logger import configure_logging
 
@@ -52,11 +53,45 @@ async def main() -> None:
 
         logger.info("Connected to RabbitMQ and queues are set up. Starting collection...")
 
+        file_storage_service = FileStorageService()
+        file_storage_service.ensure_bucket()
+
         collector = DataCollectorService()
         article_parser = ArticleParser()
 
         async for item in collector.monitor():
+            safe_pub_date = item.pub_date.replace("/", "-")
+
+            raw_news_remote_object_name = file_storage_service.create_remote_object_name(
+                FileStorageFolder.RAW_NEWS,
+                f"{item.metadata.region}-{item.metadata.name}-{safe_pub_date}-{item.title}.html",
+            )
+            file_storage_service.upload_text(
+                item.raw_content or "",
+                raw_news_remote_object_name,
+                metadata={
+                    "source": f"{item.metadata.region}/{item.metadata.name}",
+                    "publication_date": safe_pub_date,
+                    "title": item.title,
+                },
+            )
+
             item = article_parser.parse(item)
+
+            extracted_news_remote_object_name = file_storage_service.create_remote_object_name(
+                FileStorageFolder.EXTRACTED_NEWS,
+                f"{item.metadata.region}-{item.metadata.name}-{safe_pub_date}-{item.title}.txt",
+            )
+            file_storage_service.upload_text(
+                item.prepared_content or "",
+                extracted_news_remote_object_name,
+                metadata={
+                    "source": f"{item.metadata.region}/{item.metadata.name}",
+                    "publication_date": safe_pub_date,
+                    "title": item.title,
+                },
+            )
+
             if item.prepared_content is not None:
                 item.raw_content = None
 

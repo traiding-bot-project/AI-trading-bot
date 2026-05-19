@@ -42,6 +42,12 @@ class LoggingLevel(StrEnum):
     CRITICAL = "critical"
 
 
+class FileStorageRegions(StrEnum):
+    """File storage regions supported by the service."""
+
+    US_EAST_1 = "us-east-1"
+
+
 class DatasourceType(StrEnum):
     """Datasource types supported by the service."""
 
@@ -88,6 +94,27 @@ class ServiceSettings(StrictBaseModel):
             ...,
             title="Logging Level",
             description="Logging level for the application.",
+        ),
+    ]
+
+
+class FileStorageSettings(StrictBaseModel):
+    """Settings for file storage (e.g., S3-compatible buckets)."""
+
+    bucket_name: Annotated[
+        str,
+        Field(
+            ...,
+            title="Bucket name",
+            description="Name of the object storage bucket.",
+        ),
+    ]
+    region_name: Annotated[
+        FileStorageRegions,
+        Field(
+            ...,
+            title="Region name",
+            description="Region of the object storage service.",
         ),
     ]
 
@@ -212,6 +239,14 @@ class Settings(StrictBaseModel):
             ...,
             title="Service settings",
             description="Configuration for the service runtime (host/port/environment).",
+        ),
+    ]
+    filestorage: Annotated[
+        FileStorageSettings,
+        Field(
+            ...,
+            title="File storage settings",
+            description="Configuration for object/file storage used by the service.",
         ),
     ]
     datasource: Annotated[

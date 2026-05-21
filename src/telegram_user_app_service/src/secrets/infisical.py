@@ -20,7 +20,9 @@ class InfisicalSecretsManager:
         """Initialize the InfisicalSecretsManager with the provided settings."""
         logger.info("Initializing InfisicalSecretsManager with provided settings.")
         try:
-            self._client = InfisicalSDKClient(host=get_resource_url(**settings.infisical.connection.model_dump()))
+            self._client = InfisicalSDKClient(
+                host=get_resource_url(**settings.infisical.connection.model_dump())
+            )
             logger.info("Infisical SDK client initialized successfully.")
 
             self._client.auth.universal_auth.login(

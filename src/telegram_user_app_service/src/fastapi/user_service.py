@@ -23,7 +23,9 @@ async def register_user(
 ) -> Any:
     """Endpoint to register a new Telegram user."""
     logger.info(f"POST /user - Registering new user with chat_id {body.chat_id}")
-    logger.debug(f"User details - username: {body.username}, first_name: {body.first_name}")
+    logger.debug(
+        f"User details - username: {body.username}, first_name: {body.first_name}"
+    )
     user = await user_service.register_user(body)
     logger.info(f"User registered successfully with ID {user.id}")
     return user
@@ -61,7 +63,9 @@ async def update_user(
 ) -> Any:
     """Endpoint to update an existing user's information."""
     logger.info(f"PUT /user - Updating user with chat_id {body.chat_id}")
-    logger.debug(f"Update payload: username={body.username}, subscribed={body.is_subscribed}")
+    logger.debug(
+        f"Update payload: username={body.username}, subscribed={body.is_subscribed}"
+    )
     user = await user_service.update_user(body)
     logger.info("User updated successfully")
     return user
@@ -69,7 +73,8 @@ async def update_user(
 
 @user_router.delete("/{user_id}", response_model=bool, status_code=status.HTTP_200_OK)
 async def remove_user(
-    user_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_service)]
+    user_id: Annotated[int, Field(gt=0)],
+    user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> Any:
     """Endpoint to remove a user by their Telegram chat ID."""
     logger.info(f"DELETE /user/{{{user_id}}} - Removing user with chat_id {user_id}")
@@ -77,12 +82,19 @@ async def remove_user(
     return removed
 
 
-@user_router.get("/subs/{chat_id}", response_model=list[SubscriptionToken], status_code=status.HTTP_200_OK)
+@user_router.get(
+    "/subs/{chat_id}",
+    response_model=list[SubscriptionToken],
+    status_code=status.HTTP_200_OK,
+)
 async def list_user_subscriptions(
-    chat_id: Annotated[int, Field(gt=0)], user_service: Annotated[UserService, Depends(get_user_service)]
+    chat_id: Annotated[int, Field(gt=0)],
+    user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> Any:
     """Endpoint to get the list of subscription tokens for a given user."""
-    logger.info(f"GET /user/subs - Listing subscription tokens for user with chat_id {chat_id}")
+    logger.info(
+        f"GET /user/subs - Listing subscription tokens for user with chat_id {chat_id}"
+    )
     tokens = await user_service.list_user_subscriptions(chat_id)
     logger.debug(f"Retrieved subscription tokens for user {chat_id}: {tokens}")
     return tokens

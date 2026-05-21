@@ -44,11 +44,15 @@ class PostgresUserRepository:
 
     async def list_users(self, filters: UserFilters) -> list[User]:
         """Retrieve all users from the database with optional filtering."""
-        logger.debug(f"Querying all users with filters: {filters.model_dump(exclude_none=True)}")
+        logger.debug(
+            f"Querying all users with filters: {filters.model_dump(exclude_none=True)}"
+        )
         stmt = select(UserDB)
 
         if filters.is_subscribed is not None:
-            logger.debug(f"Applying subscription filter: is_subscribed={filters.is_subscribed}")
+            logger.debug(
+                f"Applying subscription filter: is_subscribed={filters.is_subscribed}"
+            )
             stmt = stmt.where(UserDB.is_subscribed == filters.is_subscribed)
 
         result = await self._session.execute(stmt)
@@ -62,7 +66,12 @@ class PostgresUserRepository:
         update_data = user.model_dump(exclude_unset=True, exclude={"id"})
         logger.debug(f"Update data: {update_data}")
 
-        stmt = update(UserDB).where(UserDB.chat_id == user.chat_id).values(**update_data).returning(UserDB)
+        stmt = (
+            update(UserDB)
+            .where(UserDB.chat_id == user.chat_id)
+            .values(**update_data)
+            .returning(UserDB)
+        )
 
         result = await self._session.execute(stmt)
         updated_user_db = result.scalar_one_or_none()
@@ -100,4 +109,7 @@ class PostgresUserRepository:
             .where(UserDB.chat_id == chat_id)
         )
         result = await self._session.execute(stmt)
-        return [SubscriptionToken.model_validate(token_db) for token_db in result.scalars().all()]
+        return [
+            SubscriptionToken.model_validate(token_db)
+            for token_db in result.scalars().all()
+        ]

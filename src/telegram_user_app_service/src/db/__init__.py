@@ -6,7 +6,9 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from src.db.subscriptions.postgres_subscription_token_repository import PostgresSubscriptionTokenRepository
+from src.db.subscriptions.postgres_subscription_token_repository import (
+    PostgresSubscriptionTokenRepository,
+)
 from src.db.subscriptions.subscription_token_service import SubscriptionTokenService
 from src.db.users.postgres_user_repository import PostgresUserRepository
 from src.db.users.user_service import UserService
@@ -29,7 +31,9 @@ def _get_session_factory() -> Any:
     """Return a session factory scoped to the current thread (and its event loop)."""
     if not hasattr(_thread_local, "session_factory"):
         engine = create_async_engine(_db_url)
-        _thread_local.session_factory = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+        _thread_local.session_factory = async_sessionmaker(
+            bind=engine, class_=AsyncSession, expire_on_commit=False
+        )
     return _thread_local.session_factory
 
 
@@ -48,7 +52,9 @@ async def get_user_service() -> AsyncGenerator[UserService]:
 
 
 @asynccontextmanager
-async def subscription_token_service_context() -> AsyncGenerator[SubscriptionTokenService]:
+async def subscription_token_service_context() -> AsyncGenerator[
+    SubscriptionTokenService
+]:
     """Async context manager for providing a SubscriptionTokenService instance."""
     session_factory = _get_session_factory()
     async with session_factory() as session:

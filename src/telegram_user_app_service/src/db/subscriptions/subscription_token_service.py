@@ -23,7 +23,9 @@ class SubscriptionTokenService:
         self._repo = repository
         logger.debug("SubscriptionTokenService initialized")
 
-    async def create_token(self, expires_in_seconds: int = SUBSCRIPTION_TOKEN_EXPIRATION_SECONDS) -> SubscriptionToken:
+    async def create_token(
+        self, expires_in_seconds: int = SUBSCRIPTION_TOKEN_EXPIRATION_SECONDS
+    ) -> SubscriptionToken:
         """Create and persist a new subscription token."""
         now = datetime.now(UTC)
         expires_at = now + timedelta(seconds=expires_in_seconds)
@@ -35,7 +37,9 @@ class SubscriptionTokenService:
             expires_at=expires_at,
         )
 
-        logger.info(f"Generating new subscription token that expires at {expires_at.isoformat()}")
+        logger.info(
+            f"Generating new subscription token that expires at {expires_at.isoformat()}"
+        )
         return await self._repo.create_token(token)
 
     async def list_tokens(self) -> list[SubscriptionToken]:

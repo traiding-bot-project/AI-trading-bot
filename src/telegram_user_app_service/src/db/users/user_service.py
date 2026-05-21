@@ -22,7 +22,9 @@ class UserService:
         logger.info(f"Registering new user with chat_id {user.chat_id}")
         existing = await self._repo.get_user_by_chat_id(user.chat_id)
         if existing:
-            logger.warning(f"User registration failed: user with chat_id {user.chat_id} already exists")
+            logger.warning(
+                f"User registration failed: user with chat_id {user.chat_id} already exists"
+            )
             raise ValueError(f"User with chat_id {user.chat_id} already exists")
         result = await self._repo.add_user(user)
         logger.info(f"User registered successfully with ID {result.id}")
@@ -47,7 +49,9 @@ class UserService:
 
     async def list_users(self, filters: UserFilters) -> list[User]:
         """Retrieve a list of registered users with optional filtering."""
-        logger.info(f"Listing users with filters: {filters.model_dump(exclude_none=True)}")
+        logger.info(
+            f"Listing users with filters: {filters.model_dump(exclude_none=True)}"
+        )
         users = await self._repo.list_users(filters)
         logger.debug(f"Retrieved {len(users)} users")
         return users

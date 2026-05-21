@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 token = secrets_manager.get_secret(InfisicalSecretsKeys.TELEGRAM_ACCESS_TOKEN)
 
 bot_commands = [
-    BotCommand(TelegramAppHandlers.SUBSCRIBE, "Subscribe to the bot with the access token."),
+    BotCommand(
+        TelegramAppHandlers.SUBSCRIBE, "Subscribe to the bot with the access token."
+    ),
     BotCommand(TelegramAppHandlers.UNSUBSCRIBE, "Unsubscribe from the bot."),
 ]
 
@@ -38,7 +40,10 @@ async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     try:
-        async with user_service_context() as user_service, subscription_token_service_context() as token_service:
+        async with (
+            user_service_context() as user_service,
+            subscription_token_service_context() as token_service,
+        ):
             logger.info(f"Validating subscription token for user {tg_user.id}...")
             await token_service.validate_token(token_value)
 
@@ -72,11 +77,17 @@ async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     except ValueError as e:
         if token_value:
-            logger.warning(f"Invalid or expired token attempt by user {tg_user.id}: {e}")
-            await update.message.reply_text("Invalid or expired subscription token. Please request a new one.")
+            logger.warning(
+                f"Invalid or expired token attempt by user {tg_user.id}: {e}"
+            )
+            await update.message.reply_text(
+                "Invalid or expired subscription token. Please request a new one."
+            )
         else:
             logger.warning(f"Unauthorized access attempt by user {tg_user.id}.")
-            await update.message.reply_text("Sorry, you are not authorized to use this bot.")
+            await update.message.reply_text(
+                "Sorry, you are not authorized to use this bot."
+            )
     except Exception as e:
         logger.error(f"Error in subscribe command: {e}")
         await update.message.reply_text("An internal error occurred.")
@@ -110,7 +121,9 @@ async def unsubscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
     except ValueError:
         logger.warning(f"Unauthorized access attempt by user {tg_user.id}.")
-        await update.message.reply_text("Sorry, you are not authorized to use this bot.")
+        await update.message.reply_text(
+            "Sorry, you are not authorized to use this bot."
+        )
     except Exception as e:
         logger.error(f"Error in unsubscribe command: {e}")
         await update.message.reply_text("An internal error occurred.")
@@ -127,7 +140,9 @@ def start_telegram_application() -> None:
     application = Application.builder().token(token).post_init(post_init).build()
 
     application.add_handler(CommandHandler(TelegramAppHandlers.SUBSCRIBE, subscribe))
-    application.add_handler(CommandHandler(TelegramAppHandlers.UNSUBSCRIBE, unsubscribe))
+    application.add_handler(
+        CommandHandler(TelegramAppHandlers.UNSUBSCRIBE, unsubscribe)
+    )
 
     logger.info("Bot started and listening...")
     application.run_polling(allowed_updates=Update.ALL_TYPES, stop_signals=None)

@@ -22,7 +22,9 @@ class UserDB(Base):
     chat_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
     is_subscribed: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    tokens: Mapped[list[SubscriptionTokenDB]] = relationship(back_populates="user", lazy="select")
+    tokens: Mapped[list[SubscriptionTokenDB]] = relationship(
+        back_populates="user", lazy="select"
+    )
 
     def __repr__(self) -> str:
         """Returns a string representation of the UserDB instance."""

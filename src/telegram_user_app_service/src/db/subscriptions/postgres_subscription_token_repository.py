@@ -34,12 +34,17 @@ class PostgresSubscriptionTokenRepository:
         logger.debug("Listing all subscription tokens from the database")
         stmt = select(SubscriptionTokenDB)
         result = await self._session.execute(stmt)
-        return [SubscriptionToken.model_validate(token_db) for token_db in result.scalars().all()]
+        return [
+            SubscriptionToken.model_validate(token_db)
+            for token_db in result.scalars().all()
+        ]
 
     async def get_token_by_value(self, token_value: str) -> SubscriptionToken | None:
         """Retrieve a subscription token by its exact token value."""
         logger.debug("Querying subscription token by value")
-        stmt = select(SubscriptionTokenDB).where(SubscriptionTokenDB.token == token_value)
+        stmt = select(SubscriptionTokenDB).where(
+            SubscriptionTokenDB.token == token_value
+        )
         result = await self._session.execute(stmt)
         token_db = result.scalar_one_or_none()
         return SubscriptionToken.model_validate(token_db) if token_db else None
@@ -53,7 +58,10 @@ class PostgresSubscriptionTokenRepository:
             .where(UserDB.username == username)
         )
         result = await self._session.execute(stmt)
-        return [SubscriptionToken.model_validate(token_db) for token_db in result.scalars().all()]
+        return [
+            SubscriptionToken.model_validate(token_db)
+            for token_db in result.scalars().all()
+        ]
 
     async def update_token(self, token: SubscriptionToken) -> SubscriptionToken:
         """Update an existing subscription token in the database."""

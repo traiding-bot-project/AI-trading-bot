@@ -8,13 +8,24 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 class User(BaseModel):
     """Represents a user in the Telegram User App Service."""
 
-    id: Annotated[int | None, Field(default=None, title="User ID", description="Unique identifier for the user.")] = (
-        None
-    )
-    first_name: Annotated[str, Field(..., title="First Name", description="User's first name.")]
-    last_name: Annotated[str, Field(..., title="Last Name", description="User's last name.")]
-    username: Annotated[str, Field(..., title="Username", description="User's username.")]
-    chat_id: Annotated[int, Field(..., title="Chat ID", description="Telegram chat ID for the user.")]
+    id: Annotated[
+        int | None,
+        Field(
+            default=None, title="User ID", description="Unique identifier for the user."
+        ),
+    ] = None
+    first_name: Annotated[
+        str, Field(..., title="First Name", description="User's first name.")
+    ]
+    last_name: Annotated[
+        str, Field(..., title="Last Name", description="User's last name.")
+    ]
+    username: Annotated[
+        str, Field(..., title="Username", description="User's username.")
+    ]
+    chat_id: Annotated[
+        int, Field(..., title="Chat ID", description="Telegram chat ID for the user.")
+    ]
     is_subscribed: Annotated[
         bool,
         Field(

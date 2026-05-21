@@ -86,7 +86,9 @@ async def main() -> None:
             )
             await queue.consume(create_message_handler(queue_config))
 
-        logger.info("MQ worker connected to RabbitMQ and queues are set up. Waiting for messages...")
+        logger.info(
+            "MQ worker connected to RabbitMQ and queues are set up. Waiting for messages..."
+        )
         logger.info("Worker is listening. Press CTRL+C to exit.")
 
         try:

@@ -37,5 +37,6 @@ class AIContentAnalyzer(BaseModel):
         """List available models from the underlying AI service."""
         logger.info("Listing available AI models")
         result = await self.service.list_models()
-        logger.debug(f"Retrieved {len(result.models)} available models")
+        models_len = len(getattr(result, "models", getattr(result, "data", [])))
+        logger.debug(f"Retrieved {models_len} available models")
         return result

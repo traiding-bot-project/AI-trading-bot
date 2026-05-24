@@ -4,6 +4,7 @@ environment = "development"
 logging_level = "info"
 
 [ai_model]
+active_deployment = "qwen_deployments"
 base_url = "http://127.0.0.1"
 base_port = 12434
 

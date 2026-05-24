@@ -9,23 +9,28 @@ from src.models.ollama_api import (
     OllamaCompletionResponse,
     OllamaTagsResponse,
 )
+from src.models.qwen_api import (
+    QwenCompletionRequest,
+    QwenCompletionResponse,
+    QwenModelsResponse,
+)
 
 AnalyzeContentRequest = Annotated[
-    OllamaCompletionRequest,
+    OllamaCompletionRequest | QwenCompletionRequest,
     Field(
         ...,
         title="The request for content analysis, which can be any type depending on the AI service used",
     ),
 ]
 AnalyzeContentResponse = Annotated[
-    OllamaCompletionResponse,
+    OllamaCompletionResponse | QwenCompletionResponse,
     Field(
         ...,
         title="The response from the content analysis, which can be any type depending on the AI service used",
     ),
 ]
 ListModelsResponse = Annotated[
-    OllamaTagsResponse,
+    OllamaTagsResponse | QwenModelsResponse,
     Field(
         ...,
         title="The response from listing available models, which can be any type depending on the AI service used",

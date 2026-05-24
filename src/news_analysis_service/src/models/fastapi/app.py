@@ -9,6 +9,7 @@ class V1RouterTags(StrEnum):
     """Enum for FastAPI router tags used for API documentation."""
 
     OLLAMA = "Ollama"
+    QWEN = "Qwen"
 
 
 class HealthCheck(BaseModel):

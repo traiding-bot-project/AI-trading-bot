@@ -85,7 +85,7 @@ class OllamaSupportedModels(StrEnum):
 class QwenSupportedModels(StrEnum):
     """Supported Qwen models for the news analysis service.
 
-    These should correspond to the model identifiers used by the Ollama API.
+    These should correspond to the model identifiers used by the Qwen API.
     """
 
     QWEN3_8B_Q4_K_M = "docker.io/ai/qwen3:8B-Q4_K_M"
@@ -98,7 +98,7 @@ class ModelApi(StrictBaseModel):
         CompatibleAPI, Field(..., title="Compatible API provider for the model")
     ]
     implemented_endpoints: Annotated[
-        list[OllamaImplementedEndpoints],
+        list[OllamaImplementedEndpoints | QwenImplementedEndpoints],
         Field(
             ...,
             title="List of implemented endpoints for the model in the compatible API",
@@ -124,11 +124,11 @@ class OllamaSupportedDeployments(StrictBaseModel):
 class QwenSupportedDeployments(StrictBaseModel):
     """Supported Qwen models for the news analysis service.
 
-    These should correspond to the model identifiers used by the Ollama API.
+    These should correspond to the model identifiers used by the Qwen API.
     """
 
-    ollama_models: Annotated[
-        list[QwenSupportedModels], Field(..., title="Ollama Models")
+    qwen_models: Annotated[
+        list[QwenSupportedModels], Field(..., title="Qwen Models")
     ]
     api: Annotated[
         ModelApi,
@@ -145,6 +145,11 @@ class SupportedDeployments(StrictBaseModel):
     ollama_deployments: Annotated[
         OllamaSupportedDeployments,
         Field(..., title="Ollama Models and API compatibility"),
+    ]
+
+    qwen_deployments: Annotated[
+        QwenSupportedDeployments,
+        Field(..., title="Qwen Models and API compatibility")
     ]
 
 
@@ -180,6 +185,14 @@ class ServiceSettings(StrictBaseModel):
 class AIModelSettings(StrictBaseModel):
     """Settings related to the AI model connection and configuration."""
 
+    active_deployment: Annotated[
+        str,
+        Field(
+            ...,
+            title="Active Deployment",
+            description="The key of the active deployment, e.g., 'ollama_deployments' or 'qwen_deployments'.",
+        ),
+    ]
     deployments: Annotated[
         SupportedDeployments,
         Field(..., title="Supported AI models and their API compatibility"),

@@ -13,7 +13,7 @@ class User(BaseModel):
         Field(
             default=None, title="User ID", description="Unique identifier for the user."
         ),
-    ]
+    ] = None
     first_name: Annotated[
         str, Field(..., title="First Name", description="User's first name.")
     ]

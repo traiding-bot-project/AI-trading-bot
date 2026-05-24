@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import APIRouter, FastAPI, status
+from src.fastapi.subscription_tokens import subscription_router
 from src.fastapi.telegram_bot import bot_router
 from src.fastapi.user_service import user_router
 from src.models.fastapi.app import HealthCheck
@@ -46,5 +47,6 @@ api = APIRouter(prefix="/api")
 
 api.include_router(bot_router)
 api.include_router(user_router)
+api.include_router(subscription_router)
 
 app.include_router(api)

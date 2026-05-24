@@ -1,0 +1,46 @@
+services:
+  master-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_master
+    ports:
+      - "9333:9333"
+    volumes:
+      - seaweed_master_data:/data
+    command: "master -ip=master-seaweedfs -mdir=/data"
+    restart: unless-stopped
+
+  volume-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_volume
+    ports:
+      - "8088:8088"
+    volumes:
+      - seaweed_volume_data:/data
+    command: "volume -mserver=master-seaweedfs:9333 -port=8088 -ip=volume-seaweedfs -dir=/data -max=8"
+    depends_on:
+      - master-seaweedfs
+    restart: unless-stopped
+
+  filer-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_filer
+    ports:
+      - "8888:8888"
+    command: "filer -master=master-seaweedfs:9333"
+    depends_on:
+      - master-seaweedfs
+    restart: unless-stopped
+
+  s3-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_s3
+    ports:
+      - "8333:8333"
+    command: "s3 -filer=filer-seaweedfs:8888"
+    depends_on:
+      - filer-seaweedfs
+    restart: unless-stopped
+
+volumes:
+  seaweed_master_data:
+  seaweed_volume_data:

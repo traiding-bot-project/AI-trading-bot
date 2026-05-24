@@ -12,6 +12,7 @@ from fastapi import APIRouter, Query, status
 from src.models.fastapi.app import V1RouterTags
 from src.parsers.article_parser import ArticleParser
 from src.services.data_collector import DataCollectorService
+from src.utils.file_storage import FileStorageFolder, FileStorageService
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +32,44 @@ async def monitor(
     """Endpoint to monitor the data collection process and stream parsed news items as NDJSON."""
 
     async def generate() -> AsyncGenerator[str]:
+        file_storage_service = FileStorageService()
+        file_storage_service.ensure_bucket()
         collector = DataCollectorService()
         article_parser = ArticleParser()
         item_count = 0
 
         async for item in collector.monitor():
+            safe_pub_date = item.pub_date.replace("/", "-")
+            raw_news_remote_object_name = file_storage_service.create_remote_object_name(
+                FileStorageFolder.RAW_NEWS,
+                f"{item.metadata.region}-{item.metadata.name}-{safe_pub_date}-{item.title}.html",
+            )
+            file_storage_service.upload_text(
+                item.raw_content or "",
+                raw_news_remote_object_name,
+                metadata={
+                    "source": f"{item.metadata.region}/{item.metadata.name}",
+                    "publication_date": safe_pub_date,
+                    "title": item.title,
+                },
+            )
+
             item = article_parser.parse(item)
+
+            extracted_news_remote_object_name = file_storage_service.create_remote_object_name(
+                FileStorageFolder.EXTRACTED_NEWS,
+                f"{item.metadata.region}-{item.metadata.name}-{safe_pub_date}-{item.title}.txt",
+            )
+            file_storage_service.upload_text(
+                item.prepared_content or "",
+                extracted_news_remote_object_name,
+                metadata={
+                    "source": f"{item.metadata.region}/{item.metadata.name}",
+                    "publication_date": safe_pub_date,
+                    "title": item.title,
+                },
+            )
+
             item_count += 1
 
             payload = {

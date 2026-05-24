@@ -98,9 +98,7 @@ class CollectionTarget(BaseModel):
         str,
         Field(title="Domain", description="The root domain used for rate limiting."),
     ]
-    datasource_type: Annotated[
-        DatasourceType, Field(title="Type", description="RSS, API, etc.")
-    ]
+    datasource_type: Annotated[DatasourceType, Field(title="Type", description="RSS, API, etc.")]
     category: Annotated[str, Field(title="Category")]
     ignore_routes: Annotated[
         list[str],

@@ -98,9 +98,7 @@ class DataCollectorService:
                 "Chrome/91.0.4472.124 Safari/537.36"
             ),
         }
-        content_type_mapping: dict[
-            DatasourceType, tuple[dict[str, str], Callable[[Response], Any]]
-        ] = {
+        content_type_mapping: dict[DatasourceType, tuple[dict[str, str], Callable[[Response], Any]]] = {
             DatasourceType.API: (
                 browser_headers | {"Accept": "application/json"},
                 (lambda r: r.json()),
@@ -108,6 +106,10 @@ class DataCollectorService:
             DatasourceType.RSS: (
                 browser_headers
                 | {"Accept": "application/rss+xml, application/xml, text/xml"},
+                (lambda r: r.text),
+            ),
+            DatasourceType.TEXT: (
+                browser_headers | {"Accept": "text/plain, text/html"},
                 (lambda r: r.text),
             ),
             DatasourceType.TEXT: (

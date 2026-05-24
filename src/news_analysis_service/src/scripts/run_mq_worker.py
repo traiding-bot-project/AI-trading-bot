@@ -4,12 +4,10 @@ import asyncio
 import json
 from logging import getLogger
 from pathlib import Path
-from pathlib import Path
 
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
 
-from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.interfaces import content_analyzer
 from src.models.news_items import NewsItem
@@ -103,7 +101,6 @@ async def main() -> None:
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(
                             Message(
-                                body=data.response.encode(),
                                 body=data.response.encode(),
                                 delivery_mode=DeliveryMode(send_queue_config.delivery_mode),
                             ),

@@ -53,6 +53,7 @@ class QwenImplementedEndpoints(StrEnum):
     EMBEDDINGS = "v1/embeddings"
     COMPLETIONS = "v1/completions"
 
+
 class OllamaImplementedEndpoints(StrEnum):
     """Implemented endpoints for the Ollama API.
 
@@ -94,9 +95,7 @@ class QwenSupportedModels(StrEnum):
 class ModelApi(StrictBaseModel):
     """API compatibility and implemented endpoints for a specific AI model."""
 
-    compatible_api: Annotated[
-        CompatibleAPI, Field(..., title="Compatible API provider for the model")
-    ]
+    compatible_api: Annotated[CompatibleAPI, Field(..., title="Compatible API provider for the model")]
     implemented_endpoints: Annotated[
         list[OllamaImplementedEndpoints | QwenImplementedEndpoints],
         Field(
@@ -112,9 +111,7 @@ class OllamaSupportedDeployments(StrictBaseModel):
     These should correspond to the model identifiers used by the Ollama API.
     """
 
-    ollama_models: Annotated[
-        list[OllamaSupportedModels], Field(..., title="Ollama Models")
-    ]
+    ollama_models: Annotated[list[OllamaSupportedModels], Field(..., title="Ollama Models")]
     api: Annotated[
         ModelApi,
         Field(..., title="API compatibility and implemented endpoints for the model"),
@@ -127,9 +124,7 @@ class QwenSupportedDeployments(StrictBaseModel):
     These should correspond to the model identifiers used by the Qwen API.
     """
 
-    qwen_models: Annotated[
-        list[QwenSupportedModels], Field(..., title="Qwen Models")
-    ]
+    qwen_models: Annotated[list[QwenSupportedModels], Field(..., title="Qwen Models")]
     api: Annotated[
         ModelApi,
         Field(..., title="API compatibility and implemented endpoints for the model"),
@@ -147,10 +142,7 @@ class SupportedDeployments(StrictBaseModel):
         Field(..., title="Ollama Models and API compatibility"),
     ]
 
-    qwen_deployments: Annotated[
-        QwenSupportedDeployments,
-        Field(..., title="Qwen Models and API compatibility")
-    ]
+    qwen_deployments: Annotated[QwenSupportedDeployments, Field(..., title="Qwen Models and API compatibility")]
 
 
 class ServiceSettings(StrictBaseModel):

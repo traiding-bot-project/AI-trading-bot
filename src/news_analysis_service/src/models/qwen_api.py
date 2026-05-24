@@ -24,9 +24,7 @@ class QwenCompletionRequest(BaseModel):
     """
 
     model: Annotated[QwenSupportedModels, Field(..., title="Qwen Model")]
-    messages: Annotated[
-        list[ChatMessage], Field(..., title="A list of messages comprising the conversation so far")
-    ]
+    messages: Annotated[list[ChatMessage], Field(..., title="A list of messages comprising the conversation so far")]
     temperature: Annotated[
         float | None,
         Field(None, title="What sampling temperature to use, between 0 and 2"),
@@ -63,7 +61,7 @@ class QwenCompletionResponse(BaseModel):
 
     id: Annotated[str, Field(..., title="A unique identifier for the chat completion")]
     object: Annotated[Literal["chat.completion"], Field("chat.completion", title="The object type")]
-    created: Annotated[int, Field(..., title="The Unix timestamp (in seconds) of when the chat completion was created")]
+    created: Annotated[int, Field(..., title="The Unix timestamp (in sec) of when the chat completion was created")]
     model: Annotated[str, Field(..., title="The model used for the chat completion")]
     choices: Annotated[list[Choice], Field(..., title="A list of chat completion choices")]
 

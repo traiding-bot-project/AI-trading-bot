@@ -24,9 +24,7 @@ class AIContentAnalyzer(BaseModel):
 
     service: SkipValidation[AIService]
 
-    async def analyze_content(
-        self, request: AnalyzeContentRequest
-    ) -> AnalyzeContentResponse:
+    async def analyze_content(self, request: AnalyzeContentRequest) -> AnalyzeContentResponse:
         """Analyze content using the underlying AI service."""
         logger.info(f"Analyzing content with model: {request.model}")
         result = await self.service.generate_completion(request)

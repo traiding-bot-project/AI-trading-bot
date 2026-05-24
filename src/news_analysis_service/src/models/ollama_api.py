@@ -17,9 +17,7 @@ class OllamaCompletionRequest(BaseModel):
     """
 
     model: Annotated[OllamaSupportedModels, Field(..., title="Ollama Model")]
-    prompt: Annotated[
-        str, Field(..., title="Prompt for the model to generate a response to")
-    ]
+    prompt: Annotated[str, Field(..., title="Prompt for the model to generate a response to")]
     suffix: Annotated[
         str | None,
         Field(None, title="Optional suffix to append to the generated response"),
@@ -59,16 +57,10 @@ class OllamaCompletionResponse(BaseModel):
     References: https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
     """
 
-    model: Annotated[
-        OllamaSupportedModels, Field(..., title="The model that generated the response")
-    ]
-    created_at: Annotated[
-        datetime, Field(..., title="The timestamp when the response was created")
-    ]
+    model: Annotated[OllamaSupportedModels, Field(..., title="The model that generated the response")]
+    created_at: Annotated[datetime, Field(..., title="The timestamp when the response was created")]
     response: Annotated[str, Field(..., title="The generated response from the model")]
-    done: Annotated[
-        bool, Field(..., title="Whether the response generation is complete")
-    ]
+    done: Annotated[bool, Field(..., title="Whether the response generation is complete")]
 
     model_config = ConfigDict(extra="ignore")
 

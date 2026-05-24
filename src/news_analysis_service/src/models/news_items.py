@@ -61,9 +61,7 @@ class DataSourceMetadata(BaseModel):
 class NewsItem(BaseModel):
     """Model representing a parsed news item."""
 
-    title: Annotated[
-        str, Field(title="Title", description="The title of the news item")
-    ]
+    title: Annotated[str, Field(title="Title", description="The title of the news item")]
     link: Annotated[str, Field(title="Link", description="The URL of the news item")]
     description: Annotated[
         str | None,

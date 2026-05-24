@@ -23,27 +23,18 @@ class QwenService:
     def __init__(self) -> None:
         """Initialize the QwenService with an asynchronous HTTP client."""
         self.client = AsyncClient(timeout=SERVICE_CLIENT_SESSION_TIMEOUT)
-        logger.info(
-            f"QwenService initialized with timeout={SERVICE_CLIENT_SESSION_TIMEOUT}s"
-        )
+        logger.info(f"QwenService initialized with timeout={SERVICE_CLIENT_SESSION_TIMEOUT}s")
 
     def get_endpoint_url(self, endpoint: QwenImplementedEndpoints) -> str:
         """Construct the full endpoint URL for the Qwen API."""
         logger.debug(f"Constructing URL for endpoint: {endpoint.value}")
-        if (
-            endpoint.value
-            not in settings.ai_model.deployments.qwen_deployments.api.implemented_endpoints
-        ):
-            logger.error(
-                f"Endpoint '{endpoint.value}' is not implemented in Qwen API settings"
-            )
-            raise ValueError(
-                f"Endpoint '{endpoint.value}' is not implemented in the Qwen API settings."
-            )
+        if endpoint.value not in settings.ai_model.deployments.qwen_deployments.api.implemented_endpoints:
+            logger.error(f"Endpoint '{endpoint.value}' is not implemented in Qwen API settings")
+            raise ValueError(f"Endpoint '{endpoint.value}' is not implemented in the Qwen API settings.")
         url = f"{settings.ai_model.base_url}:{settings.ai_model.base_port}/{endpoint.value}"
         logger.debug(f"Constructed endpoint URL: {url}")
         return url
-    
+
     async def _send_get_request(self, url: str) -> Any:
         """Send HTTP GET request to Qwen API and return parsed JSON response."""
         logger.debug(f"Sending GET request to: {url}")
@@ -52,13 +43,11 @@ class QwenService:
         try:
             response.raise_for_status()
         except HTTPStatusError as e:
-            logger.error(
-                f"GET request to Qwen API failed with status {e.response.status_code}: {e}"
-            )
+            logger.error(f"GET request to Qwen API failed with status {e.response.status_code}: {e}")
             raise RuntimeError(f"Request to Qwen API failed: {e}")
         logger.debug("GET request successful")
         return response.json()
-    
+
     async def _send_post_request(self, url: str, body: QwenCompletionRequest) -> Any:
         """Send HTTP POST request with body to Qwen API and return parsed JSON response."""
         logger.debug(f"Sending POST request to: {url}")
@@ -76,20 +65,16 @@ class QwenService:
             raise RuntimeError(f"Request to Qwen API failed: {e}. Details: {error_details}")
         logger.debug("POST request successful")
         return response.json()
-    
+
     async def list_models(self) -> QwenModelsResponse:
         """Get the list of available models from the Qwen API."""
         logger.info("Fetching available models from Qwen API")
         url = self.get_endpoint_url(QwenImplementedEndpoints.MODELS)
         response_data = await self._send_get_request(url)
-        logger.debug(
-            f"Received model list with {len(response_data.get('data', []))} models"
-        )
+        logger.debug(f"Received model list with {len(response_data.get('data', []))} models")
         return QwenModelsResponse(**response_data)
 
-    async def generate_completion(
-        self, request: QwenCompletionRequest
-    ) -> QwenCompletionResponse:
+    async def generate_completion(self, request: QwenCompletionRequest) -> QwenCompletionResponse:
         """Generate a completion using the Qwen API based on the given request."""
         logger.info(f"Generating completion with model: {request.model}")
         url = self.get_endpoint_url(QwenImplementedEndpoints.CHAT_COMPLETIONS)

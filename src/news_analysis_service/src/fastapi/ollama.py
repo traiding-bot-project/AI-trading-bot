@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 ollama_router = APIRouter(prefix="/ollama", tags=[V1RouterTags.OLLAMA])
 
 
-@ollama_router.post(
-    "/generate", response_model=OllamaCompletionResponse, status_code=status.HTTP_200_OK
-)
+@ollama_router.post("/generate", response_model=OllamaCompletionResponse, status_code=status.HTTP_200_OK)
 async def generate_completion(
     body: Annotated[OllamaCompletionRequest, Body(...)],
 ) -> Any:
@@ -31,9 +29,7 @@ async def generate_completion(
     return result
 
 
-@ollama_router.get(
-    "/tags", response_model=OllamaTagsResponse, status_code=status.HTTP_200_OK
-)
+@ollama_router.get("/tags", response_model=OllamaTagsResponse, status_code=status.HTTP_200_OK)
 async def list_models() -> Any:
     """Endpoint to list available models in the Ollama service."""
     logger.info("GET /ollama/tags - Received request to list available models")

@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 qwen_router = APIRouter(prefix="/qwen", tags=[V1RouterTags.QWEN])
 
 
-@qwen_router.post(
-    "/generate", response_model=QwenCompletionResponse, status_code=status.HTTP_200_OK
-)
+@qwen_router.post("/generate", response_model=QwenCompletionResponse, status_code=status.HTTP_200_OK)
 async def generate_completion(
     body: Annotated[QwenCompletionRequest, Body(...)],
 ) -> Any:
@@ -31,9 +29,7 @@ async def generate_completion(
     return result
 
 
-@qwen_router.get(
-    "/tags", response_model=QwenModelsResponse, status_code=status.HTTP_200_OK
-)
+@qwen_router.get("/tags", response_model=QwenModelsResponse, status_code=status.HTTP_200_OK)
 async def list_models() -> Any:
     """Endpoint to list available models in the Qwen service."""
     logger.info("GET /qwen/tags - Received request to list available models")

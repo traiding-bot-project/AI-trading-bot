@@ -76,7 +76,10 @@ class ModelApi(StrictBaseModel):
     compatible_api: Annotated[CompatibleAPI, Field(..., title="Compatible API provider for the model")]
     implemented_endpoints: Annotated[
         list[OllamaImplementedEndpoints],
-        Field(..., title="List of implemented endpoints for the model in the compatible API"),
+        Field(
+            ...,
+            title="List of implemented endpoints for the model in the compatible API",
+        ),
     ]
 
 
@@ -87,7 +90,10 @@ class OllamaSupportedDeployments(StrictBaseModel):
     """
 
     ollama_models: Annotated[list[OllamaSupportedModels], Field(..., title="Ollama Models")]
-    api: Annotated[ModelApi, Field(..., title="API compatibility and implemented endpoints for the model")]
+    api: Annotated[
+        ModelApi,
+        Field(..., title="API compatibility and implemented endpoints for the model"),
+    ]
 
 
 class SupportedDeployments(StrictBaseModel):
@@ -96,7 +102,10 @@ class SupportedDeployments(StrictBaseModel):
     These should correspond to model identifiers used by the AI backend.
     """
 
-    ollama_deployments: Annotated[OllamaSupportedDeployments, Field(..., title="Ollama Models and API compatibility")]
+    ollama_deployments: Annotated[
+        OllamaSupportedDeployments,
+        Field(..., title="Ollama Models and API compatibility"),
+    ]
 
 
 class ServiceSettings(StrictBaseModel):
@@ -131,7 +140,10 @@ class ServiceSettings(StrictBaseModel):
 class AIModelSettings(StrictBaseModel):
     """Settings related to the AI model connection and configuration."""
 
-    deployments: Annotated[SupportedDeployments, Field(..., title="Supported AI models and their API compatibility")]
+    deployments: Annotated[
+        SupportedDeployments,
+        Field(..., title="Supported AI models and their API compatibility"),
+    ]
     base_url: Annotated[
         str,
         Field(

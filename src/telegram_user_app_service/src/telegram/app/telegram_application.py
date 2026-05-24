@@ -2,9 +2,10 @@
 
 import logging
 
-from src.db import user_service_context
+from src.db import subscription_token_service_context, user_service_context
 from src.models.infisical import InfisicalSecretsKeys
 from src.models.telegram_app_handlers import TelegramAppHandlers
+from src.models.user import User
 from src.secrets import secrets_manager
 from telegram import BotCommand, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, ExtBot
@@ -14,7 +15,9 @@ logger = logging.getLogger(__name__)
 token = secrets_manager.get_secret(InfisicalSecretsKeys.TELEGRAM_ACCESS_TOKEN)
 
 bot_commands = [
-    BotCommand(TelegramAppHandlers.SUBSCRIBE, "Subscribe to the bot."),
+    BotCommand(
+        TelegramAppHandlers.SUBSCRIBE, "Subscribe to the bot with the access token."
+    ),
     BotCommand(TelegramAppHandlers.UNSUBSCRIBE, "Unsubscribe from the bot."),
 ]
 
@@ -27,28 +30,64 @@ async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not update.effective_user or not update.message:
         return
 
-    chat_id = update.effective_user.id
-    logger.info(f"User: {update.effective_user}")
+    tg_user = update.effective_user
+    token_value = context.args[0] if context.args and len(context.args) > 0 else None
+
+    if not token_value:
+        await update.message.reply_text(
+            "To subscribe, please provide a valid subscription token. Use /subscribe <token> to subscribe."
+        )
+        return
 
     try:
-        async with user_service_context() as user_service:
-            logger.info(f"Checking subscription status for user {chat_id}...")
-            user = await user_service.get_user(chat_id)
+        async with (
+            user_service_context() as user_service,
+            subscription_token_service_context() as token_service,
+        ):
+            logger.info(f"Validating subscription token for user {tg_user.id}...")
+            await token_service.validate_token(token_value)
 
-            if user.is_subscribed:
-                logger.info(f"User {chat_id} is already subscribed.")
+            try:
+                user = await user_service.get_user(tg_user.id)
+            except ValueError:
+                user = None
+
+            if user and user.is_subscribed:
+                logger.info(f"User {tg_user.id} is already subscribed.")
                 await update.message.reply_text("You are already subscribed.")
                 return
 
-            user.is_subscribed = True
-            await user_service.update_user(user)
+            if not user:
+                user = User(
+                    first_name=tg_user.first_name or "",
+                    last_name=tg_user.last_name or "",
+                    username=tg_user.username or f"user_{tg_user.id}",
+                    chat_id=tg_user.id,
+                    is_subscribed=True,
+                )
+                user = await user_service.register_user(user)
+            else:
+                user.is_subscribed = True
+                user = await user_service.update_user(user)
 
-            logger.info(f"User {chat_id} has been subscribed.")
+            await token_service.activate_token(token_value, user)
+            logger.info(f"User {tg_user.id} subscribed successfully with token.")
             await update.message.reply_text("Welcome! You are now subscribed.")
+            return
 
-    except ValueError:
-        logger.warning(f"Unauthorized access attempt by user {chat_id}.")
-        await update.message.reply_text("Sorry, you are not authorized to use this bot.")
+    except ValueError as e:
+        if token_value:
+            logger.warning(
+                f"Invalid or expired token attempt by user {tg_user.id}: {e}"
+            )
+            await update.message.reply_text(
+                "Invalid or expired subscription token. Please request a new one."
+            )
+        else:
+            logger.warning(f"Unauthorized access attempt by user {tg_user.id}.")
+            await update.message.reply_text(
+                "Sorry, you are not authorized to use this bot."
+            )
     except Exception as e:
         logger.error(f"Error in subscribe command: {e}")
         await update.message.reply_text("An internal error occurred.")
@@ -62,27 +101,29 @@ async def unsubscribe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     if not update.effective_user or not update.message:
         return
 
-    chat_id = update.effective_user.id
+    tg_user = update.effective_user
 
     try:
         async with user_service_context() as user_service:
-            logger.info(f"Checking subscription status for user {chat_id}...")
-            user = await user_service.get_user(chat_id)
+            logger.info(f"Checking subscription status for user {tg_user.id}...")
+            user = await user_service.get_user(tg_user.id)
 
             if not user.is_subscribed:
-                logger.info(f"User {chat_id} is not currently subscribed.")
+                logger.info(f"User {tg_user.id} is not currently subscribed.")
                 await update.message.reply_text("You are not currently subscribed.")
                 return
 
             user.is_subscribed = False
             await user_service.update_user(user)
 
-            logger.info(f"User {chat_id} has been unsubscribed.")
+            logger.info(f"User {tg_user.id} has been unsubscribed.")
             await update.message.reply_text("You have been unsubscribed.")
 
     except ValueError:
-        logger.warning(f"Unauthorized access attempt by user {chat_id}.")
-        await update.message.reply_text("Sorry, you are not authorized to use this bot.")
+        logger.warning(f"Unauthorized access attempt by user {tg_user.id}.")
+        await update.message.reply_text(
+            "Sorry, you are not authorized to use this bot."
+        )
     except Exception as e:
         logger.error(f"Error in unsubscribe command: {e}")
         await update.message.reply_text("An internal error occurred.")
@@ -99,7 +140,9 @@ def start_telegram_application() -> None:
     application = Application.builder().token(token).post_init(post_init).build()
 
     application.add_handler(CommandHandler(TelegramAppHandlers.SUBSCRIBE, subscribe))
-    application.add_handler(CommandHandler(TelegramAppHandlers.UNSUBSCRIBE, unsubscribe))
+    application.add_handler(
+        CommandHandler(TelegramAppHandlers.UNSUBSCRIBE, unsubscribe)
+    )
 
     logger.info("Bot started and listening...")
     application.run_polling(allowed_updates=Update.ALL_TYPES, stop_signals=None)

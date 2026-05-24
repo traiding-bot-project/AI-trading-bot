@@ -4,7 +4,11 @@ from typing import Annotated
 
 from pydantic import Field
 
-from src.models.ollama_api import OllamaCompletionRequest, OllamaCompletionResponse, OllamaTagsResponse
+from src.models.ollama_api import (
+    OllamaCompletionRequest,
+    OllamaCompletionResponse,
+    OllamaTagsResponse,
+)
 
 AnalyzeContentRequest = Annotated[
     OllamaCompletionRequest,

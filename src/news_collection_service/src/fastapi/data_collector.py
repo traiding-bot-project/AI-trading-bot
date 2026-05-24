@@ -16,9 +16,7 @@ from src.utils.file_storage import FileStorageFolder, FileStorageService
 
 logger = logging.getLogger(__name__)
 
-data_collector_router = APIRouter(
-    prefix="/data-collector", tags=[V1RouterTags.DATA_COLLECTOR]
-)
+data_collector_router = APIRouter(prefix="/data-collector", tags=[V1RouterTags.DATA_COLLECTOR])
 
 
 @data_collector_router.get(

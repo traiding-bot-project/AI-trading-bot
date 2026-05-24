@@ -1,7 +1,6 @@
 """User Service for managing user operations in the Telegram User App Service."""
 
 import logging
-from typing import cast
 
 from src.db.users.protocol import UserRepository
 from src.models.subscription_token import SubscriptionToken

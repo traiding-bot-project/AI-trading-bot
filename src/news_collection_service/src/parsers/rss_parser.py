@@ -18,15 +18,11 @@ class RSSParser:
         try:
             feed = feedparser.parse(feed_data)
         except Exception as e:
-            logger.error(
-                f"Failed to parse RSS feed for datasource {target.metadata.name}: {e}"
-            )
+            logger.error(f"Failed to parse RSS feed for datasource {target.metadata.name}: {e}")
             return []
 
         if feed.bozo and hasattr(feed, "bozo_exception"):
-            logger.warning(
-                f"Feed parser bozo exception for {target.metadata.name}: {feed.bozo_exception}"
-            )
+            logger.warning(f"Feed parser bozo exception for {target.metadata.name}: {feed.bozo_exception}")
 
         items = []
         for entry in feed.entries:
@@ -48,9 +44,7 @@ class RSSParser:
                     )
 
             except Exception as e:
-                logger.error(
-                    f"Error parsing RSS entry from {target.metadata.name}: {e}"
-                )
+                logger.error(f"Error parsing RSS entry from {target.metadata.name}: {e}")
 
         logger.debug(f"Parsed {len(items)} items from {target.metadata.name} feed.")
         return items

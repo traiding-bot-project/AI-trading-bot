@@ -17,6 +17,6 @@ implemented_endpoints = ["generate", "tags"]
 [ai_model.deployments.qwen_deployments]
 qwen_models = ["docker.io/ai/qwen3:8B-Q4_K_M"]
 
-[ai_model.deployments..api]
+[ai_model.deployments.qwen_deployments.api]
 compatible_api = "qwen"
-implemented_endpoints = ["generate", "tags"]
+implemented_endpoints = ["v1/chat/completions", "v1/models"]

@@ -48,8 +48,10 @@ class QwenImplementedEndpoints(StrEnum):
     These should correspond to the endpoints available in the Qwen API.
     """
 
-    # TODO: to be implemented
-
+    CHAT_COMPLETIONS = "v1/chat/completions"
+    MODELS = "v1/models"
+    EMBEDDINGS = "v1/embeddings"
+    COMPLETIONS = "v1/completions"
 
 class OllamaImplementedEndpoints(StrEnum):
     """Implemented endpoints for the Ollama API.

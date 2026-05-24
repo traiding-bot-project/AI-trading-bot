@@ -30,7 +30,7 @@ class QwenCompletionRequest(BaseModel):
     temperature: Annotated[
         float | None,
         Field(None, title="What sampling temperature to use, between 0 and 2"),
-    ] = None
+    ] = 0
     stream: Annotated[
         bool,
         Field(

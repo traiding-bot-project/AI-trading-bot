@@ -10,7 +10,8 @@ from aio_pika.abc import AbstractIncomingMessage
 
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.interfaces import content_analyzer
-from src.models.action_union_types import AnalyzeContentRequest
+from src.models.ollama_api import OllamaCompletionRequest
+from src.models.qwen_api import ChatMessage, QwenCompletionRequest
 from src.models.news_items import NewsItem
 from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
@@ -72,11 +73,6 @@ async def main() -> None:
             async with message.process(requeue=False):
                 try:
                     data = NewsItem.model_validate(json.loads(message.body))
-                    model = (
-                        settings.ai_model.deployments.ollama_deployments.ollama_models[
-                            0
-                        ]
-                    )
                     prompt = load_and_format_prompt(
                         Path(ANALYZE_NEWS_PROMPT),
                         news_item=data,
@@ -85,11 +81,25 @@ async def main() -> None:
                         prepared_content=data.prepared_content or "N/A",
                     )
                     logger.info("Prompt built for content analysis task")
-                    request = AnalyzeContentRequest(model=model, prompt=prompt)
 
-                    result = await content_analyzer.analyze_content(request)
-                    data.response = result.response
-                    data.metadata.model_used = model.LLAMA32_1B_Q8_0
+                    active_deployment_key = settings.ai_model.active_deployment
+                    if active_deployment_key == "ollama_deployments":
+                        model = settings.ai_model.deployments.ollama_deployments.ollama_models[0]
+                        request = OllamaCompletionRequest(model=model, prompt=prompt)
+                        result = await content_analyzer.analyze_content(request)
+                        data.response = result.response
+                        data.metadata.model_used = model.value
+                    elif active_deployment_key == "qwen_deployments":
+                        model = settings.ai_model.deployments.qwen_deployments.qwen_models[0]
+                        request = QwenCompletionRequest(
+                            model=model,
+                            messages=[ChatMessage(role="user", content=prompt)]
+                        )
+                        result = await content_analyzer.analyze_content(request)
+                        data.response = result.choices[0].message.content
+                        data.metadata.model_used = model.value
+                    else:
+                        raise ValueError(f"Unsupported active deployment: {active_deployment_key}")
 
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(

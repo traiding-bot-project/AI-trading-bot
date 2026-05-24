@@ -44,9 +44,6 @@ class QwenService:
         logger.debug(f"Constructed endpoint URL: {url}")
         return url
     
-
-
-    # TODO: what is this one for??? -> the same about ollama service
     async def _send_get_request(self, url: str) -> Any:
         """Send HTTP GET request to Qwen API and return parsed JSON response."""
         logger.debug(f"Sending GET request to: {url}")
@@ -62,9 +59,6 @@ class QwenService:
         logger.debug("GET request successful")
         return response.json()
     
-
-
-    # TODO: go through schemas QwenCompletionRequest -> they sure will be different
     async def _send_post_request(self, url: str, body: QwenCompletionRequest) -> Any:
         """Send HTTP POST request with body to Qwen API and return parsed JSON response."""
         logger.debug(f"Sending POST request to: {url}")
@@ -75,17 +69,14 @@ class QwenService:
         try:
             response.raise_for_status()
         except HTTPStatusError as e:
+            error_details = response.text
             logger.error(
-                f"POST request to Qwen API failed with status {e.response.status_code}: {e}"
+                f"POST request to Qwen API failed with status {e.response.status_code}: {e}. Details: {error_details}"
             )
-            raise RuntimeError(f"Request to Qwen API failed: {e}")
+            raise RuntimeError(f"Request to Qwen API failed: {e}. Details: {error_details}")
         logger.debug("POST request successful")
         return response.json()
     
-
-
-
-    # TODO: what is this one for??? -> the same about ollama service
     async def list_models(self) -> QwenModelsResponse:
         """Get the list of available models from the Qwen API."""
         logger.info("Fetching available models from Qwen API")

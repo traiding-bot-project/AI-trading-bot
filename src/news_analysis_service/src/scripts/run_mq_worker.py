@@ -11,8 +11,8 @@ from aio_pika.abc import AbstractIncomingMessage
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.interfaces import content_analyzer
 from src.models.news_items import NewsItem
-from src.models.ollama_api import OllamaCompletionRequest
-from src.models.qwen_api import ChatMessage, QwenCompletionRequest
+from src.models.ollama_api import OllamaCompletionRequest, OllamaCompletionResponse
+from src.models.qwen_api import ChatMessage, QwenCompletionRequest, QwenCompletionResponse
 from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
@@ -78,19 +78,23 @@ async def main() -> None:
 
                     active_deployment_key = settings.ai_model.active_deployment
                     if active_deployment_key == "ollama_deployments":
-                        model = settings.ai_model.deployments.ollama_deployments.ollama_models[0]
-                        request = OllamaCompletionRequest(model=model, prompt=prompt)
-                        result = await content_analyzer.analyze_content(request)
+                        ollama_model = settings.ai_model.deployments.ollama_deployments.ollama_models[0]
+                        ollama_request = OllamaCompletionRequest(model=ollama_model, prompt=prompt)
+                        result = await content_analyzer.analyze_content(ollama_request)
+                        if not isinstance(result, OllamaCompletionResponse):
+                            raise TypeError("Expected OllamaCompletionResponse")
                         data.response = result.response
-                        data.metadata.model_used = model.value
+                        data.metadata.model_used = ollama_model.value
                     elif active_deployment_key == "qwen_deployments":
-                        model = settings.ai_model.deployments.qwen_deployments.qwen_models[0]
-                        request = QwenCompletionRequest(
-                            model=model, messages=[ChatMessage(role="user", content=prompt)]
+                        qwen_model = settings.ai_model.deployments.qwen_deployments.qwen_models[0]
+                        qwen_request = QwenCompletionRequest(
+                            model=qwen_model, messages=[ChatMessage(role="user", content=prompt)]
                         )
-                        result = await content_analyzer.analyze_content(request)
+                        result = await content_analyzer.analyze_content(qwen_request)
+                        if not isinstance(result, QwenCompletionResponse):
+                            raise TypeError("Expected QwenCompletionResponse")
                         data.response = result.choices[0].message.content
-                        data.metadata.model_used = model.value
+                        data.metadata.model_used = qwen_model.value
                     else:
                         raise ValueError(f"Unsupported active deployment: {active_deployment_key}")
 

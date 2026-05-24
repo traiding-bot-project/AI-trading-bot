@@ -1,5 +1,7 @@
 """AI service implementations."""
 
+from typing import cast
+
 from src.interfaces.ai_service import AIService
 from src.services.ollama import OllamaService
 from src.services.qwen import QwenService
@@ -15,4 +17,4 @@ def get_ai_service() -> AIService:
 
     if compatible_api not in providers:
         raise ValueError(f"Unsupported compatible API provider: {compatible_api}")
-    return providers[compatible_api]
+    return cast(AIService, providers[compatible_api])

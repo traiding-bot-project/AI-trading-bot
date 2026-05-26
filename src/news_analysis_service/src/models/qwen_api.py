@@ -81,7 +81,7 @@ class QwenModelData(BaseModel):
     References: https://developers.openai.com/api/reference/resources/models
     """
 
-    id: Annotated[str, Field(..., title="The model identifier, which can be referenced in the API endpoints")]
+    id: Annotated[QwenSupportedModels, Field(..., title="The model identifier, which can be referenced in the API endpoints")]
     object: Annotated[Literal["model"], Field("model", title="The object type, which is always 'model'")]
     created: Annotated[int, Field(..., title="The Unix timestamp (in seconds) when the model was created")]
     owned_by: Annotated[str, Field(..., title="The organization that owns the model")]

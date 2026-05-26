@@ -105,10 +105,6 @@ class DataCollectorService:
                 browser_headers | {"Accept": "text/plain, text/html"},
                 (lambda r: r.text),
             ),
-            DatasourceType.TEXT: (
-                browser_headers | {"Accept": "text/plain, text/html"},
-                (lambda r: r.text),
-            ),
         }
         return content_type_mapping[content_type]
 

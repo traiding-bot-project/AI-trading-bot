@@ -12,7 +12,10 @@ from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.interfaces import content_analyzer
 from src.models.news_items import NewsItem
 from src.models.ollama_api import OllamaCompletionRequest, OllamaCompletionResponse
-from src.models.qwen_api import ChatMessage, QwenCompletionRequest, QwenCompletionResponse
+from src.models.qwen_api import (ChatMessageRole, 
+                                 ChatMessage, 
+                                 QwenCompletionRequest, 
+                                 QwenCompletionResponse)
 from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
@@ -88,7 +91,7 @@ async def main() -> None:
                     elif active_deployment_key == "qwen_deployments":
                         qwen_model = settings.ai_model.deployments.qwen_deployments.qwen_models[0]
                         qwen_request = QwenCompletionRequest(
-                            model=qwen_model, messages=[ChatMessage(role="user", content=prompt)]
+                            model=qwen_model, messages=[ChatMessage(role=ChatMessageRole.USER, content=prompt)]
                         )
                         result = await content_analyzer.analyze_content(qwen_request)
                         if not isinstance(result, QwenCompletionResponse):

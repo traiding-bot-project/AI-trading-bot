@@ -1,5 +1,6 @@
 """Pydantic models for Qwen API interactions (OpenAI Compatible)."""
 
+from enum import StrEnum
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -7,11 +8,17 @@ from pydantic import BaseModel, ConfigDict, Field
 from src.settings.models.settings_model import QwenSupportedModels
 
 
+class ChatMessageRole(StrEnum):
+    SYSTEM = "system"
+    USER = "user"
+    ASSISTANT = "assistant"
+    TOOL = "tool"
+
 class ChatMessage(BaseModel):
     """A message in a chat conversation."""
 
     role: Annotated[
-        Literal["system", "user", "assistant", "tool"],
+        ChatMessageRole,
         Field(..., title="The role of the messages author"),
     ]
     content: Annotated[str, Field(..., title="The contents of the message")]

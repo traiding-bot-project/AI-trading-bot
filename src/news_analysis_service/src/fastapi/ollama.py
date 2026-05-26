@@ -34,5 +34,7 @@ async def list_models() -> Any:
     """Endpoint to list available models in the Ollama service."""
     logger.info("GET /ollama/tags - Received request to list available models")
     result = await content_analyzer.list_models()
-    logger.debug(f"Successfully retrieved {len(result.models)} available models")
-    return result
+    if isinstance(result, OllamaTagsResponse):
+        logger.debug(f"Successfully retrieved {len(result.models)} available models")
+        return result
+    raise TypeError(f"Expected OllamaTagsResponse, got {type(result).__name__}")

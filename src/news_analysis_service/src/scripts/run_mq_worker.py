@@ -12,10 +12,7 @@ from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.interfaces import content_analyzer
 from src.models.news_items import NewsItem
 from src.models.ollama_api import OllamaCompletionRequest, OllamaCompletionResponse
-from src.models.qwen_api import (ChatMessageRole, 
-                                 ChatMessage, 
-                                 QwenCompletionRequest, 
-                                 QwenCompletionResponse)
+from src.models.qwen_api import ChatMessage, ChatMessageRole, QwenCompletionRequest, QwenCompletionResponse
 from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings

@@ -9,10 +9,13 @@ from src.settings.models.settings_model import QwenSupportedModels
 
 
 class ChatMessageRole(StrEnum):
+    """User role for LLM messages."""
+
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
     TOOL = "tool"
+
 
 class ChatMessage(BaseModel):
     """A message in a chat conversation."""
@@ -81,7 +84,7 @@ class QwenModelData(BaseModel):
     References: https://developers.openai.com/api/reference/resources/models
     """
 
-    id: Annotated[QwenSupportedModels, Field(..., title="The model identifier, which can be referenced in the API endpoints")]
+    id: Annotated[str, Field(..., title="The model identifier, which can be referenced in the API endpoints")]
     object: Annotated[Literal["model"], Field("model", title="The object type, which is always 'model'")]
     created: Annotated[int, Field(..., title="The Unix timestamp (in seconds) when the model was created")]
     owned_by: Annotated[str, Field(..., title="The organization that owns the model")]

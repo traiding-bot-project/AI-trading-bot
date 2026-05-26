@@ -1,6 +1,6 @@
 """Union type definitions for AI service interactions."""
 
-from typing import Annotated, Union
+from typing import Annotated
 
 from pydantic import Field
 
@@ -16,21 +16,21 @@ from src.models.qwen_api import (
 )
 
 AnalyzeContentRequest = Annotated[
-    Union[OllamaCompletionRequest, QwenCompletionRequest],
+    OllamaCompletionRequest | QwenCompletionRequest,
     Field(
         ...,
         title="The request for content analysis, which can be any type depending on the AI service used",
     ),
 ]
 AnalyzeContentResponse = Annotated[
-    Union[OllamaCompletionResponse, QwenCompletionResponse],
+    OllamaCompletionResponse | QwenCompletionResponse,
     Field(
         ...,
         title="The response from the content analysis, which can be any type depending on the AI service used",
     ),
 ]
 ListModelsResponse = Annotated[
-    Union[OllamaTagsResponse, QwenModelsResponse],
+    OllamaTagsResponse | QwenModelsResponse,
     Field(
         ...,
         title="The response from listing available models, which can be any type depending on the AI service used",

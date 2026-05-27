@@ -23,6 +23,7 @@ logger = getLogger(__name__)
 
 USER_MODEL = QwenSupportedModels.QWEN3_8B_Q4_K_M
 
+
 async def main() -> None:
     """Main entry point for the RabbitMQ worker process."""
     logger.info("Starting RabbitMQ worker for News Analysis Service")

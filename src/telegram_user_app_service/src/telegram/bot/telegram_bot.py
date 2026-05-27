@@ -6,7 +6,7 @@ from src.db.users.user_service import UserService
 from src.models.infisical import InfisicalSecretsKeys
 from src.models.user import UserFilters
 from src.secrets import secrets_manager
-from telegram import Bot
+from telegram import Bot, LinkPreviewOptions
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,12 @@ class BroadcastBot:
     async def _send(self, chat_id: int, message: str) -> None:
         """Send a message to a single user, logging success or failure."""
         try:
-            await self._bot.send_message(chat_id=chat_id, text=message)
+            await self._bot.send_message(
+                chat_id=chat_id,
+                text=message,
+                parse_mode="HTML",
+                link_preview_options=LinkPreviewOptions(is_disabled=True),
+            )
             logger.info(f"Message sent to user {chat_id}.")
         except Exception as e:
             logger.error(f"Failed to send message to user {chat_id}: {e}")

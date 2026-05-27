@@ -77,7 +77,7 @@ class OllamaModelsResponse(BaseModel):
     """
 
     name: Annotated[str, Field(..., title="The name of the model deployment")]
-    model: Annotated[OllamaSupportedModels, Field(..., title="The name of the model")]
+    model: Annotated[str, Field(..., title="The name of the model")]
     modified_at: Annotated[
         datetime,
         Field(..., title="The timestamp when the model deployment was last modified"),
@@ -100,7 +100,18 @@ class OllamaTagsResponse(BaseModel):
     """
 
     models: Annotated[
-        list[OllamaModelsResponse],
+        list[OllamaModelsResponse] | None,
+        Field(..., title="The list of available model deployments"),
+    ]
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class OllamaModelsList(BaseModel):
+    """Response model for the list of available models from the Ollama API."""
+
+    models: Annotated[
+        list[OllamaSupportedModels] | None,
         Field(..., title="The list of available model deployments"),
     ]
 

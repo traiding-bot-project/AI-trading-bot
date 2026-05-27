@@ -6,13 +6,15 @@ from typing import Any
 from httpx import AsyncClient, HTTPStatusError
 
 from src.constants import SERVICE_CLIENT_SESSION_TIMEOUT
+from src.models.action_union_types import AnalyzeContentRequest, AnalyzeContentResponse
 from src.models.ollama_api import (
     OllamaCompletionRequest,
     OllamaCompletionResponse,
+    OllamaModelsList,
     OllamaTagsResponse,
 )
 from src.settings import settings
-from src.settings.models.settings_model import OllamaImplementedEndpoints
+from src.settings.models.settings_model import OllamaImplementedEndpoints, OllamaSupportedModels
 
 logger = logging.getLogger(__name__)
 
@@ -63,18 +65,37 @@ class OllamaService:
         logger.debug("POST request successful")
         return response.json()
 
-    async def list_models(self) -> OllamaTagsResponse:
+    async def list_models(self) -> OllamaModelsList:
         """Get the list of available models from the Ollama API."""
         logger.info("Fetching available models from Ollama API")
         url = self.get_endpoint_url(OllamaImplementedEndpoints.TAGS)
-        response_data = await self._send_get_request(url)
-        logger.debug(f"Received model list with {len(response_data.get('models', []))} models")
-        return OllamaTagsResponse(**response_data)
+        response_data = OllamaTagsResponse.model_validate(await self._send_get_request(url))
+        supported_models = settings.ai_model.deployments.ollama_deployments.models
+        models_list: list[OllamaSupportedModels] = []
+        for model in response_data.models or []:
+            try:
+                model_enum = OllamaSupportedModels(model.model)
+            except ValueError:
+                continue
+            if model_enum in supported_models:
+                models_list.append(model_enum)
+        logger.debug(f"Received model list: {models_list}")
+        return OllamaModelsList(models=models_list)
 
-    async def generate_completion(self, request: OllamaCompletionRequest) -> OllamaCompletionResponse:
+    async def generate_completion(self, request: AnalyzeContentRequest) -> AnalyzeContentResponse:
         """Generate a completion using the Ollama API based on the given request."""
         logger.info(f"Generating completion with model: {request.model}")
         url = self.get_endpoint_url(OllamaImplementedEndpoints.GENERATE)
-        response_data = await self._send_post_request(url, request)
-        logger.debug(f"Generated completion with status done={response_data.get('done', False)}")
-        return OllamaCompletionResponse(**response_data)
+        if isinstance(request.model, OllamaSupportedModels):
+            request_model = request.model
+        elif isinstance(request.model, str):
+            request_model = OllamaSupportedModels(request.model)
+        else:
+            raise ValueError(
+                f"Model '{request.model}' is not valid for the Ollama service. "
+                f"Use one of: {list(OllamaSupportedModels)}"
+            )
+        request_body = OllamaCompletionRequest(model=request_model, prompt=request.prompt)
+        response_data = OllamaCompletionResponse.model_validate(await self._send_post_request(url, request_body))
+        logger.debug(f"Generated completion with status done={response_data.done}")
+        return AnalyzeContentResponse(response=response_data.response)

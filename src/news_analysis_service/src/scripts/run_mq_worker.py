@@ -23,13 +23,15 @@ logger = getLogger(__name__)
 
 USER_MODEL = QwenSupportedModels.QWEN3_8B_Q4_K_M
 
-
 async def main() -> None:
     """Main entry point for the RabbitMQ worker process."""
     logger.info("Starting RabbitMQ worker for News Analysis Service")
     configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
     logger.info("MQ worker settings loaded from configuration file")
+
+    compatible_api = get_compatible_api_for_model(USER_MODEL)
+    content_analyzer = get_content_analyzer(compatible_api)
 
     connection = await connect_robust(
         host=mq_worker_settings.connector.host,
@@ -77,9 +79,6 @@ async def main() -> None:
                         prepared_content=data.prepared_content or "N/A",
                     )
                     logger.info("Prompt built for content analysis task")
-
-                    compatible_api = get_compatible_api_for_model(USER_MODEL)
-                    content_analyzer = get_content_analyzer(compatible_api)
 
                     request = AnalyzeContentRequest(model=USER_MODEL, prompt=prompt)
                     result = await content_analyzer.analyze_content(request)

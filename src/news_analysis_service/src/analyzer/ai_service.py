@@ -2,7 +2,7 @@
 
 from typing import Protocol
 
-from src.models.action_union_types import (
+from src.models.ai_types import (
     AnalyzeContentRequest,
     AnalyzeContentResponse,
 )

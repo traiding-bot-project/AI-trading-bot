@@ -3,7 +3,7 @@
 import logging
 
 from src.analyzer.ai_service import AIService
-from src.models.action_union_types import (
+from src.models.ai_types import (
     AnalyzeContentRequest,
     AnalyzeContentResponse,
 )

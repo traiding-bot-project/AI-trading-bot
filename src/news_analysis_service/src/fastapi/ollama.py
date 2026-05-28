@@ -5,7 +5,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, status
 from src.analyzer import get_content_analyzer
-from src.models.action_union_types import (
+from src.models.ai_types import (
     AnalyzeContentResponse,
     OllamaAnalyzeContentRequest,
 )

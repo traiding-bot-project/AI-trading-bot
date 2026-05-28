@@ -10,7 +10,7 @@ from aio_pika.abc import AbstractIncomingMessage
 
 from src.analyzer import get_compatible_api_for_model, get_content_analyzer
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
-from src.models.action_union_types import AnalyzeContentRequest
+from src.models.ai_types import AnalyzeContentRequest
 from src.models.news_items import NewsItem
 from src.prompts.builder import load_and_format_prompt
 from src.settings import settings

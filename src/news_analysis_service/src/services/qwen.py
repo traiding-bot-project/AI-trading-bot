@@ -6,7 +6,7 @@ from typing import Any
 from httpx import AsyncClient, HTTPStatusError
 
 from src.constants import SERVICE_CLIENT_SESSION_TIMEOUT
-from src.models.action_union_types import AnalyzeContentRequest, AnalyzeContentResponse
+from src.models.ai_types import AnalyzeContentRequest, AnalyzeContentResponse
 from src.models.qwen_api import (
     ChatMessage,
     ChatMessageRole,

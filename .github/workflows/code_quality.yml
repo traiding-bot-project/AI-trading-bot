@@ -55,4 +55,4 @@ jobs:
           config: '.github/workflows/config/.markdownlint.yml'
           globs: |
             **/*.md
-            src/news_analysis_service/src/prompts/*.md
+            !src/news_analysis_service/src/prompts/*.md

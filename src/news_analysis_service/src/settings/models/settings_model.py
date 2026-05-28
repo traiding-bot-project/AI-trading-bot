@@ -42,6 +42,18 @@ class LoggingLevel(StrEnum):
     CRITICAL = "critical"
 
 
+class QwenImplementedEndpoints(StrEnum):
+    """Implemented endpoints for the Qwen API.
+
+    These should correspond to the endpoints available in the Qwen API.
+    """
+
+    CHAT_COMPLETIONS = "v1/chat/completions"
+    MODELS = "v1/models"
+    EMBEDDINGS = "v1/embeddings"
+    COMPLETIONS = "v1/completions"
+
+
 class OllamaImplementedEndpoints(StrEnum):
     """Implemented endpoints for the Ollama API.
 
@@ -59,6 +71,7 @@ class CompatibleAPI(StrEnum):
     """Compatible API providers for the AI model. Can be used to determine which API client to use for requests."""
 
     OLLAMA = "ollama"
+    QWEN = "qwen"
 
 
 class OllamaSupportedModels(StrEnum):
@@ -70,12 +83,21 @@ class OllamaSupportedModels(StrEnum):
     LLAMA32_1B_Q8_0 = "docker.io/ai/llama3.2:1B-Q8_0"
 
 
+class QwenSupportedModels(StrEnum):
+    """Supported Qwen models for the news analysis service.
+
+    These should correspond to the model identifiers used by the Qwen API.
+    """
+
+    QWEN3_8B_Q4_K_M = "docker.io/ai/qwen3:8B-Q4_K_M"
+
+
 class ModelApi(StrictBaseModel):
     """API compatibility and implemented endpoints for a specific AI model."""
 
     compatible_api: Annotated[CompatibleAPI, Field(..., title="Compatible API provider for the model")]
     implemented_endpoints: Annotated[
-        list[OllamaImplementedEndpoints],
+        list[OllamaImplementedEndpoints | QwenImplementedEndpoints],
         Field(
             ...,
             title="List of implemented endpoints for the model in the compatible API",
@@ -89,7 +111,20 @@ class OllamaSupportedDeployments(StrictBaseModel):
     These should correspond to the model identifiers used by the Ollama API.
     """
 
-    ollama_models: Annotated[list[OllamaSupportedModels], Field(..., title="Ollama Models")]
+    models: Annotated[list[OllamaSupportedModels], Field(..., title="Ollama Models")]
+    api: Annotated[
+        ModelApi,
+        Field(..., title="API compatibility and implemented endpoints for the model"),
+    ]
+
+
+class QwenSupportedDeployments(StrictBaseModel):
+    """Supported Qwen models for the news analysis service.
+
+    These should correspond to the model identifiers used by the Qwen API.
+    """
+
+    models: Annotated[list[QwenSupportedModels], Field(..., title="Qwen Models")]
     api: Annotated[
         ModelApi,
         Field(..., title="API compatibility and implemented endpoints for the model"),
@@ -106,6 +141,8 @@ class SupportedDeployments(StrictBaseModel):
         OllamaSupportedDeployments,
         Field(..., title="Ollama Models and API compatibility"),
     ]
+
+    qwen_deployments: Annotated[QwenSupportedDeployments, Field(..., title="Qwen Models and API compatibility")]
 
 
 class ServiceSettings(StrictBaseModel):

@@ -8,17 +8,20 @@ from pathlib import Path
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
 
+from src.analyzer import get_compatible_api_for_model, get_content_analyzer
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
-from src.interfaces import content_analyzer
-from src.models.action_union_types import AnalyzeContentRequest
+from src.models.ai_types import AnalyzeContentRequest
 from src.models.news_items import NewsItem
 from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
+from src.settings.models.settings_model import QwenSupportedModels
 from src.utils.ingest_toml import load_settings
 from src.utils.logger import configure_logging
 
 logger = getLogger(__name__)
+
+USER_MODEL = QwenSupportedModels.QWEN3_8B_Q4_K_M
 
 
 async def main() -> None:
@@ -27,6 +30,9 @@ async def main() -> None:
     configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
     logger.info("MQ worker settings loaded from configuration file")
+
+    compatible_api = get_compatible_api_for_model(USER_MODEL)
+    content_analyzer = get_content_analyzer(compatible_api)
 
     connection = await connect_robust(
         host=mq_worker_settings.connector.host,
@@ -66,7 +72,6 @@ async def main() -> None:
             async with message.process(requeue=False):
                 try:
                     data = NewsItem.model_validate(json.loads(message.body))
-                    model = settings.ai_model.deployments.ollama_deployments.ollama_models[0]
                     prompt = load_and_format_prompt(
                         Path(ANALYZE_NEWS_PROMPT),
                         news_item=data,
@@ -75,11 +80,11 @@ async def main() -> None:
                         prepared_content=data.prepared_content or "N/A",
                     )
                     logger.info("Prompt built for content analysis task")
-                    request = AnalyzeContentRequest(model=model, prompt=prompt)
 
+                    request = AnalyzeContentRequest(model=USER_MODEL, prompt=prompt)
                     result = await content_analyzer.analyze_content(request)
                     data.response = result.response
-                    data.metadata.model_used = model.LLAMA32_1B_Q8_0
+                    data.metadata.model_used = USER_MODEL
 
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(

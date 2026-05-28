@@ -7,6 +7,7 @@ from src.models.infisical import InfisicalSecretsKeys
 from src.models.user import UserFilters
 from src.secrets import secrets_manager
 from telegram import Bot, LinkPreviewOptions
+from telegram.constants import ParseMode
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class BroadcastBot:
             await self._bot.send_message(
                 chat_id=chat_id,
                 text=message,
-                parse_mode="HTML",
+                parse_mode=ParseMode.HTML,
                 link_preview_options=LinkPreviewOptions(is_disabled=True),
             )
             logger.info(f"Message sent to user {chat_id}.")

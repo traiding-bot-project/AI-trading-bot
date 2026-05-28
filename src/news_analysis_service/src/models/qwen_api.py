@@ -84,7 +84,10 @@ class QwenModelData(BaseModel):
     References: https://developers.openai.com/api/reference/resources/models
     """
 
-    id: Annotated[str, Field(..., title="The model identifier, which can be referenced in the API endpoints")]
+    id: Annotated[
+        str,
+        Field(..., title="The model identifier, which can be referenced in the API endpoints"),
+    ]
     object: Annotated[Literal["model"], Field("model", title="The object type, which is always 'model'")]
     created: Annotated[int, Field(..., title="The Unix timestamp (in seconds) when the model was created")]
     owned_by: Annotated[str, Field(..., title="The organization that owns the model")]
@@ -100,8 +103,17 @@ class QwenModelsResponse(BaseModel):
 
     object: Annotated[Literal["list"], Field("list", title="The object type")]
     data: Annotated[
-        list[QwenModelData],
+        list[QwenModelData] | None,
         Field(..., title="The list of available models"),
     ]
 
     model_config = ConfigDict(extra="ignore")
+
+
+class QwenModelsList(BaseModel):
+    """A simplified model for just the list of model names from the Qwen API."""
+
+    models: Annotated[
+        list[QwenSupportedModels] | None,
+        Field(..., title="The list of available model names"),
+    ]

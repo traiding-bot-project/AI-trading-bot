@@ -6,13 +6,17 @@ from typing import Any
 from httpx import AsyncClient, HTTPStatusError
 
 from src.constants import SERVICE_CLIENT_SESSION_TIMEOUT
+from src.models.ai_types import AnalyzeContentRequest, AnalyzeContentResponse
 from src.models.qwen_api import (
+    ChatMessage,
+    ChatMessageRole,
     QwenCompletionRequest,
     QwenCompletionResponse,
+    QwenModelsList,
     QwenModelsResponse,
 )
 from src.settings import settings
-from src.settings.models.settings_model import QwenImplementedEndpoints
+from src.settings.models.settings_model import QwenImplementedEndpoints, QwenSupportedModels
 
 logger = logging.getLogger(__name__)
 
@@ -66,18 +70,39 @@ class QwenService:
         logger.debug("POST request successful")
         return response.json()
 
-    async def list_models(self) -> QwenModelsResponse:
+    async def list_models(self) -> QwenModelsList:
         """Get the list of available models from the Qwen API."""
         logger.info("Fetching available models from Qwen API")
         url = self.get_endpoint_url(QwenImplementedEndpoints.MODELS)
-        response_data = await self._send_get_request(url)
-        logger.debug(f"Received model list with {len(response_data.get('data', []))} models")
-        return QwenModelsResponse(**response_data)
+        response_data = QwenModelsResponse.model_validate(await self._send_get_request(url))
+        supported_models = settings.ai_model.deployments.qwen_deployments.models
+        models_list: list[QwenSupportedModels] = []
+        for model in response_data.data or []:
+            try:
+                model_enum = QwenSupportedModels(model.id)
+            except ValueError:
+                continue
+            if model_enum in supported_models:
+                models_list.append(model_enum)
+        logger.debug(f"Received model list: {models_list}")
+        return QwenModelsList(models=models_list)
 
-    async def generate_completion(self, request: QwenCompletionRequest) -> QwenCompletionResponse:
+    async def generate_completion(self, request: AnalyzeContentRequest) -> AnalyzeContentResponse:
         """Generate a completion using the Qwen API based on the given request."""
         logger.info(f"Generating completion with model: {request.model}")
         url = self.get_endpoint_url(QwenImplementedEndpoints.CHAT_COMPLETIONS)
-        response_data = await self._send_post_request(url, request)
+        if isinstance(request.model, QwenSupportedModels):
+            request_model = request.model
+        elif isinstance(request.model, str):
+            request_model = QwenSupportedModels(request.model)
+        else:
+            raise ValueError(
+                f"Model '{request.model}' is not valid for the Qwen service. Use one of: {list(QwenSupportedModels)}"
+            )
+        request_body = QwenCompletionRequest(
+            model=request_model,
+            messages=[ChatMessage(role=ChatMessageRole.USER, content=request.prompt)],
+        )
+        response_data = QwenCompletionResponse.model_validate(await self._send_post_request(url, request_body))
         logger.debug("Generated chat completion successfully.")
-        return QwenCompletionResponse(**response_data)
+        return AnalyzeContentResponse(response=response_data.choices[0].message.content)

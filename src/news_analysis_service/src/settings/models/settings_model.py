@@ -111,7 +111,7 @@ class OllamaSupportedDeployments(StrictBaseModel):
     These should correspond to the model identifiers used by the Ollama API.
     """
 
-    ollama_models: Annotated[list[OllamaSupportedModels], Field(..., title="Ollama Models")]
+    models: Annotated[list[OllamaSupportedModels], Field(..., title="Ollama Models")]
     api: Annotated[
         ModelApi,
         Field(..., title="API compatibility and implemented endpoints for the model"),
@@ -124,7 +124,7 @@ class QwenSupportedDeployments(StrictBaseModel):
     These should correspond to the model identifiers used by the Qwen API.
     """
 
-    qwen_models: Annotated[list[QwenSupportedModels], Field(..., title="Qwen Models")]
+    models: Annotated[list[QwenSupportedModels], Field(..., title="Qwen Models")]
     api: Annotated[
         ModelApi,
         Field(..., title="API compatibility and implemented endpoints for the model"),
@@ -177,14 +177,6 @@ class ServiceSettings(StrictBaseModel):
 class AIModelSettings(StrictBaseModel):
     """Settings related to the AI model connection and configuration."""
 
-    active_deployment: Annotated[
-        str,
-        Field(
-            ...,
-            title="Active Deployment",
-            description="The key of the active deployment, e.g., 'ollama_deployments' or 'qwen_deployments'.",
-        ),
-    ]
     deployments: Annotated[
         SupportedDeployments,
         Field(..., title="Supported AI models and their API compatibility"),

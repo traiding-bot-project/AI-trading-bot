@@ -8,18 +8,20 @@ from pathlib import Path
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
 
+from src.analyzer import get_compatible_api_for_model, get_content_analyzer
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
-from src.interfaces import content_analyzer
+from src.models.ai_types import AnalyzeContentRequest
 from src.models.news_items import NewsItem
-from src.models.ollama_api import OllamaCompletionRequest, OllamaCompletionResponse
-from src.models.qwen_api import ChatMessage, ChatMessageRole, QwenCompletionRequest, QwenCompletionResponse
 from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
+from src.settings.models.settings_model import QwenSupportedModels
 from src.utils.ingest_toml import load_settings
 from src.utils.logger import configure_logging
 
 logger = getLogger(__name__)
+
+USER_MODEL = QwenSupportedModels.QWEN3_8B_Q4_K_M
 
 
 async def main() -> None:
@@ -28,6 +30,9 @@ async def main() -> None:
     configure_logging(settings.service.logging_level)
     mq_worker_settings = load_settings(MQ_WORKER_SETTINGS_PATH, MQWorkerSettings)
     logger.info("MQ worker settings loaded from configuration file")
+
+    compatible_api = get_compatible_api_for_model(USER_MODEL)
+    content_analyzer = get_content_analyzer(compatible_api)
 
     connection = await connect_robust(
         host=mq_worker_settings.connector.host,
@@ -76,27 +81,10 @@ async def main() -> None:
                     )
                     logger.info("Prompt built for content analysis task")
 
-                    active_deployment_key = settings.ai_model.active_deployment
-                    if active_deployment_key == "ollama_deployments":
-                        ollama_model = settings.ai_model.deployments.ollama_deployments.ollama_models[0]
-                        ollama_request = OllamaCompletionRequest(model=ollama_model, prompt=prompt)
-                        result = await content_analyzer.analyze_content(ollama_request)
-                        if not isinstance(result, OllamaCompletionResponse):
-                            raise TypeError("Expected OllamaCompletionResponse")
-                        data.response = result.response
-                        data.metadata.model_used = ollama_model.value
-                    elif active_deployment_key == "qwen_deployments":
-                        qwen_model = settings.ai_model.deployments.qwen_deployments.qwen_models[0]
-                        qwen_request = QwenCompletionRequest(
-                            model=qwen_model, messages=[ChatMessage(role=ChatMessageRole.USER, content=prompt)]
-                        )
-                        result = await content_analyzer.analyze_content(qwen_request)
-                        if not isinstance(result, QwenCompletionResponse):
-                            raise TypeError("Expected QwenCompletionResponse")
-                        data.response = result.choices[0].message.content
-                        data.metadata.model_used = qwen_model.value
-                    else:
-                        raise ValueError(f"Unsupported active deployment: {active_deployment_key}")
+                    request = AnalyzeContentRequest(model=USER_MODEL, prompt=prompt)
+                    result = await content_analyzer.analyze_content(request)
+                    data.response = result.response
+                    data.metadata.model_used = USER_MODEL
 
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(

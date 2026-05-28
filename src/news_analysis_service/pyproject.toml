@@ -21,7 +21,7 @@ dev = [
     "ruff>=0.15.14",
 ]
 fastapi = [
-    "fastapi>=0.136.1",
+    "fastapi>=0.136.3",
     "uvicorn>=0.48.0",
 ]
 rabbitmq = [

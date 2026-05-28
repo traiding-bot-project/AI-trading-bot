@@ -53,5 +53,6 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@v20
         with:
           config: '.github/workflows/config/.markdownlint.yml'
-          globs: '**/*.md'
-          ignore: 'src/news_analysis_service/src/prompts/*.md'
+          globs: |
+            **/*.md
+            src/news_analysis_service/src/prompts/*.md

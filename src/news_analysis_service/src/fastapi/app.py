@@ -5,6 +5,7 @@ from typing import Any
 
 from fastapi import APIRouter, FastAPI, status
 from src.fastapi.ollama import ollama_router
+from src.fastapi.qwen import qwen_router
 from src.models.fastapi.app import HealthCheck
 
 logger = logging.getLogger(__name__)
@@ -28,5 +29,6 @@ def get_health() -> Any:
 api = APIRouter(prefix="/api")
 
 api.include_router(ollama_router)
+api.include_router(qwen_router)
 
 app.include_router(api)

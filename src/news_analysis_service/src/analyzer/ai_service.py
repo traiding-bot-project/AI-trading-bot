@@ -2,17 +2,18 @@
 
 from typing import Protocol
 
-from src.models.action_union_types import (
+from src.models.ai_types import (
     AnalyzeContentRequest,
     AnalyzeContentResponse,
-    ListModelsResponse,
 )
+from src.models.ollama_api import OllamaModelsList
+from src.models.qwen_api import QwenModelsList
 
 
 class AIService(Protocol):
     """Protocol defining the interface for AI service interactions."""
 
-    async def list_models(self) -> ListModelsResponse:
+    async def list_models(self) -> OllamaModelsList | QwenModelsList:
         """Get the list of available models from the AI service."""
         ...
 

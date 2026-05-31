@@ -764,6 +764,7 @@ version = "0.1.0"
 source = { editable = "src/news_analysis_service" }
 dependencies = [
     { name = "httpx" },
+    { name = "market-intel-lib" },
     { name = "pydantic" },
 ]
 
@@ -783,6 +784,7 @@ rabbitmq = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "market-intel-lib", editable = "market_intel_lib" },
     { name = "pydantic", specifier = ">=2.13.4" },
 ]
 
@@ -807,6 +809,7 @@ dependencies = [
     { name = "boto3-stubs", extra = ["s3"] },
     { name = "feedparser" },
     { name = "httpx" },
+    { name = "market-intel-lib" },
     { name = "pydantic" },
     { name = "trafilatura" },
 ]
@@ -831,6 +834,7 @@ requires-dist = [
     { name = "boto3-stubs", extras = ["s3"], specifier = ">=1.43.10" },
     { name = "feedparser", specifier = ">=6.0.12" },
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "market-intel-lib", editable = "market_intel_lib" },
     { name = "pydantic", specifier = ">=2.13.3" },
     { name = "trafilatura", specifier = ">=2.0.0" },
 ]

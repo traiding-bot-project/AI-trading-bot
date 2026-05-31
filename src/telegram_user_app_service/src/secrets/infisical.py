@@ -7,8 +7,8 @@ from src.constants import INFISICAL_DEV_SECRET_NAME
 from src.models.infisical import InfisicalSecretsKeys
 from src.settings import settings
 from src.settings.models.settings_model import InfiscalSettings
-from market_intel_lib.env_vars.get_env_var import get_env_var
-from market_intel_lib.construct_url.get_resource_url import get_resource_url
+from market_intel_lib.get_env_var import get_env_var
+from market_intel_lib.get_resource_url import get_resource_url
 
 logger = getLogger(__name__)
 

@@ -15,7 +15,7 @@ from src.db.users.user_service import UserService
 from src.models.infisical import InfisicalSecretsKeys
 from src.secrets import secrets_manager
 from src.settings import settings
-from market_intel_lib.construct_url.get_resource_url import get_resource_url
+from market_intel_lib.get_resource_url import get_resource_url
 
 db_password = secrets_manager.get_secret(InfisicalSecretsKeys.DB_PASSWORD)
 db_params = settings.database.model_dump()

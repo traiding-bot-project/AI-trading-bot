@@ -5,6 +5,7 @@ description = "Shared library"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "aioboto3>=15.5.0",
     "pydantic>=2.13.4",
 ]
 

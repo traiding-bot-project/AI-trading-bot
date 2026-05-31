@@ -12,8 +12,6 @@ keywords = [
 ]
 dependencies = [
     "beautifulsoup4>=4.14.3",
-    "boto3>=1.43.10",
-    "boto3-stubs[s3]>=1.43.10",
     "feedparser>=6.0.12",
     "httpx>=0.28.1",
     "pydantic>=2.13.3",

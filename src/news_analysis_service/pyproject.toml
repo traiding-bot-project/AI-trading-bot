@@ -13,6 +13,7 @@ keywords = [
 dependencies = [
     "httpx>=0.28.1",
     "pydantic>=2.13.4",
+    "market-intel-lib",
 ]
 
 [dependency-groups]
@@ -87,3 +88,6 @@ package = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
+
+[tool.uv.sources]
+market-intel-lib = { workspace = true }

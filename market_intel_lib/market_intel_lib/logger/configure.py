@@ -1,12 +1,12 @@
-"""Logging configuration for the News Collection Service."""
+"""Logging configuration for the Telegram User App Service."""
 
 import logging
 
-from src.settings.models.settings_model import LoggingLevel
+from market_intel_lib.schemas.logger import LoggingLevel
 
 
 def configure_logging(level: LoggingLevel) -> None:
-    """Configure the root logger with the specified logging level and console output."""
+    """Configure the root logger with the specified level and console output."""
     numeric_level = getattr(logging, level.upper(), logging.INFO)
 
     logger = logging.getLogger()
@@ -15,7 +15,9 @@ def configure_logging(level: LoggingLevel) -> None:
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
 
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(numeric_level)

@@ -18,6 +18,7 @@ dependencies = [
     "pydantic>=2.13.4",
     "python-telegram-bot>=22.7",
     "sqlalchemy[asyncio]>=2.0.50",
+    "market-intel-lib"
 ]
 
 [dependency-groups]
@@ -67,3 +68,6 @@ package = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
+
+[tool.uv.sources]
+market-intel-lib = { workspace = true }

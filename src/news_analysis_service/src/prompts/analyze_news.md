@@ -114,47 +114,41 @@ Financially relevant information includes:
 - Do not add extra sections, commentary, disclaimers, headers, or explanations.
 - Do not omit any section, even if information is limited.
 - Use short, information-dense sentences.
-- Keep formatting compatible with Telegram Markdown.
+- Keep formatting compatible with Telegram HTML (use <b>bold</b> and <a href="...">links</a>).
 - Do not use tables.
 - Do not use bullet points unless explicitly required by the structure.
 - Keep the entire response under 2048 characters.
+- "Tickers/Assets:", "Significance:", and "Horizon:" MUST remain on their own single lines.
+- Significance MUST choose from [🔴 High, 🟡 Medium, 🟢 Low].
+- Horizon MUST choose from [Short-Term (1-3 days), Medium-Term (weeks), Long-Term (months)].
 
 ---
 
 ## Required Output Structure
 
-*{{Article Title}}*
+## Required Output Structure
+<b><a href="{{link}}">{{Article Title}}</a></b>
+🌐 {{metadata.name}} | 📅 {{pub_date}}
 
-Source: {{metadata.name}} | Published: {{pub_date}} | [Article link]({{link}})
-
-*Summary*
-
+🔍 <b>Summary</b>
 {{Write 3-5 concise sentences that:
 - explain the core event or development,
 - include the most important quantitative details,
 - explain why the story matters for financial markets,
-- identify affected companies, sectors, countries, or asset classes where relevant,
-- and synthesize the full article context rather than repeating the raw description.}}
+- identify affected companies, sectors, countries, or asset classes.
+- IMPORTANT: Highlight key financial figures, percentages, tickers, or asset classes in bold (e.g., <b>$1.5B</b>, <b>+4.2%</b>, <b>SPY</b>).}}
 
-*Market Impact*
-
-Sectors: {{List only the materially affected sectors separated by commas.}}
-
-*Overall Market Sentiment*
-
-{{Choose exactly one:
-Positive
-Negative
-Neutral
-Mixed
-Unrelated to financial markets}}
-
-{{Write one short sentence explaining the sentiment classification.}}
+💲 <b>Market Takeaways</b>
+• <b>Sectors:</b> {{List only the materially affected sectors separated by commas.}}
+• <b>Tickers/Assets:</b> {{Identify specific stock tickers, currencies, cryptocurrencies, or commodities affected. Write "None" if only general market index is affected.}}
+• <b>Significance:</b> {{Choose one: 🔴 High / 🟡 Medium / 🟢 Low. Assess based on systemic importance or price volatility impact.}}
+• <b>Horizon:</b> {{Choose one: Short-Term (1-3 days) / Medium-Term (weeks) / Long-Term (months)}}
+• <b>Sentiment:</b> {{Choose exactly one: 🟢 Positive / 🔴 Negative / 🟡 Neutral / 🟡 Mixed / ⚪ Unrelated}} — {{Write short explanation of the sentiment classification.}}
 
 ### Formatting Constraints
 
-- The article title MUST always be wrapped in * *.
-- Section names MUST always be wrapped in * *.
+- The article title MUST always be wrapped in <b> and </b> tags.
+- Section names MUST always be wrapped in <b> and </b> tags.
 - "Sectors:" MUST remain on a single line.
 - Sentiment value MUST match one of the allowed values exactly.
 - Do not output placeholders.

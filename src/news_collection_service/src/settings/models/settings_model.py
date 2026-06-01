@@ -98,27 +98,6 @@ class ServiceSettings(StrictBaseModel):
     ]
 
 
-class FileStorageSettings(StrictBaseModel):
-    """Settings for file storage (e.g., S3-compatible buckets)."""
-
-    bucket_name: Annotated[
-        str,
-        Field(
-            ...,
-            title="Bucket name",
-            description="Name of the object storage bucket.",
-        ),
-    ]
-    region_name: Annotated[
-        FileStorageRegions,
-        Field(
-            ...,
-            title="Region name",
-            description="Region of the object storage service.",
-        ),
-    ]
-
-
 class DatasourceConfig(StrictBaseModel):
     """Configuration for a single datasource within a region."""
 
@@ -239,14 +218,6 @@ class Settings(StrictBaseModel):
             ...,
             title="Service settings",
             description="Configuration for the service runtime (host/port/environment).",
-        ),
-    ]
-    filestorage: Annotated[
-        FileStorageSettings,
-        Field(
-            ...,
-            title="File storage settings",
-            description="Configuration for object/file storage used by the service.",
         ),
     ]
     datasource: Annotated[

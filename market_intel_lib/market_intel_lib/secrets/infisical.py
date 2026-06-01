@@ -3,14 +3,16 @@
 from logging import getLogger
 
 from infisical_sdk import InfisicalSDKClient
-from src.constants import INFISICAL_DEV_SECRET_NAME
-from src.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.models.infisical import InfisicalSecretsKeys
 from src.settings import settings
 from src.settings.models.settings_model import InfiscalSettings
 from market_intel_lib.get_env_var import get_env_var
 from market_intel_lib.get_resource_url import get_resource_url
 
 logger = getLogger(__name__)
+
+
+INFISICAL_DEV_SECRET_NAME = "__INFISICAL_CLIENT_SECRET"
 
 
 class InfisicalSecretsManager:

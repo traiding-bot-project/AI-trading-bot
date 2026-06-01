@@ -13,10 +13,10 @@ import aioboto3
 from botocore.exceptions import ClientError
 from types_aiobotocore_s3.client import S3Client
 
-from src.settings import settings
-
 logger = logging.getLogger(__name__)
 
+FIRESTORAGE_REGION_NAME: str = "us-east-1"
+FILESTORAGE_BUCKET_NAME: str = "news-bucket"
 FILESTORAGE_SERVICE_NAME: Literal["s3"] = "s3"
 LOCAL_ENDPOINT_URL = "http://localhost:8333"
 
@@ -34,7 +34,7 @@ class FileStorageService:
     def __init__(self) -> None:
         """Initialize the file storage service by creating an S3 client and setting the bucket name."""
         self.session = aioboto3.Session()
-        self.bucket_name = settings.filestorage.bucket_name
+        self.bucket_name = FILESTORAGE_BUCKET_NAME
 
     @asynccontextmanager
     async def _get_client(self) -> AsyncGenerator[S3Client, None]:
@@ -42,7 +42,7 @@ class FileStorageService:
         async with self.session.client(
             FILESTORAGE_SERVICE_NAME,
             endpoint_url=LOCAL_ENDPOINT_URL,
-            region_name=settings.filestorage.region_name,
+            region_name=FIRESTORAGE_REGION_NAME,
             aws_access_key_id="mock",
             aws_secret_access_key="mock",
         ) as client:

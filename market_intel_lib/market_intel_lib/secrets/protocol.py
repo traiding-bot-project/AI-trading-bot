@@ -1,8 +1,7 @@
 """Secrets management protocol."""
 
+from enum import StrEnum
 from typing import Protocol
-
-from src.models.infisical import InfisicalSecretsKeys
 
 
 class SecretsManager(Protocol):

@@ -11,7 +11,7 @@ from src.parsers.article_parser import ArticleParser
 from src.services.data_collector import DataCollectorService
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
-from src.utils.file_storage import FileStorageFolder, FileStorageService
+from market_intel_lib.file_storage import FileStorageFolder, FileStorageService
 from market_intel_lib.toml.ingest_toml import load_settings
 from market_intel_lib.logger.configure import configure_logging
 
@@ -54,7 +54,7 @@ async def main() -> None:
         logger.info("Connected to RabbitMQ and queues are set up. Starting collection...")
 
         file_storage_service = FileStorageService()
-        file_storage_service.ensure_bucket()
+        await file_storage_service.ensure_bucket()
 
         collector = DataCollectorService()
         article_parser = ArticleParser()
@@ -66,7 +66,7 @@ async def main() -> None:
                 FileStorageFolder.RAW_NEWS,
                 f"{item.metadata.region}-{item.metadata.name}-{safe_pub_date}-{item.title}.html",
             )
-            file_storage_service.upload_text(
+            await file_storage_service.upload_text(
                 item.raw_content or "",
                 raw_news_remote_object_name,
                 metadata={
@@ -82,7 +82,7 @@ async def main() -> None:
                 FileStorageFolder.EXTRACTED_NEWS,
                 f"{item.metadata.region}-{item.metadata.name}-{safe_pub_date}-{item.title}.txt",
             )
-            file_storage_service.upload_text(
+            await file_storage_service.upload_text(
                 item.prepared_content or "",
                 extracted_news_remote_object_name,
                 metadata={

@@ -15,6 +15,9 @@ logger = getLogger(__name__)
 INFISICAL_DEV_SECRET_NAME = "__INFISICAL_CLIENT_SECRET"
 
 
+# TODO: rewrite to take settings from service and put them into this obj
+
+
 class InfisicalSecretsManager:
     """Secrets manager implementation for Infisical. Retrieves secrets from the Infisical service."""
 

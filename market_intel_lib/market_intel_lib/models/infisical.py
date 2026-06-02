@@ -1,3 +1,6 @@
+from enum import StrEnum
+
+
 class InfisicalSecretsKeys(StrEnum):
     """Enum for Infisical secrets used in the application."""
 

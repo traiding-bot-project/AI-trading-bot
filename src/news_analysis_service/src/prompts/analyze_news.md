@@ -72,37 +72,22 @@ Do not invent new values.
 
 ### Equity Sectors
 ```
-banking, insurance, fintech,
-energy, oil_and_gas, renewables,
-mining, metals_and_steel,
-technology, semiconductors, software, cybersecurity,
-retail, e_commerce, luxury,
-healthcare, pharma, biotech,
-real_estate, construction,
-utilities, water,
-telecom, media, gaming,
-food_beverage, agriculture,
-automotive, aerospace_and_defense,
-chemicals, logistics, shipping
+{equity_sectors_list}
 ```
 
 ### Commodities
 ```
-gold, silver, copper, lithium, uranium,
-oil, natural_gas, coal,
-wheat, corn, soybeans, coffee, cocoa
+{commodities_list}
 ```
 
 ### Asset Classes & Macro Themes
 ```
-forex, crypto, bonds, equities, indices,
-macro, inflation, interest_rates, fiscal_policy,
-geopolitics, trade, sanctions, regulation
+{asset_classes_and_macro_themes_list}
 ```
 
 ### Special
 ```
-UNRELATED
+{special}
 ```
 
 Assign ALL values that are materially affected — even if no specific company is named.

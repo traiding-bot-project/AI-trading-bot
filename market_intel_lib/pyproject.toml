@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "aioboto3>=15.5.0",
+    "infisicalsdk>=1.0.16",
     "mypy-boto3-s3>=1.43.14",
     "pydantic>=2.13.4",
     "types-aioboto3>=15.5.0",

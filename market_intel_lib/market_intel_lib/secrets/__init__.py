@@ -2,9 +2,9 @@
 
 from logging import getLogger
 
-from src.secrets.infisical import InfisicalSecretsManager
-from src.secrets.protocol import SecretsManager
-from src.settings import settings
+from market_intel_lib.secrets.infisical import InfisicalSecretsManager
+from market_intel_lib.secrets.protocol import SecretsManager
+from market_intel_lib.settings import settings
 
 logger = getLogger(__name__)
 

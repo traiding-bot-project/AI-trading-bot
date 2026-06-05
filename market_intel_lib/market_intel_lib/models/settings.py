@@ -1,8 +1,14 @@
 from typing import Annotated
 
-from pydantic import Field
+from pydantic import Field, BaseModel
 
 from market_intel_lib.models.custom_base_model import StrictBaseModel
+
+
+class LibrarySettings(BaseModel):
+    """Settings model for the shared library. Wraps Infisical settings
+    and ignores other service-specific fields."""
+    infisical: InfiscalSettings
 
 
 class InfiscalConnectionSettings(StrictBaseModel):

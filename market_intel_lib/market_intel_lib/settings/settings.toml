@@ -10,4 +10,3 @@ client_id = "a1303b57-dacb-4ab4-ab55-3d43648554cc"
 project_id = "fb9b018d-120f-4211-ad81-dd7735c770f5"
 env_slug = "dev"
 secret_path = "/"
-

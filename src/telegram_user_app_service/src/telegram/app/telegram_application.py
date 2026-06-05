@@ -3,10 +3,10 @@
 import logging
 
 from src.db import subscription_token_service_context, user_service_context
-from src.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.secrets import secrets_manager
 from src.models.telegram_app_handlers import TelegramAppHandlers
 from src.models.user import User
-from src.secrets import secrets_manager
 from telegram import BotCommand, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, ExtBot
 

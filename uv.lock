@@ -1353,7 +1353,6 @@ source = { editable = "src/telegram_user_app_service" }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
-    { name = "infisicalsdk" },
     { name = "market-intel-lib" },
     { name = "psycopg2-binary" },
     { name = "pydantic" },
@@ -1378,7 +1377,6 @@ rabbitmq = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.18.4" },
     { name = "asyncpg", specifier = ">=0.31.0" },
-    { name = "infisicalsdk", specifier = ">=1.0.16" },
     { name = "market-intel-lib", editable = "market_intel_lib" },
     { name = "psycopg2-binary", specifier = ">=2.9.12" },
     { name = "pydantic", specifier = ">=2.13.4" },

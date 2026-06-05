@@ -3,9 +3,9 @@
 import logging
 
 from src.db.users.user_service import UserService
-from src.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.secrets import secrets_manager
 from src.models.user import UserFilters
-from src.secrets import secrets_manager
 from telegram import Bot, LinkPreviewOptions
 from telegram.constants import ParseMode
 

@@ -12,8 +12,8 @@ from src.db.subscriptions.postgres_subscription_token_repository import (
 from src.db.subscriptions.subscription_token_service import SubscriptionTokenService
 from src.db.users.postgres_user_repository import PostgresUserRepository
 from src.db.users.user_service import UserService
-from src.models.infisical import InfisicalSecretsKeys
-from src.secrets import secrets_manager
+from market_intel_lib.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.secrets import secrets_manager
 from src.settings import settings
 from market_intel_lib.get_resource_url import get_resource_url
 

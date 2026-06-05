@@ -16,7 +16,6 @@ dependencies = [
     "psycopg2-binary>=2.9.12",
     "pydantic>=2.13.4",
     "python-telegram-bot>=22.7",
-    "sqlalchemy[asyncio]>=2.0.50",
     "market-intel-lib",
 ]
 

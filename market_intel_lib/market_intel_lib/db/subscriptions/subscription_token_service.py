@@ -4,10 +4,10 @@ import logging
 import secrets
 from datetime import UTC, datetime, timedelta
 
-from src.constants import SUBSCRIPTION_TOKEN_EXPIRATION_SECONDS
-from src.db.subscriptions.protocol import SubscriptionTokenRepository
-from src.models.subscription_token import SubscriptionToken
-from src.models.user import User
+from market_intel_lib.constants import SUBSCRIPTION_TOKEN_EXPIRATION_SECONDS
+from market_intel_lib.db.subscriptions.protocol import SubscriptionTokenRepository
+from market_intel_lib.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.user import User
 
 logger = logging.getLogger(__name__)
 

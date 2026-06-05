@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.db.declarative_base import Base
+from market_intel_lib.db.declarative_base import Base
 
 if TYPE_CHECKING:
-    from src.db.users.user import UserDB
+    from market_intel_lib.db.users.user import UserDB
 
 
 class SubscriptionTokenDB(Base):

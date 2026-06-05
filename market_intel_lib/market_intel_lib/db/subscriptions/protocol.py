@@ -2,7 +2,7 @@
 
 from typing import Protocol
 
-from src.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.subscription_token import SubscriptionToken
 
 
 class SubscriptionTokenRepository(Protocol):

@@ -2,8 +2,8 @@
 
 from typing import Protocol
 
-from src.models.subscription_token import SubscriptionToken
-from src.models.user import User, UserFilters
+from market_intel_lib.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.user import User, UserFilters
 
 
 class UserRepository(Protocol):

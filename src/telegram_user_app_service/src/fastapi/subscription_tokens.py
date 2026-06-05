@@ -4,8 +4,8 @@ import logging
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Path, status
-from src.db import get_subscription_token_service
-from src.db.subscriptions.subscription_token_service import SubscriptionTokenService
+from market_intel_lib.db import get_subscription_token_service
+from market_intel_lib.db.subscriptions.subscription_token_service import SubscriptionTokenService
 from src.models.fastapi.app import V1RouterTags
 from src.models.subscription_token import SubscriptionToken
 

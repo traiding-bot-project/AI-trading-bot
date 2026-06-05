@@ -2,9 +2,9 @@
 
 import logging
 
-from src.db.users.protocol import UserRepository
-from src.models.subscription_token import SubscriptionToken
-from src.models.user import User, UserFilters
+from market_intel_lib.db.users.protocol import UserRepository
+from market_intel_lib.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
 

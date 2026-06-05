@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import BigInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.db.declarative_base import Base
+from market_intel_lib.db.declarative_base import Base
 
 if TYPE_CHECKING:
-    from src.db.subscriptions.subscription_token import SubscriptionTokenDB
+    from market_intel_lib.db.subscriptions.subscription_token import SubscriptionTokenDB
 
 
 class UserDB(Base):

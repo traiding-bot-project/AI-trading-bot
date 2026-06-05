@@ -2,7 +2,7 @@
 
 import logging
 
-from src.db import subscription_token_service_context, user_service_context
+from market_intel_lib.db import subscription_token_service_context, user_service_context
 from market_intel_lib.models.infisical import InfisicalSecretsKeys
 from market_intel_lib.secrets import secrets_manager
 from src.models.telegram_app_handlers import TelegramAppHandlers

@@ -2,7 +2,7 @@
 
 import logging
 
-from src.db.users.user_service import UserService
+from market_intel_lib.db.users.user_service import UserService
 from market_intel_lib.models.infisical import InfisicalSecretsKeys
 from market_intel_lib.secrets import secrets_manager
 from src.models.user import UserFilters

@@ -4,10 +4,10 @@ import logging
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.db.subscriptions.subscription_token import SubscriptionTokenDB
-from src.db.users.user import UserDB
-from src.models.subscription_token import SubscriptionToken
-from src.models.user import User, UserFilters
+from market_intel_lib.db.subscriptions.subscription_token import SubscriptionTokenDB
+from market_intel_lib.db.users.user import UserDB
+from market_intel_lib.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
 

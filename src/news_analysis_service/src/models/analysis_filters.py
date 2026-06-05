@@ -77,7 +77,6 @@ asset_classes_and_macro_themes_list = Literal[
     "Bonds",
     "Equities",
     "Indices",
-    "Macro",
     "Inflation",
     "Interest rates",
     "Fiscal policy",

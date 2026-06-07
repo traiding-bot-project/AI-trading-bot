@@ -233,4 +233,3 @@ class Settings(StrictBaseModel):
         title="Infisical settings",
         description="Configuration for the Infisical secret management service.",
     )
-

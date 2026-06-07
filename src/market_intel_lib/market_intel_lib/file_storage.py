@@ -89,16 +89,22 @@ class FileStorageService:
             md5.update(data)
         return md5.hexdigest()
 
-    async def is_duplicate(self, remote_object_name: str, local_content: str | bytes, is_path: bool = False) -> bool:
+    async def is_duplicate(
+        self, remote_object_name: str, local_content: str | bytes, is_path: bool = False
+    ) -> bool:
         """Check if an object with the same key and identical MD5 content hash already exists in S3."""
         try:
             async with self._get_client() as client:
-                response = await client.head_object(Bucket=self.bucket_name, Key=remote_object_name)
+                response = await client.head_object(
+                    Bucket=self.bucket_name, Key=remote_object_name
+                )
 
             s3_etag = response.get("ETag", "").strip('"')
 
             if is_path:
-                local_md5 = await asyncio.to_thread(self._calculate_md5, local_content, is_path=True)
+                local_md5 = await asyncio.to_thread(
+                    self._calculate_md5, local_content, is_path=True
+                )
             else:
                 local_md5 = self._calculate_md5(local_content, is_path=False)
 
@@ -106,16 +112,25 @@ class FileStorageService:
         except ClientError as e:
             if e.response["Error"]["Code"] in ["404", "NoSuchKey"]:
                 return False
-            logger.error(f"Error checking duplication status for {remote_object_name}: {e}")
+            logger.error(
+                f"Error checking duplication status for {remote_object_name}: {e}"
+            )
             return False
 
     async def upload_file(
-        self, local_file_path: str, remote_object_name: str, metadata: dict[str, str] | None = None
+        self,
+        local_file_path: str,
+        remote_object_name: str,
+        metadata: dict[str, str] | None = None,
     ) -> None:
         """Upload a file from a local path to the object storage with optional metadata."""
         try:
-            if await self.is_duplicate(remote_object_name, local_file_path, is_path=True):
-                logger.info(f"Skipping upload: File {remote_object_name} already exists with identical content.")
+            if await self.is_duplicate(
+                remote_object_name, local_file_path, is_path=True
+            ):
+                logger.info(
+                    f"Skipping upload: File {remote_object_name} already exists with identical content."
+                )
                 return
 
             extra_args = {}
@@ -124,26 +139,42 @@ class FileStorageService:
 
             async with self._get_client() as client:
                 await client.upload_file(
-                    Filename=local_file_path, Key=remote_object_name, Bucket=self.bucket_name, ExtraArgs=extra_args
+                    Filename=local_file_path,
+                    Key=remote_object_name,
+                    Bucket=self.bucket_name,
+                    ExtraArgs=extra_args,
                 )
             logger.info(f"File {local_file_path} uploaded to {remote_object_name}")
         except Exception as e:
             logger.error(f"Error uploading file: {e}")
 
-    async def download_file(self, local_file_path: str, remote_object_name: str) -> None:
+    async def download_file(
+        self, local_file_path: str, remote_object_name: str
+    ) -> None:
         """Download a file from the object storage to a local path."""
         try:
             async with self._get_client() as client:
-                await client.download_file(Filename=local_file_path, Key=remote_object_name, Bucket=self.bucket_name)
+                await client.download_file(
+                    Filename=local_file_path,
+                    Key=remote_object_name,
+                    Bucket=self.bucket_name,
+                )
             logger.info(f"File {remote_object_name} downloaded to {local_file_path}")
         except Exception as e:
             logger.error(f"Error downloading file: {e}")
 
-    async def upload_text(self, text_content: str, remote_object_name: str, metadata: dict[str, str] | None = None) -> None:
+    async def upload_text(
+        self,
+        text_content: str,
+        remote_object_name: str,
+        metadata: dict[str, str] | None = None,
+    ) -> None:
         """Upload text content as a file to the object storage with optional metadata."""
         try:
             if await self.is_duplicate(remote_object_name, text_content):
-                logger.info(f"Skipping upload: Text for {remote_object_name} already exists with identical content.")
+                logger.info(
+                    f"Skipping upload: Text for {remote_object_name} already exists with identical content."
+                )
                 return
 
             cleaned_metadata = self._handle_file_metadata(metadata) if metadata else {}
@@ -163,7 +194,9 @@ class FileStorageService:
         """Download text content from the object storage."""
         try:
             async with self._get_client() as client:
-                response = await client.get_object(Key=remote_object_name, Bucket=self.bucket_name)
+                response = await client.get_object(
+                    Key=remote_object_name, Bucket=self.bucket_name
+                )
                 async with response["Body"] as stream:
                     text_content = (await stream.read()).decode("utf-8")
             logger.info(f"Text content downloaded from {remote_object_name}")
@@ -176,7 +209,9 @@ class FileStorageService:
         """Get metadata of a file stored in the object storage."""
         try:
             async with self._get_client() as client:
-                response = await client.head_object(Key=remote_object_name, Bucket=self.bucket_name)
+                response = await client.head_object(
+                    Key=remote_object_name, Bucket=self.bucket_name
+                )
             metadata = response.get("Metadata", {})
             logger.info(f"Metadata retrieved for {remote_object_name}")
             return metadata

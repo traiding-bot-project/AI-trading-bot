@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import Field, BaseModel
+from pydantic import Field
 
 from market_intel_lib.models.custom_base_model import StrictBaseModel
 
@@ -163,4 +163,3 @@ class Settings(StrictBaseModel):
         title="Infisical settings",
         description="Configuration for the Infisical secret management service.",
     )
-

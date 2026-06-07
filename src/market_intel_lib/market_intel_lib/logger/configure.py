@@ -16,6 +16,7 @@ class LoggingLevel(StrEnum):
     ERROR = "error"
     CRITICAL = "critical"
 
+
 def configure_logging(level: LoggingLevel) -> None:
     """Configure the root logger with the specified level and console output."""
     numeric_level = getattr(logging, level.upper(), logging.INFO)

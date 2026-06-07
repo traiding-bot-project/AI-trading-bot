@@ -9,7 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from market_intel_lib.db.subscriptions.postgres_subscription_token_repository import (
     PostgresSubscriptionTokenRepository,
 )
-from market_intel_lib.db.subscriptions.subscription_token_service import SubscriptionTokenService
+from market_intel_lib.db.subscriptions.subscription_token_service import (
+    SubscriptionTokenService,
+)
 from market_intel_lib.db.users.postgres_user_repository import PostgresUserRepository
 from market_intel_lib.db.users.user_service import UserService
 from market_intel_lib.models.infisical import InfisicalSecretsKeys

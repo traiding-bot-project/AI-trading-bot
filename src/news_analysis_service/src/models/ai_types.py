@@ -4,7 +4,10 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from src.settings.models.settings_model import OllamaSupportedModels, QwenSupportedModels
+from src.settings.models.settings_model import (
+    OllamaSupportedModels,
+    QwenSupportedModels,
+)
 
 
 class AnalyzeContentRequest(BaseModel):

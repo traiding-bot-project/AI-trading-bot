@@ -14,7 +14,10 @@ from src.models.ollama_api import (
     OllamaTagsResponse,
 )
 from src.settings import settings
-from src.settings.models.settings_model import OllamaImplementedEndpoints, OllamaSupportedModels
+from src.settings.models.settings_model import (
+    OllamaImplementedEndpoints,
+    OllamaSupportedModels,
+)
 
 logger = logging.getLogger(__name__)
 

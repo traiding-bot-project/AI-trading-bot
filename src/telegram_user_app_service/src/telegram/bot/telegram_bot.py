@@ -5,7 +5,7 @@ import logging
 from market_intel_lib.db.users.user_service import UserService
 from market_intel_lib.models.infisical import InfisicalSecretsKeys
 from market_intel_lib.secrets import secrets_manager
-from src.models.user import UserFilters
+from market_intel_lib.models.user import UserFilters
 from telegram import Bot, LinkPreviewOptions
 from telegram.constants import ParseMode
 

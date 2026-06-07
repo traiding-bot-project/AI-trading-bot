@@ -5,10 +5,49 @@ from pydantic import Field, BaseModel
 from market_intel_lib.models.custom_base_model import StrictBaseModel
 
 
-class LibrarySettings(BaseModel):
-    """Settings model for the shared library. Wraps Infisical settings
-    and ignores other service-specific fields."""
-    infisical: InfiscalSettings
+class DatabaseSettings(StrictBaseModel):
+    """Settings for the database connection."""
+
+    url_schema: Annotated[
+        str,
+        Field(
+            ...,
+            title="Schema",
+            description="Database URL schema (e.g., postgresql, mysql).",
+        ),
+    ]
+    host: Annotated[
+        str,
+        Field(
+            ...,
+            title="Host",
+            description="Database host address.",
+        ),
+    ]
+    port: Annotated[
+        int,
+        Field(
+            ...,
+            title="Port",
+            description="Database port.",
+        ),
+    ]
+    database: Annotated[
+        str,
+        Field(
+            ...,
+            title="Database Name",
+            description="Name of the database to connect to.",
+        ),
+    ]
+    username: Annotated[
+        str,
+        Field(
+            ...,
+            title="Username",
+            description="Username for database authentication.",
+        ),
+    ]
 
 
 class InfiscalConnectionSettings(StrictBaseModel):
@@ -109,3 +148,19 @@ class InfiscalSettings(StrictBaseModel):
             description="Infiscal project settings.",
         ),
     ]
+
+
+class Settings(StrictBaseModel):
+    """Main settings model for the Notification Service microservice."""
+
+    database: DatabaseSettings = Field(
+        ...,
+        title="Database settings",
+        description="Configuration for the database connection.",
+    )
+    infisical: InfiscalSettings = Field(
+        ...,
+        title="Infisical settings",
+        description="Configuration for the Infisical secret management service.",
+    )
+

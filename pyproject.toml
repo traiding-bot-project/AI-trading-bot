@@ -13,6 +13,3 @@ keywords = [
 
 [project.urls]
 repository = "https://github.com/traiding-bot-project/AI-trading-bot"
-
-[tool.uv]
-workspace = { members = ["src/*", "market_intel_lib"] }

@@ -13,10 +13,10 @@ keywords = [
 dependencies = [
     "alembic>=1.18.4",
     "asyncpg>=0.31.0",
+    "market-intel-lib",
     "psycopg2-binary>=2.9.12",
     "pydantic>=2.13.4",
     "python-telegram-bot>=22.7",
-    "market-intel-lib",
 ]
 
 [dependency-groups]
@@ -36,7 +36,7 @@ rabbitmq = [
 repository = "https://github.com/traiding-bot-project/AI-trading-bot"
 
 [project.scripts]
-run-fastapi = "src.scripts.run_fastapi:main"
+run-telegram-fastapi = "src.scripts.run_fastapi:main"
 run-mq-worker = "src.scripts.run_mq_worker:run"
 
 [tool.mypy]
@@ -64,8 +64,8 @@ ignore_errors = true
 [tool.uv]
 package = true
 
+[tool.uv.sources]
+market-intel-lib = { path = "../market_intel_lib" }
+
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
-
-[tool.uv.sources]
-market-intel-lib = { workspace = true }

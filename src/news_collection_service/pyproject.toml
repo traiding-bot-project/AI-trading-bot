@@ -14,9 +14,9 @@ dependencies = [
     "beautifulsoup4>=4.14.3",
     "feedparser>=6.0.12",
     "httpx>=0.28.1",
+    "market-intel-lib",
     "pydantic>=2.13.3",
     "trafilatura>=2.0.0",
-    "market-intel-lib",
 ]
 
 [dependency-groups]
@@ -36,7 +36,7 @@ rabbitmq = [
 repository = "https://github.com/traiding-bot-project/AI-trading-bot"
 
 [project.scripts]
-run-fastapi = "src.scripts.run_fastapi:main"
+run-collection-fastapi = "src.scripts.run_fastapi:main"
 run-mq-worker = "src.scripts.run_mq_worker:run"
 
 [tool.mypy]
@@ -86,8 +86,8 @@ build-backend = "hatchling.build"
 [tool.uv]
 package = true
 
+[tool.uv.sources]
+market-intel-lib = { path = "../market_intel_lib" }
+
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
-
-[tool.uv.sources]
-market-intel-lib = { workspace = true }

@@ -8,7 +8,7 @@ from typing import Any
 from aio_pika import ExchangeType, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
 from src.constants import MQ_WORKER_SETTINGS_PATH
-from src.models.bot import BroadcastRequest
+from src.models.structured_input import NewsItem
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import (
     MQWorkerReceiveQueue,
@@ -33,7 +33,7 @@ def create_message_handler(
         try:
             text_data = message.body.decode("utf-8")
             logger.debug(f"Message data received as string: {text_data}")
-            request = BroadcastRequest(response=text_data)
+            request = NewsItem.model_validate_json(text_data)
 
             await _broadcast_message(request)
 
@@ -97,11 +97,11 @@ async def main() -> None:
             logger.info("Worker cancelled. Closing connection...")
 
 
-async def _broadcast_message(request: BroadcastRequest) -> None:
+async def _broadcast_message(request: NewsItem | str) -> None:
     """Broadcast a message to all subscribed Telegram users."""
     async with broadcast_bot_context() as bot:
-        await bot.broadcast(request.message)
-        logger.debug(f"Message broadcasted successfully: {request.message}")
+        await bot.broadcast(request)
+        logger.debug(f"Message broadcasted successfully: {request}")
 
 
 def run() -> None:

@@ -1,12 +1,13 @@
 """Qwen Service implementation for generating AI completions."""
 
+import json
 import logging
 from typing import Any
 
 from httpx import AsyncClient, HTTPStatusError
 
 from src.constants import SERVICE_CLIENT_SESSION_TIMEOUT
-from src.models.ai_types import AnalyzeContentRequest, AnalyzeContentResponse
+from src.models.ai_types import AnalyzeContentRequest, AnalyzeContentResponse, StructuredOutputResponse
 from src.models.qwen_api import (
     ChatMessage,
     ChatMessageRole,
@@ -102,10 +103,31 @@ class QwenService:
             raise ValueError(
                 f"Model '{request.model}' is not valid for the Qwen service. Use one of: {list(QwenSupportedModels)}"
             )
+
+        response_format = {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "structured_output",
+                "schema": StructuredOutputResponse.model_json_schema(),
+                "strict": True,
+            },
+        }
+
         request_body = QwenCompletionRequest(
             model=request_model,
             messages=[ChatMessage(role=ChatMessageRole.USER, content=request.prompt)],
+            response_format=response_format,
         )
+
         response_data = QwenCompletionResponse.model_validate(await self._send_post_request(url, request_body))
         logger.debug("Generated chat completion successfully.")
-        return AnalyzeContentResponse(response=response_data.choices[0].message.content)
+
+        content_str = response_data.choices[0].message.content
+        try:
+            content_dict = json.loads(content_str)
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse JSON from model response: {e}")
+            raise ValueError(f"Model response is not valid JSON: {e}")
+
+        structured_output = StructuredOutputResponse.model_validate(content_dict)
+        return AnalyzeContentResponse(response=structured_output)

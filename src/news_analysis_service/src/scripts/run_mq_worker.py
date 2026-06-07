@@ -85,11 +85,14 @@ async def main() -> None:
                     result = await content_analyzer.analyze_content(request)
                     data.response = result.response
                     data.metadata.model_used = USER_MODEL
+                    data.prepared_content = None
+
+                    serialized_body = json.dumps(data.model_dump()).encode("utf-8")
 
                     for send_queue_config in mq_worker_settings.send_queues:
                         await exchange.publish(
                             Message(
-                                body=data.response.encode(),
+                                body=serialized_body,
                                 delivery_mode=DeliveryMode(send_queue_config.delivery_mode),
                             ),
                             routing_key=send_queue_config.routing_key,

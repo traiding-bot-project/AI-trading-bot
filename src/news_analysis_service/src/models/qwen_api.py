@@ -1,7 +1,7 @@
 """Pydantic models for Qwen API interactions (OpenAI Compatible)."""
 
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -49,6 +49,10 @@ class QwenCompletionRequest(BaseModel):
             title="If set, partial message deltas will be sent, like in ChatGPT.",
         ),
     ] = False
+    response_format: Annotated[
+        dict[str, Any] | None,
+        Field(None, title="The format of the response. Check docs for examples."),
+    ] = None
 
     model_config = ConfigDict(extra="ignore")
 

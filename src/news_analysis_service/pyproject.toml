@@ -12,6 +12,7 @@ keywords = [
 ]
 dependencies = [
     "httpx>=0.28.1",
+    "market-intel-lib==0.1.0",
     "pydantic>=2.13.4",
 ]
 
@@ -84,6 +85,9 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 package = true
+
+[tool.uv.sources]
+market-intel-lib = { path = "../market_intel_lib" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]

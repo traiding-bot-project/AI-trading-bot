@@ -2,9 +2,10 @@
 
 from logging import getLogger
 
+from market_intel_lib.utils.toml.ingest_toml import load_settings
+
 from src.constants import SETTINGS_PATH
 from src.settings.models.settings_model import Settings
-from src.utils.ingest_toml import load_settings
 
 logger = getLogger(__name__)
 

@@ -5,11 +5,11 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, Depends, status
 from pydantic import Field
-from src.db import get_user_service
-from src.db.users.user_service import UserService
+from market_intel_lib.db import get_user_service
+from market_intel_lib.db.users.user_service import UserService
 from src.models.fastapi.app import V1RouterTags
-from src.models.subscription_token import SubscriptionToken
-from src.models.user import User, UserFilters
+from market_intel_lib.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)
 

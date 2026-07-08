@@ -3,7 +3,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from src.db import user_service_context
+from market_intel_lib.db import user_service_context
 from src.telegram.bot.telegram_bot import BroadcastBot
 
 

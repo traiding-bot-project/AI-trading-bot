@@ -17,7 +17,10 @@ from src.models.qwen_api import (
     QwenModelsResponse,
 )
 from src.settings import settings
-from src.settings.models.settings_model import QwenImplementedEndpoints, QwenSupportedModels
+from src.settings.models.settings_model import (
+    QwenImplementedEndpoints,
+    QwenSupportedModels,
+)
 
 logger = logging.getLogger(__name__)
 

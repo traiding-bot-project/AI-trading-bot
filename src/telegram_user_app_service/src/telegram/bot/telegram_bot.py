@@ -2,11 +2,11 @@
 
 import logging
 
-from src.db.users.user_service import UserService
-from src.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.db.users.user_service import UserService
+from market_intel_lib.models.infisical import InfisicalSecretsKeys
+from market_intel_lib.secrets import secrets_manager
+from market_intel_lib.models.user import UserFilters
 from src.models.structured_input import NewsItem, StructuredOutputResponse
-from src.models.user import UserFilters
-from src.secrets import secrets_manager
 from telegram import Bot, LinkPreviewOptions
 from telegram.constants import ParseMode
 

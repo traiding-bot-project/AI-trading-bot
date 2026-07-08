@@ -3,7 +3,11 @@
 from src.analyzer.content_analyzer import AIContentAnalyzer
 from src.services import get_ai_service
 from src.settings import settings
-from src.settings.models.settings_model import CompatibleAPI, OllamaSupportedModels, QwenSupportedModels
+from src.settings.models.settings_model import (
+    CompatibleAPI,
+    OllamaSupportedModels,
+    QwenSupportedModels,
+)
 
 
 def get_content_analyzer(api_name: CompatibleAPI) -> AIContentAnalyzer:
@@ -11,7 +15,9 @@ def get_content_analyzer(api_name: CompatibleAPI) -> AIContentAnalyzer:
     return AIContentAnalyzer(get_ai_service(api_name))
 
 
-def get_compatible_api_for_model(model_name: OllamaSupportedModels | QwenSupportedModels) -> CompatibleAPI:
+def get_compatible_api_for_model(
+    model_name: OllamaSupportedModels | QwenSupportedModels,
+) -> CompatibleAPI:
     """Return the compatible API provider name for the requested model."""
     deployments = settings.ai_model.deployments
     models_to_api = [(deployment.api.compatible_api, deployment.models) for _, deployment in deployments]

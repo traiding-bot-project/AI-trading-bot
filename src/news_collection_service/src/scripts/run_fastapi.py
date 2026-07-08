@@ -2,8 +2,8 @@
 
 from logging import getLogger
 
-from market_intel_lib.logger.configure import configure_logging
-from market_intel_lib.toml.ingest_toml import load_settings
+from market_intel_lib.utils.logger.configure import configure_logging
+from market_intel_lib.utils.toml.ingest_toml import load_settings
 from uvicorn import run
 
 from src.constants import FASTAPI_SETTINGS_PATH

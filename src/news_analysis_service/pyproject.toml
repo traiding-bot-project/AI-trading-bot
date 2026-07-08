@@ -12,7 +12,7 @@ keywords = [
 ]
 dependencies = [
     "httpx>=0.28.1",
-    "market-intel-lib",
+    "market-intel-lib==0.1.0",
     "pydantic>=2.13.4",
 ]
 
@@ -33,7 +33,7 @@ rabbitmq = [
 repository = "https://github.com/traiding-bot-project/AI-trading-bot"
 
 [project.scripts]
-run-analysis-fastapi = "src.scripts.run_fastapi:main"
+run-fastapi = "src.scripts.run_fastapi:main"
 run-mq-worker = "src.scripts.run_mq_worker:run"
 
 [tool.mypy]

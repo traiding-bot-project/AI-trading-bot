@@ -8,7 +8,7 @@ from pydantic import Field
 from market_intel_lib.db import get_user_service
 from market_intel_lib.db.users.user_service import UserService
 from src.models.fastapi.app import V1RouterTags
-from src.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.subscription_token import SubscriptionToken
 from market_intel_lib.models.user import User, UserFilters
 
 logger = logging.getLogger(__name__)

@@ -4,7 +4,7 @@ from logging import getLogger
 
 from src.constants import SETTINGS_PATH
 from src.settings.models.settings_model import Settings
-from market_intel_lib.toml.ingest_toml import load_settings
+from market_intel_lib.utils.toml.ingest_toml import load_settings
 
 logger = getLogger(__name__)
 

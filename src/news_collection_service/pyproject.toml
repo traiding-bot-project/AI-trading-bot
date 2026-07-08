@@ -14,7 +14,7 @@ dependencies = [
     "beautifulsoup4>=4.14.3",
     "feedparser>=6.0.12",
     "httpx>=0.28.1",
-    "market-intel-lib",
+    "market-intel-lib==0.1.0",
     "pydantic>=2.13.3",
     "trafilatura>=2.0.0",
 ]
@@ -36,7 +36,7 @@ rabbitmq = [
 repository = "https://github.com/traiding-bot-project/AI-trading-bot"
 
 [project.scripts]
-run-collection-fastapi = "src.scripts.run_fastapi:main"
+run-fastapi = "src.scripts.run_fastapi:main"
 run-mq-worker = "src.scripts.run_mq_worker:run"
 
 [tool.mypy]

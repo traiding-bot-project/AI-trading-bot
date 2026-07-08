@@ -4,10 +4,10 @@ host = "127.0.0.1"
 port = 80
 
 [infisical.auth]
-client_id = "a1303b57-dacb-4ab4-ab55-3d43648554cc"
+client_id = "a68d6548-c1ce-42c5-854c-acec188b7b16"
 
 [infisical.project]
-project_id = "fb9b018d-120f-4211-ad81-dd7735c770f5"
+project_id = "f518625c-5ab2-479d-b800-0c930567020b"
 env_slug = "dev"
 secret_path = "/"
 

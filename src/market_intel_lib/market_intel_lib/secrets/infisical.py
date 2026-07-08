@@ -6,8 +6,8 @@ from infisical_sdk import InfisicalSDKClient
 from market_intel_lib.models.infisical import InfisicalSecretsKeys
 from market_intel_lib.settings import settings
 from market_intel_lib.models.settings import InfiscalSettings
-from market_intel_lib.get_env_var import get_env_var
-from market_intel_lib.get_resource_url import get_resource_url
+from market_intel_lib.utils.get_env_var import get_env_var
+from market_intel_lib.utils.get_resource_url import get_resource_url
 
 logger = getLogger(__name__)
 
@@ -28,6 +28,7 @@ class InfisicalSecretsManager:
             self._client = InfisicalSDKClient(
                 host=get_resource_url(**settings.infisical.connection.model_dump())
             )
+
             logger.info("Infisical SDK client initialized successfully.")
 
             self._client.auth.universal_auth.login(
@@ -36,7 +37,9 @@ class InfisicalSecretsManager:
             )
             logger.info("Authenticated with Infisical successfully.")
         except Exception as e:
-            logger.error(f"Error initializing Infisical SDK client: {e}")
+            logger.error(
+                f"Error initializing Infisical SDK client {get_resource_url(**settings.infisical.connection.model_dump())}: {e}"
+            )
             raise
 
     def get_secret(self, secret_name: InfisicalSecretsKeys) -> str:

@@ -9,7 +9,7 @@ from market_intel_lib.db.subscriptions.subscription_token_service import (
     SubscriptionTokenService,
 )
 from src.models.fastapi.app import V1RouterTags
-from src.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.subscription_token import SubscriptionToken
 
 logger = logging.getLogger(__name__)
 

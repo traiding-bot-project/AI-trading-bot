@@ -15,8 +15,8 @@ from src.settings.models.mq_worker_settings_model import (
     MQWorkerSettings,
 )
 from src.telegram.bot import broadcast_bot_context
-from market_intel_lib.toml.ingest_toml import load_settings
-from market_intel_lib.logger.configure import configure_logging
+from market_intel_lib.utils.toml.ingest_toml import load_settings
+from market_intel_lib.utils.logger.configure import configure_logging
 
 logger = getLogger(__name__)
 

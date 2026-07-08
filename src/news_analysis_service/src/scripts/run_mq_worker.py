@@ -7,8 +7,8 @@ from pathlib import Path
 
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
-from market_intel_lib.logger.configure import configure_logging
-from market_intel_lib.toml.ingest_toml import load_settings
+from market_intel_lib.utils.logger.configure import configure_logging
+from market_intel_lib.utils.toml.ingest_toml import load_settings
 
 from src.analyzer import get_compatible_api_for_model, get_content_analyzer
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH

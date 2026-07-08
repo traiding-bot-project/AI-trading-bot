@@ -7,7 +7,7 @@ from collections.abc import AsyncGenerator
 from typing import Annotated
 
 from fastapi.responses import StreamingResponse
-from market_intel_lib.file_storage import FileStorageFolder, FileStorageService
+from market_intel_lib.utils.file_storage import FileStorageFolder, FileStorageService
 
 from fastapi import APIRouter, Query, status
 from src.models.fastapi.app import V1RouterTags

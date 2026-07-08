@@ -5,9 +5,9 @@ import json
 from logging import getLogger
 
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
-from market_intel_lib.file_storage import FileStorageFolder, FileStorageService
-from market_intel_lib.logger.configure import configure_logging
-from market_intel_lib.toml.ingest_toml import load_settings
+from market_intel_lib.utils.file_storage import FileStorageFolder, FileStorageService
+from market_intel_lib.utils.logger.configure import configure_logging
+from market_intel_lib.utils.toml.ingest_toml import load_settings
 
 from src.constants import MQ_WORKER_SETTINGS_PATH
 from src.parsers.article_parser import ArticleParser

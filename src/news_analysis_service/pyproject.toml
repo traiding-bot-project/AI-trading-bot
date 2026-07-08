@@ -23,7 +23,7 @@ dev = [
 ]
 fastapi = [
     "fastapi>=0.136.3",
-    "uvicorn>=0.48.0",
+    "uvicorn>=0.50.2",
 ]
 rabbitmq = [
     "aio-pika>=9.6.2",

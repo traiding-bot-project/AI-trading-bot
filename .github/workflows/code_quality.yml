@@ -18,6 +18,7 @@ jobs:
           - "src/telegram_user_app_service"
           - "src/news_analysis_service"
           - "src/news_collection_service"
+          - "src/market_intel_lib"
     
     defaults:
       run:

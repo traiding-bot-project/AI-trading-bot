@@ -2,14 +2,14 @@
 
 from logging import getLogger
 
+from market_intel_lib.utils.logger.configure import configure_logging
+from market_intel_lib.utils.toml.ingest_toml import load_settings
 from uvicorn import run
 
 from src.constants import FASTAPI_SETTINGS_PATH
 from src.fastapi.app import app
 from src.settings import settings
 from src.settings.models.fastapi_settings_model import FastAPISettings
-from src.utils.ingest_toml import load_settings
-from src.utils.logger import configure_logging
 
 logger = getLogger(__name__)
 

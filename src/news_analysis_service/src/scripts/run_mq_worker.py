@@ -7,6 +7,8 @@ from pathlib import Path
 
 from aio_pika import DeliveryMode, ExchangeType, Message, connect_robust
 from aio_pika.abc import AbstractIncomingMessage
+from market_intel_lib.utils.logger.configure import configure_logging
+from market_intel_lib.utils.toml.ingest_toml import load_settings
 
 from src.analyzer import get_compatible_api_for_model, get_content_analyzer
 from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
@@ -16,8 +18,6 @@ from src.prompts.builder import load_and_format_prompt
 from src.settings import settings
 from src.settings.models.mq_worker_settings_model import MQWorkerSettings
 from src.settings.models.settings_model import QwenSupportedModels
-from src.utils.ingest_toml import load_settings
-from src.utils.logger import configure_logging
 
 logger = getLogger(__name__)
 

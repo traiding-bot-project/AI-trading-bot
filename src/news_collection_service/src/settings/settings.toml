@@ -3,10 +3,6 @@ deployment = "dev"
 environment = "development"
 logging_level = "info"
 
-[filestorage]
-bucket_name = "news-bucket"
-region_name = "us-east-1"
-
 [datasource.pl.pap_mediaroom]
 language = "pl"
 type = "rss"

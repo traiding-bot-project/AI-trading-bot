@@ -12,10 +12,9 @@ keywords = [
 ]
 dependencies = [
     "beautifulsoup4>=4.14.3",
-    "boto3>=1.43.10",
-    "boto3-stubs[s3]>=1.43.10",
     "feedparser>=6.0.12",
     "httpx>=0.28.1",
+    "market-intel-lib==0.1.0",
     "pydantic>=2.13.3",
     "trafilatura>=2.0.0",
 ]
@@ -86,6 +85,9 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 package = true
+
+[tool.uv.sources]
+market-intel-lib = { path = "../market_intel_lib" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]

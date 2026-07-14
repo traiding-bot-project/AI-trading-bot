@@ -9,7 +9,7 @@ dependencies = [
     "infisicalsdk>=1.0.16",
     "mypy-boto3-s3>=1.43.14",
     "pydantic>=2.13.4",
-    "sqlalchemy[asyncio]>=2.0.50",
+    "sqlalchemy[asyncio]>=2.0.51",
     "types-aioboto3>=15.5.0",
     "types-aiobotocore-s3>=3.7.0",
 ]
@@ -23,8 +23,8 @@ packages = ["market_intel_lib"]
 
 [dependency-groups]
 dev = [
-    "mypy>=2.1.0",
-    "ruff>=0.15.16",
+    "mypy>=2.3.0",
+    "ruff>=0.15.21",
 ]
 
 [tool.mypy]

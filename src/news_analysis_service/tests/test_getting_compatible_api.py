@@ -1,5 +1,7 @@
 from types import SimpleNamespace
 
+import pytest
+
 from src.analyzer import get_compatible_api_for_model
 from src.settings.models.settings_model import (
     QwenSupportedModels,
@@ -32,6 +34,15 @@ def make_settings(
 
 
 def test_get_compatible_api_for_model() -> None:
-
     api = get_compatible_api_for_model(model_name=QwenSupportedModels.QWEN3_8B_Q4_K_M)
     assert api == CompatibleAPI.QWEN
+
+
+def test_get_compatible_api_for_model_unknown_raises() -> None:
+    with pytest.raises(ValueError, match="is not supported by any configured API provider"):
+        get_compatible_api_for_model(model_name="docker.io/ai/nonexistent:1B")
+
+
+def test_returns_compatible_api_enum_instance() -> None:
+    api = get_compatible_api_for_model(model_name=QwenSupportedModels.QWEN3_8B_Q4_K_M)
+    assert isinstance(api, CompatibleAPI)

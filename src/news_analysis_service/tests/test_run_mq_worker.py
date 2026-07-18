@@ -1,4 +1,9 @@
-# ruff: noqa: D100, D103
+"""Tests for the RabbitMQ worker entrypoint (``src/scripts/run_mq_worker.py``).
+
+``main()`` is driven with mocked settings, connection, and analyzer just far enough
+to capture the ``on_message`` consumer callback, which is then exercised directly to
+verify the analyze-then-publish flow and error handling on a malformed message body.
+"""
 import asyncio
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -67,6 +72,11 @@ async def _drive_main_and_capture_callback(settings_mock, analyzer, exchange, qu
 
 
 def test_on_message_analyzes_and_publishes() -> None:
+    """A valid message is analyzed and the result republished with the worker's mutations applied.
+
+    Asserts the analyzer is awaited once and the published body carries the analysis
+    response, a cleared ``prepared_content``, and the model name stamped into metadata.
+    """
     async def scenario() -> None:
         settings_mock = _make_settings()
         exchange, queue = AsyncMock(), AsyncMock()
@@ -103,6 +113,7 @@ def test_on_message_analyzes_and_publishes() -> None:
 
 
 def test_on_message_reraises_on_invalid_body() -> None:
+    """A non-JSON message body causes ``on_message`` to raise without analyzing or publishing."""
     async def scenario() -> None:
         settings_mock = _make_settings()
         exchange, queue = AsyncMock(), AsyncMock()

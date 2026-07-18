@@ -1,4 +1,11 @@
-# ruff: noqa: D100, D103
+"""Tests for ``QwenService`` (``src/services/qwen.py``).
+
+The module is loaded in isolation via ``importlib`` so ``settings`` can be
+monkeypatched per test. Covers endpoint URL building, GET/POST request helpers
+(including HTTP-error wrapping), model listing, and completion generation with the
+OpenAI-style chat schema — including parsing the structured JSON response and
+rejecting a non-JSON model reply. HTTP is faked in memory; no network calls.
+"""
 import asyncio
 import importlib.util
 import json
@@ -29,6 +36,7 @@ def make_settings(
     implemented_endpoints: list[QwenImplementedEndpoints] | None = None,
     models: list[QwenSupportedModels] | None = None,
 ) -> SimpleNamespace:
+    """Build a settings stand-in exposing the qwen deployment's endpoints and models."""
     return SimpleNamespace(
         ai_model=SimpleNamespace(
             base_url="http://qwen.local",
@@ -48,6 +56,7 @@ def make_settings(
 
 
 def make_structured_response_payload() -> dict[str, object]:
+    """Return a representative structured news-analysis payload the model is expected to emit."""
     return {
         "title": "Chip stocks rally",
         "source": "Market Wire",
@@ -67,12 +76,14 @@ def make_structured_response_payload() -> dict[str, object]:
 
 
 def make_service_with_client(client: object) -> QwenService:
+    """Construct a ``QwenService`` without running ``__init__``, wiring in a fake HTTP client."""
     service = QwenService.__new__(QwenService)
     service.client = client
     return service
 
 
 def test_get_endpoint_url_uses_configured_base_url_and_port(monkeypatch: pytest.MonkeyPatch) -> None:
+    """An endpoint URL is assembled from the configured base URL, port, and endpoint path."""
     monkeypatch.setattr(qwen_module, "settings", make_settings())
     service = QwenService.__new__(QwenService)
 
@@ -82,6 +93,7 @@ def test_get_endpoint_url_uses_configured_base_url_and_port(monkeypatch: pytest.
 
 
 def test_get_endpoint_url_rejects_unimplemented_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Requesting a URL for an endpoint not in the configured list raises ``ValueError``."""
     monkeypatch.setattr(qwen_module, "settings", make_settings(implemented_endpoints=[]))
     service = QwenService.__new__(QwenService)
 
@@ -90,6 +102,7 @@ def test_get_endpoint_url_rejects_unimplemented_endpoint(monkeypatch: pytest.Mon
 
 
 def test_send_get_request_returns_json_response() -> None:
+    """``_send_get_request`` issues the GET with JSON headers and returns the decoded body."""
     class FakeClient:
         async def get(self, url: str, headers: dict[str, str]) -> Response:
             assert url == "http://qwen.local:8080/v1/models"
@@ -104,6 +117,7 @@ def test_send_get_request_returns_json_response() -> None:
 
 
 def test_send_get_request_wraps_http_errors() -> None:
+    """A non-2xx GET response is re-raised as a ``RuntimeError`` describing the failure."""
     class FakeClient:
         async def get(self, url: str, headers: dict[str, str]) -> Response:
             return Response(503, request=Request("GET", url), text="unavailable")
@@ -115,6 +129,7 @@ def test_send_get_request_wraps_http_errors() -> None:
 
 
 def test_send_post_request_serializes_body_and_returns_json() -> None:
+    """``_send_post_request`` serializes the chat request to JSON and returns the decoded response."""
     class FakeClient:
         async def post(self, url: str, json: dict[str, object], headers: dict[str, str]) -> Response:
             assert url == "http://qwen.local:8080/v1/chat/completions"
@@ -135,6 +150,7 @@ def test_send_post_request_serializes_body_and_returns_json() -> None:
 
 
 def test_send_post_request_includes_response_text_in_wrapped_http_errors() -> None:
+    """A non-2xx POST is re-raised as ``RuntimeError`` whose message includes the server's response text."""
     class FakeClient:
         async def post(self, url: str, json: dict[str, object], headers: dict[str, str]) -> Response:
             return Response(400, request=Request("POST", url), text="bad request body")
@@ -150,6 +166,7 @@ def test_send_post_request_includes_response_text_in_wrapped_http_errors() -> No
 
 
 def test_list_models_returns_only_configured_supported_models(monkeypatch: pytest.MonkeyPatch) -> None:
+    """``list_models`` filters the ``/v1/models`` response down to the configured supported models."""
     monkeypatch.setattr(qwen_module, "settings", make_settings())
     service = QwenService.__new__(QwenService)
 
@@ -183,6 +200,12 @@ def test_list_models_returns_only_configured_supported_models(monkeypatch: pytes
 def test_generate_completion_builds_qwen_request_and_parses_structured_response(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """``generate_completion`` sends a json_schema-constrained chat request and parses the structured reply.
+
+    The faked backend returns the assistant message as a JSON string; the service
+    must decode it into the typed news-analysis response (title, market takeaways,
+    affected sectors, etc.).
+    """
     monkeypatch.setattr(qwen_module, "settings", make_settings())
     service = QwenService.__new__(QwenService)
     structured_payload = make_structured_response_payload()
@@ -224,6 +247,7 @@ def test_generate_completion_builds_qwen_request_and_parses_structured_response(
 def test_generate_completion_raises_value_error_when_model_response_is_not_json(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """When the model returns non-JSON content, ``generate_completion`` raises ``ValueError``."""
     monkeypatch.setattr(qwen_module, "settings", make_settings())
     service = QwenService.__new__(QwenService)
 

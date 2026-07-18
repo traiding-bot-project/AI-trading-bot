@@ -1,4 +1,10 @@
-# ruff: noqa: D100, D103
+"""Tests for ``OllamaService`` (``src/services/ollama.py``).
+
+The module is loaded in isolation via ``importlib`` so ``settings`` can be
+monkeypatched per test. Covers endpoint URL building, GET/POST request helpers
+(including HTTP-error wrapping), model listing, and completion generation. HTTP is
+faked with in-memory clients and ``httpx.Response`` objects — no network calls.
+"""
 import asyncio
 import importlib.util
 from pathlib import Path
@@ -28,6 +34,7 @@ def make_settings(
     implemented_endpoints: list[OllamaImplementedEndpoints] | None = None,
     models: list[OllamaSupportedModels] | None = None,
 ) -> SimpleNamespace:
+    """Build a settings stand-in exposing the ollama deployment's endpoints and models."""
     return SimpleNamespace(
         ai_model=SimpleNamespace(
             base_url="http://ollama.local",
@@ -47,6 +54,7 @@ def make_settings(
 
 
 def make_completion_response_payload() -> dict[str, object]:
+    """Return a representative successful ``/api/generate`` response body."""
     return {
         "model": OllamaSupportedModels.LLAMA32_1B_Q8_0.value,
         "created_at": "2026-07-08T10:00:00Z",
@@ -56,12 +64,14 @@ def make_completion_response_payload() -> dict[str, object]:
 
 
 def make_service_with_client(client: object) -> OllamaService:
+    """Construct an ``OllamaService`` without running ``__init__``, wiring in a fake HTTP client."""
     service = OllamaService.__new__(OllamaService)
     service.client = client
     return service
 
 
 def test_get_endpoint_url_uses_configured_base_url_and_port(monkeypatch: pytest.MonkeyPatch) -> None:
+    """An endpoint URL is assembled from the configured base URL, port, and endpoint path."""
     monkeypatch.setattr(ollama_module, "settings", make_settings())
     service = OllamaService.__new__(OllamaService)
 
@@ -71,6 +81,7 @@ def test_get_endpoint_url_uses_configured_base_url_and_port(monkeypatch: pytest.
 
 
 def test_get_endpoint_url_rejects_unimplemented_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Requesting a URL for an endpoint not in the configured list raises ``ValueError``."""
     monkeypatch.setattr(ollama_module, "settings", make_settings(implemented_endpoints=[]))
     service = OllamaService.__new__(OllamaService)
 
@@ -79,6 +90,7 @@ def test_get_endpoint_url_rejects_unimplemented_endpoint(monkeypatch: pytest.Mon
 
 
 def test_send_get_request_returns_json_response() -> None:
+    """``_send_get_request`` issues the GET with JSON headers and returns the decoded body."""
     class FakeClient:
         async def get(self, url: str, headers: dict[str, str]) -> Response:
             assert url == "http://ollama.local:8080/api/tags"
@@ -93,6 +105,7 @@ def test_send_get_request_returns_json_response() -> None:
 
 
 def test_send_get_request_wraps_http_errors() -> None:
+    """A non-2xx GET response is re-raised as a ``RuntimeError`` describing the failure."""
     class FakeClient:
         async def get(self, url: str, headers: dict[str, str]) -> Response:
             return Response(503, request=Request("GET", url), text="unavailable")
@@ -104,6 +117,7 @@ def test_send_get_request_wraps_http_errors() -> None:
 
 
 def test_send_post_request_serializes_body_and_returns_json() -> None:
+    """``_send_post_request`` serializes the request model to JSON and returns the decoded response."""
     class FakeClient:
         async def post(self, url: str, json: dict[str, object], headers: dict[str, str]) -> Response:
             assert url == "http://ollama.local:8080/api/generate"
@@ -121,6 +135,7 @@ def test_send_post_request_serializes_body_and_returns_json() -> None:
 
 
 def test_send_post_request_wraps_http_errors() -> None:
+    """A non-2xx POST response is re-raised as a ``RuntimeError`` describing the failure."""
     class FakeClient:
         async def post(self, url: str, json: dict[str, object], headers: dict[str, str]) -> Response:
             return Response(400, request=Request("POST", url), text="bad request body")
@@ -133,6 +148,7 @@ def test_send_post_request_wraps_http_errors() -> None:
 
 
 def test_list_models_returns_only_configured_supported_models(monkeypatch: pytest.MonkeyPatch) -> None:
+    """``list_models`` filters the ``/api/tags`` response down to the configured supported models."""
     monkeypatch.setattr(ollama_module, "settings", make_settings())
     service = OllamaService.__new__(OllamaService)
 
@@ -167,6 +183,7 @@ def test_list_models_returns_only_configured_supported_models(monkeypatch: pytes
 def test_generate_completion_builds_ollama_request_and_returns_response(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """``generate_completion`` builds the ``/api/generate`` request and returns the model's response text."""
     monkeypatch.setattr(ollama_module, "settings", make_settings())
     service = OllamaService.__new__(OllamaService)
     completion_payload = make_completion_response_payload()
@@ -189,6 +206,7 @@ def test_generate_completion_builds_ollama_request_and_returns_response(
 
 
 def test_generate_completion_accepts_model_passed_as_string(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A model supplied as a plain string (not an enum) is coerced and still generates a completion."""
     monkeypatch.setattr(ollama_module, "settings", make_settings())
     service = OllamaService.__new__(OllamaService)
     completion_payload = make_completion_response_payload()

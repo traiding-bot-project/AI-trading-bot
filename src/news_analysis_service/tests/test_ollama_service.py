@@ -10,6 +10,7 @@ import asyncio
 import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 from httpx import Request, Response
@@ -64,8 +65,12 @@ def make_completion_response_payload() -> dict[str, object]:
     }
 
 
-def make_service_with_client(client: object) -> OllamaService:
-    """Construct an ``OllamaService`` without running ``__init__``, wiring in a fake HTTP client."""
+def make_service_with_client(client: object) -> Any:
+    """Construct an ``OllamaService`` without running ``__init__``, wiring in a fake HTTP client.
+
+    Returns ``Any`` because the service class is loaded dynamically via ``importlib`` and
+    the tests deliberately stub its private request helpers.
+    """
     service = OllamaService.__new__(OllamaService)
     service.client = client
     return service
@@ -225,7 +230,8 @@ def test_generate_completion_accepts_model_passed_as_string(monkeypatch: pytest.
     result = asyncio.run(
         service.generate_completion(
             AnalyzeContentRequest(
-                model=OllamaSupportedModels.LLAMA32_1B_Q8_0.value,
+                # model is deliberately passed as a raw string to exercise string coercion
+                model=OllamaSupportedModels.LLAMA32_1B_Q8_0.value,  # type: ignore[arg-type]
                 prompt="Analyze this article",
             ),
         ),

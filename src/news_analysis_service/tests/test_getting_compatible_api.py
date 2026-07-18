@@ -45,7 +45,7 @@ def test_get_compatible_api_for_model() -> None:
 def test_get_compatible_api_for_model_unknown_raises() -> None:
     """A model name not configured for any provider raises ``ValueError``."""
     with pytest.raises(ValueError, match="is not supported by any configured API provider"):
-        get_compatible_api_for_model(model_name="docker.io/ai/nonexistent:1B")
+        get_compatible_api_for_model(model_name="docker.io/ai/nonexistent:1B")  # type: ignore[arg-type]
 
 
 def test_returns_compatible_api_enum_instance() -> None:

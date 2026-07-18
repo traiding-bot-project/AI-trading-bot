@@ -12,12 +12,13 @@ import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 from httpx import Request, Response
 
 from src.models.ai_types import AnalyzeContentRequest
-from src.models.qwen_api import ChatMessageRole, QwenCompletionRequest
+from src.models.qwen_api import ChatMessage, ChatMessageRole, QwenCompletionRequest
 from src.settings.models.settings_model import QwenImplementedEndpoints, QwenSupportedModels
 
 QWEN_MODULE_PATH = Path(__file__).parents[1] / "src" / "services" / "qwen.py"
@@ -76,8 +77,12 @@ def make_structured_response_payload() -> dict[str, object]:
     }
 
 
-def make_service_with_client(client: object) -> QwenService:
-    """Construct a ``QwenService`` without running ``__init__``, wiring in a fake HTTP client."""
+def make_service_with_client(client: object) -> Any:
+    """Construct a ``QwenService`` without running ``__init__``, wiring in a fake HTTP client.
+
+    Returns ``Any`` because the service class is loaded dynamically via ``importlib`` and
+    the tests deliberately stub its private request helpers.
+    """
     service = QwenService.__new__(QwenService)
     service.client = client
     return service
@@ -145,7 +150,7 @@ def test_send_post_request_serializes_body_and_returns_json() -> None:
     service = make_service_with_client(FakeClient())
     body = QwenCompletionRequest(
         model=QwenSupportedModels.QWEN3_8B_Q4_K_M,
-        messages=[{"role": ChatMessageRole.USER, "content": "Analyze this"}],
+        messages=[ChatMessage(role=ChatMessageRole.USER, content="Analyze this")],
     )
 
     response = asyncio.run(service._send_post_request("http://qwen.local:8080/v1/chat/completions", body))
@@ -163,7 +168,7 @@ def test_send_post_request_includes_response_text_in_wrapped_http_errors() -> No
     service = make_service_with_client(FakeClient())
     body = QwenCompletionRequest(
         model=QwenSupportedModels.QWEN3_8B_Q4_K_M,
-        messages=[{"role": ChatMessageRole.USER, "content": "Analyze this"}],
+        messages=[ChatMessage(role=ChatMessageRole.USER, content="Analyze this")],
     )
 
     with pytest.raises(RuntimeError, match="bad request body"):

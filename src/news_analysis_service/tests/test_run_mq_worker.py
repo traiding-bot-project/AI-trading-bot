@@ -7,6 +7,9 @@ verify the analyze-then-publish flow and error handling on a malformed message b
 
 import asyncio
 import json
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -39,18 +42,17 @@ class _FakeMessage:
     def __init__(self, body: bytes) -> None:
         self.body = body
 
-    def process(self, requeue: bool = False):  # noqa: ANN201
-        class _Ctx:
-            async def __aenter__(self_):  # noqa: ANN001, ANN204, N805
-                return self_
-
-            async def __aexit__(self_, *a):  # noqa: ANN001, ANN002, ANN204, N805
-                return False
-
-        return _Ctx()
+    @asynccontextmanager
+    async def process(self, requeue: bool = False) -> AsyncIterator[_FakeMessage]:
+        yield self
 
 
-async def _drive_main_and_capture_callback(settings_mock, analyzer, exchange, queue):  # noqa: ANN001, ANN202
+async def _drive_main_and_capture_callback(
+    settings_mock: MagicMock,
+    analyzer: AsyncMock,
+    exchange: AsyncMock,
+    queue: AsyncMock,
+) -> Any:
     """Run main() far enough to register on_message, then cancel and return it."""
     connection = AsyncMock()
     channel = AsyncMock()

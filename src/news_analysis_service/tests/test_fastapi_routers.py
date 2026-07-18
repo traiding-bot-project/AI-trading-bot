@@ -4,6 +4,7 @@ The content analyzers are replaced with ``AsyncMock`` dependency overrides so th
 tests exercise routing, request validation, and response shaping without hitting a
 real model backend.
 """
+
 from collections.abc import Iterator
 from unittest.mock import AsyncMock
 
@@ -59,9 +60,7 @@ def test_health_returns_200(client: TestClient) -> None:
     assert response.json() == {"status": "OK"}
 
 
-def test_qwen_generate_hits_analyzer_and_returns_response(
-    client: TestClient, qwen_analyzer: AsyncMock
-) -> None:
+def test_qwen_generate_hits_analyzer_and_returns_response(client: TestClient, qwen_analyzer: AsyncMock) -> None:
     """``POST /api/qwen/generate`` forwards model and prompt to the analyzer and returns its response.
 
     Also asserts the analyzer was awaited exactly once with a request carrying the
@@ -81,9 +80,7 @@ def test_qwen_generate_hits_analyzer_and_returns_response(
     assert request.prompt == "analyse this"
 
 
-def test_ollama_generate_hits_analyzer_and_returns_response(
-    client: TestClient, ollama_analyzer: AsyncMock
-) -> None:
+def test_ollama_generate_hits_analyzer_and_returns_response(client: TestClient, ollama_analyzer: AsyncMock) -> None:
     """``POST /api/ollama/generate`` forwards model and prompt to the analyzer and returns its response.
 
     Also asserts the analyzer was awaited exactly once with a request carrying the

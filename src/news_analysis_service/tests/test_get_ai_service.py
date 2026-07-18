@@ -3,6 +3,7 @@
 Verifies the factory returns the concrete service for a configured provider and
 raises for a provider that is not present in the deployment settings.
 """
+
 from types import SimpleNamespace
 
 import pytest
@@ -15,9 +16,7 @@ from src.settings.models.settings_model import CompatibleAPI
 
 def make_settings(*configured_apis: CompatibleAPI) -> SimpleNamespace:
     """Build a settings stand-in whose deployments list only the given compatible APIs."""
-    deployments = [
-        (api.value, SimpleNamespace(api=SimpleNamespace(compatible_api=api))) for api in configured_apis
-    ]
+    deployments = [(api.value, SimpleNamespace(api=SimpleNamespace(compatible_api=api))) for api in configured_apis]
     return SimpleNamespace(ai_model=SimpleNamespace(deployments=deployments))
 
 

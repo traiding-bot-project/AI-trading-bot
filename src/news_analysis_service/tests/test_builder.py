@@ -3,16 +3,16 @@
 Covers the shipped news-analysis template plus edge cases around placeholder
 substitution, encoding, and error handling using small ad-hoc templates.
 """
+
 import re
 from pathlib import Path
 
 import pytest
 
 import src.prompts.builder as builder
-from src.prompts.builder import load_and_format_prompt
-from src.models.news_items import NewsItem, DataSourceMetadata, SupportedLanguages
 from src.constants import ANALYZE_NEWS_PROMPT
-
+from src.models.news_items import DataSourceMetadata, NewsItem, SupportedLanguages
+from src.prompts.builder import load_and_format_prompt
 
 SERVICE_ROOT = Path(builder.__file__).parent.parent.parent
 PLACEHOLDER = re.compile(r"\{[a-zA-Z_][\w.]*\}")
@@ -25,20 +25,16 @@ def _render(tmp_path: Path, template_text: str, **kwargs: object) -> str:
     return load_and_format_prompt(path, **kwargs)
 
 
-def test_prompt_formatting():
+def test_prompt_formatting() -> None:
     """The shipped prompt template formats with the kwargs the MQ worker actually passes."""
-    metadata = DataSourceMetadata(
-        name = "Test source",
-        language = SupportedLanguages.POLISH,
-        region = "Europe"
-    )
+    metadata = DataSourceMetadata(name="Test source", language=SupportedLanguages.POLISH, region="Europe")
     news_item = NewsItem(
-        title = "Chip stocks rally",
-        link = "https://test-url",
-        description = "Semiconductor shares rose after upbeat demand commentary.",
-        pub_date = "01.01.2025",
+        title="Chip stocks rally",
+        link="https://test-url",
+        description="Semiconductor shares rose after upbeat demand commentary.",
+        pub_date="01.01.2025",
         prepared_content="Full article body.",
-        metadata = metadata
+        metadata=metadata,
     )
 
     prompt = load_and_format_prompt(

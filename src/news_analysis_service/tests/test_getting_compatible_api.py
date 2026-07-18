@@ -3,16 +3,13 @@
 Verifies that a model name is mapped to the ``CompatibleAPI`` provider that
 supports it, and that an unknown model is rejected.
 """
+
 from types import SimpleNamespace
 
 import pytest
 
 from src.analyzer import get_compatible_api_for_model
-from src.settings.models.settings_model import (
-    QwenSupportedModels,
-    QwenImplementedEndpoints,
-    CompatibleAPI
-)
+from src.settings.models.settings_model import CompatibleAPI, QwenImplementedEndpoints, QwenSupportedModels
 
 
 def make_settings(

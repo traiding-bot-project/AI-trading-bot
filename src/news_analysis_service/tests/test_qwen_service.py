@@ -6,6 +6,7 @@ monkeypatched per test. Covers endpoint URL building, GET/POST request helpers
 OpenAI-style chat schema — including parsing the structured JSON response and
 rejecting a non-JSON model reply. HTTP is faked in memory; no network calls.
 """
+
 import asyncio
 import importlib.util
 import json
@@ -103,6 +104,7 @@ def test_get_endpoint_url_rejects_unimplemented_endpoint(monkeypatch: pytest.Mon
 
 def test_send_get_request_returns_json_response() -> None:
     """``_send_get_request`` issues the GET with JSON headers and returns the decoded body."""
+
     class FakeClient:
         async def get(self, url: str, headers: dict[str, str]) -> Response:
             assert url == "http://qwen.local:8080/v1/models"
@@ -118,6 +120,7 @@ def test_send_get_request_returns_json_response() -> None:
 
 def test_send_get_request_wraps_http_errors() -> None:
     """A non-2xx GET response is re-raised as a ``RuntimeError`` describing the failure."""
+
     class FakeClient:
         async def get(self, url: str, headers: dict[str, str]) -> Response:
             return Response(503, request=Request("GET", url), text="unavailable")
@@ -130,6 +133,7 @@ def test_send_get_request_wraps_http_errors() -> None:
 
 def test_send_post_request_serializes_body_and_returns_json() -> None:
     """``_send_post_request`` serializes the chat request to JSON and returns the decoded response."""
+
     class FakeClient:
         async def post(self, url: str, json: dict[str, object], headers: dict[str, str]) -> Response:
             assert url == "http://qwen.local:8080/v1/chat/completions"
@@ -151,6 +155,7 @@ def test_send_post_request_serializes_body_and_returns_json() -> None:
 
 def test_send_post_request_includes_response_text_in_wrapped_http_errors() -> None:
     """A non-2xx POST is re-raised as ``RuntimeError`` whose message includes the server's response text."""
+
     class FakeClient:
         async def post(self, url: str, json: dict[str, object], headers: dict[str, str]) -> Response:
             return Response(400, request=Request("POST", url), text="bad request body")

@@ -43,6 +43,14 @@ class FakeSubscriptionTokenRepository:
         self.updated_token = token
         return token
 
+    async def list_tokens(self) -> list[SubscriptionToken]:
+        """Not exercised by these tests."""
+        raise NotImplementedError
+
+    async def list_tokens_by_username(self, username: str) -> list[SubscriptionToken]:
+        """Not exercised by these tests."""
+        raise NotImplementedError
+
 
 def _make_token(
     *,
@@ -71,7 +79,6 @@ def test_create_token_sets_expiry_and_unactivated_state() -> None:
     assert token.token
     assert token.activated_at is None
     assert token.expires_at - token.created_at == timedelta(seconds=expires_in)
-    # The service persisted exactly the token it returned.
     assert repo.created_token is token
 
 
@@ -119,7 +126,14 @@ def test_activate_token_sets_user_and_activation_and_persists() -> None:
     valid = _make_token(expires_at=datetime.now(UTC) + timedelta(hours=1))
     repo = FakeSubscriptionTokenRepository(valid)
     service = SubscriptionTokenService(repo)
-    user = User(id=42, first_name="Ada", last_name="Lovelace", username="ada", chat_id=99)
+    user = User(
+        id=42,
+        first_name="Ada",
+        last_name="Lovelace",
+        username="ada",
+        chat_id=99,
+        is_subscribed=False,
+    )
 
     result = asyncio.run(service.activate_token("existing-token", user))
 

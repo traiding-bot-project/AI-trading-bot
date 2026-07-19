@@ -20,5 +20,5 @@ class _StubSecretsManager:
 
 
 _stub_module = types.ModuleType("market_intel_lib.secrets")
-_stub_module.secrets_manager = _StubSecretsManager()
+setattr(_stub_module, "secrets_manager", _StubSecretsManager())
 sys.modules.setdefault("market_intel_lib.secrets", _stub_module)

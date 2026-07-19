@@ -9,7 +9,8 @@ import asyncio
 import pytest
 
 from market_intel_lib.db.users.user_service import UserService
-from market_intel_lib.models.user import User
+from market_intel_lib.models.subscription_token import SubscriptionToken
+from market_intel_lib.models.user import User, UserFilters
 
 
 class FakeUserRepository:
@@ -41,6 +42,18 @@ class FakeUserRepository:
         self.deleted_user_id = user_id
         return self._delete_result
 
+    async def list_users(self, filters: UserFilters) -> list[User]:
+        """Not exercised by these tests."""
+        raise NotImplementedError
+
+    async def update_user(self, user: User) -> User:
+        """Not exercised by these tests."""
+        raise NotImplementedError
+
+    async def list_users_subscriptions(self, chat_id: int) -> list[SubscriptionToken]:
+        """Not exercised by these tests."""
+        raise NotImplementedError
+
 
 def _make_user(*, chat_id: int = 99) -> User:
     """Build a valid user with the given chat_id."""
@@ -49,6 +62,7 @@ def _make_user(*, chat_id: int = 99) -> User:
         last_name="Lovelace",
         username="ada",
         chat_id=chat_id,
+        is_subscribed=False,
     )
 
 

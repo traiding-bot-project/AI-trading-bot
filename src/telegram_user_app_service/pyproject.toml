@@ -11,7 +11,7 @@ keywords = [
     "Agentic AI",
 ]
 dependencies = [
-    "alembic>=1.18.4",
+    "alembic>=1.18.5",
     "asyncpg>=0.31.0",
     "market-intel-lib==0.1.0",
     "psycopg2-binary>=2.9.12",

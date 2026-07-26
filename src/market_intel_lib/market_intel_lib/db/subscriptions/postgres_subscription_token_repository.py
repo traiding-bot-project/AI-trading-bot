@@ -4,6 +4,7 @@ import logging
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from market_intel_lib.db.subscriptions.subscription_token import SubscriptionTokenDB
 from market_intel_lib.db.users.user import UserDB
 from market_intel_lib.models.subscription_token import SubscriptionToken

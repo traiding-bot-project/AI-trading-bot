@@ -39,7 +39,7 @@ class FileStorageService:
         self.bucket_name = FILESTORAGE_BUCKET_NAME
 
     @asynccontextmanager
-    async def _get_client(self) -> AsyncGenerator[S3Client, None]:
+    async def _get_client(self) -> AsyncGenerator[S3Client]:
         """Asynchronous clients must be explicitly closed when you are done with them to prevent network socket and connection pool leaks."""
         async with self.session.client(
             FILESTORAGE_SERVICE_NAME,

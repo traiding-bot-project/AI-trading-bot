@@ -1,7 +1,7 @@
 """Logging configuration for the Telegram User App Service."""
 
-from enum import StrEnum
 import logging
+from enum import StrEnum
 
 
 class LoggingLevel(StrEnum):

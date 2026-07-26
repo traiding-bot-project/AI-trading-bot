@@ -7,10 +7,14 @@ host = "infisical-backend"
 port = 8080
 
 [infisical.auth]
-client_id = "0f36d94f-e990-4a9a-8b3a-cbb5fb62eea5"
+# The Universal Auth CLIENT ID -- not the machine identity's own ID.
+# Infisical shows these separately; identity `docker-news-bot` is
+# 78b62812-c6eb-45be-87d7-182d2ad9b0ef, but Universal Auth logs in with this:
+client_id = "e1e2f33c-cb15-4316-8a41-88c0ae998903"
 
 [infisical.project]
-project_id = "78b62812-c6eb-45be-87d7-182d2ad9b0ef"
+# Project `trading-news-bot`.
+project_id = "c3847f48-85fa-42f3-8e19-82b99a6c7939"
 env_slug = "dev"
 secret_path = "/"
 

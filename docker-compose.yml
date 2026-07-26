@@ -1,10 +1,3 @@
-# Full local/VM stack for the AI trading bot.
-#
-#   docker compose up -d
-#
-# Supersedes the per-service docker-compose.dev.yml files (which only started
-# backing infra). Adds RabbitMQ, which every service needs but nothing defined.
-#
 # LLM: served by Docker Model Runner on the HOST (no container here). Enable DMR
 # and pull the models before starting:
 #   docker model pull ai/llama3.2:1B-Q8_0
@@ -12,8 +5,7 @@
 # On a cloud VM running Docker Engine on Linux this works too -- the
 # `host.docker.internal:host-gateway` extra_hosts entry below is what makes it
 # resolve (unlike Docker Desktop, Linux Engine does not provide it implicitly).
-# The model runs on that host's hardware: size the VM accordingly (qwen3:8B
-# realistically wants a GPU).
+# The model runs on that host's hardware: size the VM accordingly
 
 x-app-build: &app-build
   context: ./src
@@ -24,7 +16,6 @@ x-app-common: &app-common
   networks: [backend]
 
 services:
-  # ---------------------------------------------------------------- infra ----
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -52,7 +43,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: "pg_isready --username=$${POSTGRES_USER} && psql --username=$${POSTGRES_USER} --list"
+      test: "pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}"
       interval: 5s
       timeout: 10s
       retries: 10
@@ -73,6 +64,16 @@ services:
       - NODE_ENV=development
     ports:
       - "80:8080"
+    # Infisical is a Node app that needs ~15-30s before it listens. Without this,
+    # dependents gated only on service_started race it and die at import with
+    # "Connection refused" -- the telegram containers fetch secrets at IMPORT time,
+    # so they get no retry.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
     networks: [backend]
 
   infisical-redis:
@@ -94,13 +95,12 @@ services:
     volumes:
       - infisical_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: "pg_isready --username=$${POSTGRES_USER} && psql --username=$${POSTGRES_USER} --list"
+      test: "pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}"
       interval: 5s
       timeout: 10s
       retries: 10
     networks: [backend]
 
-  # SeaweedFS: S3-compatible storage for raw/extracted news (bucket `news-bucket`)
   master-seaweedfs:
     image: chrislusf/seaweedfs:latest
     container_name: seaweedfs_master
@@ -145,9 +145,17 @@ services:
       - filer-seaweedfs
     ports:
       - "8333:8333"
+    # The S3 gateway starts listening a moment after the container reports
+    # "started", so dependents that only wait for service_started can lose their
+    # first request with "Cannot connect to host s3-seaweedfs:8333".
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8333/"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
     networks: [backend]
 
-  # ------------------------------------------------- news collection ---------
   news-collection-api:
     <<: *app-common
     build:
@@ -156,14 +164,14 @@ services:
         SERVICE: news_collection_service
     image: ai-trading-bot/news-collection:latest
     container_name: news-collection-api
-    command: ["uv", "run", "run-fastapi"]
+    command: ["run-fastapi"]
     ports:
       - "8081:8080"
     depends_on:
       rabbitmq:
         condition: service_healthy
       s3-seaweedfs:
-        condition: service_started
+        condition: service_healthy
 
   news-collection-worker:
     <<: *app-common
@@ -173,15 +181,13 @@ services:
         SERVICE: news_collection_service
     image: ai-trading-bot/news-collection:latest
     container_name: news-collection-worker
-    command: ["uv", "run", "run-mq-worker"]
+    command: ["run-mq-worker"]
     depends_on:
       rabbitmq:
         condition: service_healthy
       s3-seaweedfs:
-        condition: service_started
+        condition: service_healthy
 
-  # --------------------------------------------------- news analysis ---------
-  # Both containers talk to Docker Model Runner on the host via host.docker.internal.
   news-analysis-api:
     <<: *app-common
     build:
@@ -190,7 +196,7 @@ services:
         SERVICE: news_analysis_service
     image: ai-trading-bot/news-analysis:latest
     container_name: news-analysis-api
-    command: ["uv", "run", "run-fastapi"]
+    command: ["run-fastapi"]
     ports:
       - "8082:8080"
     extra_hosts:
@@ -207,17 +213,13 @@ services:
         SERVICE: news_analysis_service
     image: ai-trading-bot/news-analysis:latest
     container_name: news-analysis-worker
-    command: ["uv", "run", "run-mq-worker"]
+    command: ["run-mq-worker"]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
       rabbitmq:
         condition: service_healthy
 
-  # ------------------------------------------------------- telegram ---------
-  # These import market_intel_lib.db, which fetches DB_PASSWORD from Infisical at
-  # IMPORT time -- so Infisical must be up and INFISICAL_CLIENT_SECRET must be set
-  # (see .env.example) or the process exits on startup.
   telegram-migrate:
     build:
       <<: *app-build
@@ -225,21 +227,15 @@ services:
         SERVICE: telegram_user_app_service
     image: ai-trading-bot/telegram-user-app:latest
     container_name: telegram-migrate
-    command: ["uv", "run", "alembic", "upgrade", "head"]
+    command: ["alembic", "upgrade", "head"]
     restart: "no"
     environment:
-      # Deliberately NOT a `:?` required-variable guard: compose interpolates the
-      # whole file up front, so a guard here would also block
-      # `docker compose up infisical-backend` -- the very step you need in order
-      # to create this secret. Empty default instead; the three telegram
-      # containers fail fast at import with a clear "Environment variable
-      # '__INFISICAL_CLIENT_SECRET' is not set." if it is missing.
       - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
     depends_on:
       user-db:
         condition: service_healthy
       infisical-backend:
-        condition: service_started
+        condition: service_healthy
     networks: [backend]
 
   telegram-api:
@@ -250,16 +246,10 @@ services:
         SERVICE: telegram_user_app_service
     image: ai-trading-bot/telegram-user-app:latest
     container_name: telegram-api
-    command: ["uv", "run", "run-fastapi"]
+    command: ["run-fastapi"]
     ports:
       - "8083:8080"
     environment:
-      # Deliberately NOT a `:?` required-variable guard: compose interpolates the
-      # whole file up front, so a guard here would also block
-      # `docker compose up infisical-backend` -- the very step you need in order
-      # to create this secret. Empty default instead; the three telegram
-      # containers fail fast at import with a clear "Environment variable
-      # '__INFISICAL_CLIENT_SECRET' is not set." if it is missing.
       - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
     depends_on:
       rabbitmq:
@@ -267,7 +257,7 @@ services:
       user-db:
         condition: service_healthy
       infisical-backend:
-        condition: service_started
+        condition: service_healthy
       telegram-migrate:
         condition: service_completed_successfully
 
@@ -279,14 +269,8 @@ services:
         SERVICE: telegram_user_app_service
     image: ai-trading-bot/telegram-user-app:latest
     container_name: telegram-worker
-    command: ["uv", "run", "run-mq-worker"]
+    command: ["run-mq-worker"]
     environment:
-      # Deliberately NOT a `:?` required-variable guard: compose interpolates the
-      # whole file up front, so a guard here would also block
-      # `docker compose up infisical-backend` -- the very step you need in order
-      # to create this secret. Empty default instead; the three telegram
-      # containers fail fast at import with a clear "Environment variable
-      # '__INFISICAL_CLIENT_SECRET' is not set." if it is missing.
       - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
     depends_on:
       rabbitmq:
@@ -294,7 +278,7 @@ services:
       user-db:
         condition: service_healthy
       infisical-backend:
-        condition: service_started
+        condition: service_healthy
       telegram-migrate:
         condition: service_completed_successfully
 

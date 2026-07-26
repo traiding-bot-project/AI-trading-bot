@@ -7,10 +7,10 @@ host = "infisical-backend"
 port = 8080
 
 [infisical.auth]
-client_id = "a68d6548-c1ce-42c5-854c-acec188b7b16"
+client_id = "0f36d94f-e990-4a9a-8b3a-cbb5fb62eea5"
 
 [infisical.project]
-project_id = "f518625c-5ab2-479d-b800-0c930567020b"
+project_id = "78b62812-c6eb-45be-87d7-182d2ad9b0ef"
 env_slug = "dev"
 secret_path = "/"
 

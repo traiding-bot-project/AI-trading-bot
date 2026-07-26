@@ -228,7 +228,13 @@ services:
     command: ["uv", "run", "alembic", "upgrade", "head"]
     restart: "no"
     environment:
-      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:?set INFISICAL_CLIENT_SECRET in .env}
+      # Deliberately NOT a `:?` required-variable guard: compose interpolates the
+      # whole file up front, so a guard here would also block
+      # `docker compose up infisical-backend` -- the very step you need in order
+      # to create this secret. Empty default instead; the three telegram
+      # containers fail fast at import with a clear "Environment variable
+      # '__INFISICAL_CLIENT_SECRET' is not set." if it is missing.
+      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
     depends_on:
       user-db:
         condition: service_healthy
@@ -248,7 +254,13 @@ services:
     ports:
       - "8083:8080"
     environment:
-      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:?set INFISICAL_CLIENT_SECRET in .env}
+      # Deliberately NOT a `:?` required-variable guard: compose interpolates the
+      # whole file up front, so a guard here would also block
+      # `docker compose up infisical-backend` -- the very step you need in order
+      # to create this secret. Empty default instead; the three telegram
+      # containers fail fast at import with a clear "Environment variable
+      # '__INFISICAL_CLIENT_SECRET' is not set." if it is missing.
+      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -269,7 +281,13 @@ services:
     container_name: telegram-worker
     command: ["uv", "run", "run-mq-worker"]
     environment:
-      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:?set INFISICAL_CLIENT_SECRET in .env}
+      # Deliberately NOT a `:?` required-variable guard: compose interpolates the
+      # whole file up front, so a guard here would also block
+      # `docker compose up infisical-backend` -- the very step you need in order
+      # to create this secret. Empty default instead; the three telegram
+      # containers fail fast at import with a clear "Environment variable
+      # '__INFISICAL_CLIENT_SECRET' is not set." if it is missing.
+      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
     depends_on:
       rabbitmq:
         condition: service_healthy

@@ -2,23 +2,3 @@
 deployment = "dev"
 environment = "development"
 logging_level = "info"
-
-[infisical.connection]
-url_schema = "http"
-host = "127.0.0.1"
-port = 80
-
-[infisical.auth]
-client_id = "a1303b57-dacb-4ab4-ab55-3d43648554cc"
-
-[infisical.project]
-project_id = "fb9b018d-120f-4211-ad81-dd7735c770f5"
-env_slug = "dev"
-secret_path = "/"
-
-[database]
-url_schema = "postgresql+asyncpg"
-host = "127.0.0.1"
-port = 5432
-database = "telegram_user_app_db"
-username = "admin"

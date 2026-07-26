@@ -1,0 +1,32 @@
+# Docker/compose variant.
+#
+# The LLM is served by Docker Model Runner on the host, not by a container, so
+# containers reach it through the host gateway. This works both on Docker Desktop
+# and on a cloud VM running Docker Engine on Linux -- but on Linux Engine the
+# mapping is NOT automatic: compose must supply
+#   extra_hosts: ["host.docker.internal:host-gateway"]
+# for every container that talks to the model (see docker-compose.yml).
+#
+# DMR must be enabled on the host and serving the models below on :12434.
+[service]
+deployment = "dev"
+environment = "development"
+logging_level = "info"
+
+[ai_model]
+base_url = "http://host.docker.internal"
+base_port = 12434
+
+[ai_model.deployments.ollama_deployments]
+models = ["docker.io/ai/llama3.2:1B-Q8_0"]
+
+[ai_model.deployments.ollama_deployments.api]
+compatible_api = "ollama"
+implemented_endpoints = ["generate", "tags"]
+
+[ai_model.deployments.qwen_deployments]
+models = ["docker.io/ai/qwen3:8B-Q4_K_M"]
+
+[ai_model.deployments.qwen_deployments.api]
+compatible_api = "qwen"
+implemented_endpoints = ["v1/chat/completions", "v1/models"]

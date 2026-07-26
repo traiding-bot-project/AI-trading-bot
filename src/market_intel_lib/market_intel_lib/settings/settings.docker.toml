@@ -1,7 +1,10 @@
+# Docker/compose variant of the shared-library settings.
+# Baked over settings.toml during the image build (see src/Dockerfile). Hosts point
+# at compose service DNS names instead of 127.0.0.1.
 [infisical.connection]
 url_schema = "http"
-host = "127.0.0.1"
-port = 80
+host = "infisical-backend"
+port = 8080
 
 [infisical.auth]
 client_id = "a68d6548-c1ce-42c5-854c-acec188b7b16"
@@ -13,10 +16,10 @@ secret_path = "/"
 
 [database]
 url_schema = "postgresql+asyncpg"
-host = "127.0.0.1"
+host = "user-db"
 port = 5432
 database = "telegram_user_app_db"
 username = "admin"
 
 [s3]
-endpoint = "http://localhost:8333"
+endpoint = "http://s3-seaweedfs:8333"

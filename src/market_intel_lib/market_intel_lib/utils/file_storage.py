@@ -13,12 +13,14 @@ import aioboto3
 from botocore.exceptions import ClientError
 from types_aiobotocore_s3.client import S3Client
 
+from market_intel_lib.settings import settings
+
 logger = logging.getLogger(__name__)
 
 FIRESTORAGE_REGION_NAME: str = "us-east-1"
 FILESTORAGE_BUCKET_NAME: str = "news-bucket"
 FILESTORAGE_SERVICE_NAME: Literal["s3"] = "s3"
-LOCAL_ENDPOINT_URL = "http://localhost:8333"
+S3_ENDPOINT_URL: str = settings.s3.endpoint
 
 
 class FileStorageFolder(StrEnum):
@@ -41,7 +43,7 @@ class FileStorageService:
         """Asynchronous clients must be explicitly closed when you are done with them to prevent network socket and connection pool leaks."""
         async with self.session.client(
             FILESTORAGE_SERVICE_NAME,
-            endpoint_url=LOCAL_ENDPOINT_URL,
+            endpoint_url=S3_ENDPOINT_URL,
             region_name=FIRESTORAGE_REGION_NAME,
             aws_access_key_id="mock",
             aws_secret_access_key="mock",

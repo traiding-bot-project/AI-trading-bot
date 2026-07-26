@@ -41,19 +41,9 @@ RUN set -eux; \
 
 WORKDIR /app/${SERVICE}
 
-# Install core deps + the `fastapi` (fastapi/uvicorn) and `rabbitmq` (aio-pika)
-# groups from the committed per-service uv.lock.
-#
-# NOTE: these are PEP 735 `[dependency-groups]`, NOT `[project.optional-dependencies]`.
-# `--all-extras` does NOT install them -- there are no extras defined at all -- so it
-# silently produced images without uvicorn/aio-pika. It must be `--group`.
-# `--no-dev` keeps mypy/ruff out of the runtime image.
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --group fastapi --group rabbitmq
 
 ENV PATH="/app/${SERVICE}/.venv/bin:${PATH}"
 
-# Console scripts are invoked directly off PATH rather than through `uv run`:
-# `uv run` re-resolves the environment on every container start, which mutates the
-# image at runtime (re-downloading/reinstalling packages) and adds startup latency.
 CMD ["run-fastapi"]

@@ -20,12 +20,6 @@ depends_on: str | Sequence[str] | None = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    # This revision was originally produced by `--autogenerate` against a database
-    # where `subscription_tokens` already existed (created out-of-band), so it only
-    # captured the diff -- ALTERs against a table nothing ever created. That made
-    # `alembic upgrade head` impossible on an empty database. Replaced with the
-    # create_table it should always have been; mirrors SubscriptionTokenDB in
-    # market_intel_lib/db/subscriptions/subscription_token.py.
     op.create_table(
         "subscription_tokens",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),

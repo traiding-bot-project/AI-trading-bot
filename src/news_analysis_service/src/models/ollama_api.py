@@ -18,6 +18,10 @@ class OllamaCompletionRequest(BaseModel):
 
     model: Annotated[OllamaSupportedModels, Field(..., title="Ollama Model")]
     prompt: Annotated[str, Field(..., title="Prompt for the model to generate a response to")]
+    system: Annotated[
+        str | None,
+        Field(None, title="Optional system message overriding the one defined in the Modelfile"),
+    ] = None
     suffix: Annotated[
         str | None,
         Field(None, title="Optional suffix to append to the generated response"),

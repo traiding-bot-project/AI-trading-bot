@@ -11,7 +11,7 @@ from market_intel_lib.utils.logger.configure import configure_logging
 from market_intel_lib.utils.toml.ingest_toml import load_settings
 
 from src.analyzer import get_compatible_api_for_model, get_content_analyzer
-from src.constants import ANALYZE_NEWS_PROMPT, MQ_WORKER_SETTINGS_PATH
+from src.constants import ANALYZE_NEWS_SYSTEM_PROMPT, ANALYZE_NEWS_USER_PROMPT, MQ_WORKER_SETTINGS_PATH
 from src.models.ai_types import AnalyzeContentRequest
 from src.models.news_items import NewsItem
 from src.prompts.builder import load_and_format_prompt
@@ -33,6 +33,8 @@ async def main() -> None:
 
     compatible_api = get_compatible_api_for_model(USER_MODEL)
     content_analyzer = get_content_analyzer(compatible_api)
+
+    system_prompt = load_and_format_prompt(Path(ANALYZE_NEWS_SYSTEM_PROMPT))
 
     connection = await connect_robust(
         host=mq_worker_settings.connector.host,
@@ -73,7 +75,7 @@ async def main() -> None:
                 try:
                     data = NewsItem.model_validate(json.loads(message.body))
                     prompt = load_and_format_prompt(
-                        Path(ANALYZE_NEWS_PROMPT),
+                        Path(ANALYZE_NEWS_USER_PROMPT),
                         news_item=data,
                         metadata=data.metadata,
                         description=data.description or "N/A",
@@ -81,7 +83,9 @@ async def main() -> None:
                     )
                     logger.info("Prompt built for content analysis task")
 
-                    request = AnalyzeContentRequest(model=USER_MODEL, prompt=prompt)
+                    request = AnalyzeContentRequest(
+                        model=USER_MODEL, prompt=prompt, system_prompt=system_prompt
+                    )
                     result = await content_analyzer.analyze_content(request)
                     data.response = result.response
                     data.metadata.model_used = USER_MODEL

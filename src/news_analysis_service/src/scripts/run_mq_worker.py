@@ -83,9 +83,7 @@ async def main() -> None:
                     )
                     logger.info("Prompt built for content analysis task")
 
-                    request = AnalyzeContentRequest(
-                        model=USER_MODEL, prompt=prompt, system_prompt=system_prompt
-                    )
+                    request = AnalyzeContentRequest(model=USER_MODEL, prompt=prompt, system_prompt=system_prompt)
                     result = await content_analyzer.analyze_content(request)
                     data.response = result.response
                     data.metadata.model_used = USER_MODEL

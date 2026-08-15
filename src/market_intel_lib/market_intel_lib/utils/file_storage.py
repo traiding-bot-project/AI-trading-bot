@@ -10,15 +10,17 @@ from typing import Literal
 from urllib.parse import quote
 
 import aioboto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 from types_aiobotocore_s3.client import S3Client
+
+from market_intel_lib.settings import settings
 
 logger = logging.getLogger(__name__)
 
 FIRESTORAGE_REGION_NAME: str = "us-east-1"
 FILESTORAGE_BUCKET_NAME: str = "news-bucket"
 FILESTORAGE_SERVICE_NAME: Literal["s3"] = "s3"
-LOCAL_ENDPOINT_URL = "http://localhost:8333"
+S3_ENDPOINT_URL: str = settings.s3.endpoint
 
 
 class FileStorageFolder(StrEnum):
@@ -37,11 +39,11 @@ class FileStorageService:
         self.bucket_name = FILESTORAGE_BUCKET_NAME
 
     @asynccontextmanager
-    async def _get_client(self) -> AsyncGenerator[S3Client, None]:
+    async def _get_client(self) -> AsyncGenerator[S3Client]:
         """Asynchronous clients must be explicitly closed when you are done with them to prevent network socket and connection pool leaks."""
         async with self.session.client(
             FILESTORAGE_SERVICE_NAME,
-            endpoint_url=LOCAL_ENDPOINT_URL,
+            endpoint_url=S3_ENDPOINT_URL,
             region_name=FIRESTORAGE_REGION_NAME,
             aws_access_key_id="mock",
             aws_secret_access_key="mock",
@@ -63,10 +65,10 @@ class FileStorageService:
                     logger.info(f"Bucket '{self.bucket_name}' successfully created.")
                 except ClientError as ce:
                     logger.error(f"Failed to create bucket: {ce}")
-                    raise ce
+                    raise
             else:
                 logger.error(f"Error checking bucket visibility: {e}")
-                raise e
+                raise
 
     @staticmethod
     def create_remote_object_name(folder: FileStorageFolder, object_name: str) -> str:
@@ -145,7 +147,7 @@ class FileStorageService:
                     ExtraArgs=extra_args,
                 )
             logger.info(f"File {local_file_path} uploaded to {remote_object_name}")
-        except Exception as e:
+        except (BotoCoreError, ClientError, OSError) as e:
             logger.error(f"Error uploading file: {e}")
 
     async def download_file(
@@ -160,7 +162,7 @@ class FileStorageService:
                     Bucket=self.bucket_name,
                 )
             logger.info(f"File {remote_object_name} downloaded to {local_file_path}")
-        except Exception as e:
+        except (BotoCoreError, ClientError, OSError) as e:
             logger.error(f"Error downloading file: {e}")
 
     async def upload_text(
@@ -187,7 +189,7 @@ class FileStorageService:
                     ContentType="text/plain",
                 )
             logger.info(f"Text content uploaded to {remote_object_name}")
-        except Exception as e:
+        except (BotoCoreError, ClientError) as e:
             logger.error(f"Error uploading text content: {e}")
 
     async def download_text(self, remote_object_name: str) -> str:
@@ -201,7 +203,7 @@ class FileStorageService:
                     text_content = (await stream.read()).decode("utf-8")
             logger.info(f"Text content downloaded from {remote_object_name}")
             return text_content
-        except Exception as e:
+        except (BotoCoreError, ClientError, UnicodeDecodeError) as e:
             logger.error(f"Error downloading text content: {e}")
             return ""
 
@@ -215,6 +217,6 @@ class FileStorageService:
             metadata = response.get("Metadata", {})
             logger.info(f"Metadata retrieved for {remote_object_name}")
             return metadata
-        except Exception as e:
+        except (BotoCoreError, ClientError) as e:
             logger.error(f"Error retrieving metadata: {e}")
             return {}

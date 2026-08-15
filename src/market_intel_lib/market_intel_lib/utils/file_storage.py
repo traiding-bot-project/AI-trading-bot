@@ -74,7 +74,7 @@ class FileStorageService:
         return f"{folder}/{object_name}"
 
     def _handle_file_metadata(self, metadata: dict[str, str]) -> dict[str, str]:
-        """Handle file metadata by converting keys to lowercase and replacing spaces with underscores."""
+        """Handle file metadata by converting keys to lowercase and replacing spaces with dashes."""
         return {k.lower().replace(" ", "-"): quote(str(v)) for k, v in metadata.items()}
 
     def _calculate_md5(self, content: str | bytes, is_path: bool = False) -> str:

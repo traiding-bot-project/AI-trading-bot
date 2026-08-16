@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 import src.prompts.builder as builder
-from src.constants import ANALYZE_NEWS_PROMPT
+from src.constants import ANALYZE_NEWS_SYSTEM_PROMPT, ANALYZE_NEWS_USER_PROMPT
 from src.models.news_items import DataSourceMetadata, NewsItem, SupportedLanguages
 from src.prompts.builder import load_and_format_prompt
 
@@ -25,8 +25,8 @@ def _render(tmp_path: Path, template_text: str, **kwargs: object) -> str:
     return load_and_format_prompt(path, **kwargs)
 
 
-def test_prompt_formatting() -> None:
-    """The shipped prompt template formats with the kwargs the MQ worker actually passes."""
+def test_user_prompt_formatting() -> None:
+    """The shipped user template formats with the kwargs the MQ worker actually passes."""
     metadata = DataSourceMetadata(name="Test source", language=SupportedLanguages.POLISH, region="Europe")
     news_item = NewsItem(
         title="Chip stocks rally",
@@ -38,7 +38,7 @@ def test_prompt_formatting() -> None:
     )
 
     prompt = load_and_format_prompt(
-        SERVICE_ROOT / ANALYZE_NEWS_PROMPT,
+        SERVICE_ROOT / ANALYZE_NEWS_USER_PROMPT,
         news_item=news_item,
         metadata=metadata,
         description=news_item.description,
@@ -48,8 +48,18 @@ def test_prompt_formatting() -> None:
     assert news_item.title in prompt
     assert news_item.link in prompt
     assert "Test source" in prompt
+    assert "Semiconductor shares rose after upbeat demand commentary." in prompt
     assert "Full article body." in prompt
-    assert '{ "impact": "No material market implication."' in prompt
+    assert not PLACEHOLDER.search(prompt)
+
+
+def test_system_prompt_formatting() -> None:
+    """The shipped system template renders standalone, with the filter lists injected by the loader."""
+    prompt = load_and_format_prompt(SERVICE_ROOT / ANALYZE_NEWS_SYSTEM_PROMPT)
+
+    assert "'Semiconductors'" in prompt
+    assert "'UNRELATED'" in prompt
+    assert not PLACEHOLDER.search(prompt)
 
 
 def test_values_containing_braces_are_not_reformatted(tmp_path: Path) -> None:

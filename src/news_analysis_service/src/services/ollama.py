@@ -98,7 +98,9 @@ class OllamaService:
                 f"Model '{request.model}' is not valid for the Ollama service. "
                 f"Use one of: {list(OllamaSupportedModels)}"
             )
-        request_body = OllamaCompletionRequest(model=request_model, prompt=request.prompt)
+        request_body = OllamaCompletionRequest(
+            model=request_model, prompt=request.prompt, system=request.system_prompt
+        )
         response_data = OllamaCompletionResponse.model_validate(await self._send_post_request(url, request_body))
         logger.debug(f"Generated completion with status done={response_data.done}")
         return AnalyzeContentResponse(response=response_data.response)

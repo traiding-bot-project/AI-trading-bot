@@ -1,6 +1,7 @@
 """Bot implementation for broadcasting messages to subscribed users."""
 
 import logging
+from html import escape
 
 from market_intel_lib.db.users.user_service import UserService
 from market_intel_lib.models.infisical import InfisicalSecretsKeys
@@ -59,22 +60,30 @@ class BroadcastBot:
             "Response must be parsed before formatting"
         )
 
+        response = news_item.response
+
         first_line = (
-            f'<b><a href="{news_item.link}">{news_item.response.title}</a></b>\n'
+            f'<b><a href="{escape(news_item.link)}">{escape(response.title)}</a></b>\n'
         )
         second_line = (
-            f"🌐 {news_item.response.source} | 📅 {news_item.response.published_at}\n\n"
+            f"🌐 {escape(response.source)} | 📅 {escape(response.published_at)}\n\n"
         )
-        summary = f"🔍 Summary\n{news_item.response.summary}\n\n"
-        market_takeaways = "\n".join(
-            [
-                f"📌 {takeaway.sector}: {takeaway.sentiment} - {takeaway.impact}"
-                for takeaway in news_item.response.market_takeaways
-            ]
-        )
-        return (
-            f"{first_line}{second_line}{summary}💲 Market Takeaways\n{market_takeaways}"
-        )
+        summary = f"🔍 Summary\n{escape(response.summary)}\n\n"
+
+        sections = [first_line, second_line, summary]
+
+        if response.mentioned_companies:
+            companies = "\n".join(
+                f"• <b>{escape(company.name)}</b> — {escape(company.context)}"
+                for company in response.mentioned_companies
+            )
+            sections.append(f"🏢 Companies\n{companies}\n\n")
+
+        if response.affected_sectors:
+            sectors = ", ".join(escape(sector) for sector in response.affected_sectors)
+            sections.append(f"🏭 Industries\n{sectors}")
+
+        return "".join(sections)
 
     async def close(self) -> None:
         """Clean up resources."""

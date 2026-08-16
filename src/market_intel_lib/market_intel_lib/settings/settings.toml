@@ -17,3 +17,6 @@ host = "127.0.0.1"
 port = 5432
 database = "telegram_user_app_db"
 username = "admin"
+
+[s3]
+endpoint = "http://localhost:8333"

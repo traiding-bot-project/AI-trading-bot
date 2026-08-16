@@ -1,0 +1,299 @@
+# LLM: served by Docker Model Runner on the HOST (no container here). Enable DMR
+# and pull the models before starting:
+#   docker model pull ai/llama3.2:1B-Q8_0
+#   docker model pull ai/qwen3:8B-Q4_K_M
+# On a cloud VM running Docker Engine on Linux this works too -- the
+# `host.docker.internal:host-gateway` extra_hosts entry below is what makes it
+# resolve (unlike Docker Desktop, Linux Engine does not provide it implicitly).
+# The model runs on that host's hardware: size the VM accordingly
+
+x-app-build: &app-build
+  context: ./src
+  dockerfile: Dockerfile
+
+x-app-common: &app-common
+  restart: unless-stopped
+  networks: [backend]
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # management UI (guest/guest)
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+    networks: [backend]
+
+  user-db:
+    image: postgres:18.3-alpine3.23
+    container_name: user-db
+    restart: always
+    env_file: src/telegram_user_app_service/.db.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    networks: [backend]
+
+  infisical-backend:
+    image: infisical/infisical:v0.159.8
+    container_name: infisical-backend
+    restart: unless-stopped
+    pull_policy: always
+    depends_on:
+      infisical-db:
+        condition: service_healthy
+      infisical-redis:
+        condition: service_started
+    env_file: src/telegram_user_app_service/.infisical.env
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "80:8080"
+    # Infisical is a Node app that needs ~15-30s before it listens. Without this,
+    # dependents gated only on service_started race it and die at import with
+    # "Connection refused" -- the telegram containers fetch secrets at IMPORT time,
+    # so they get no retry.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+    networks: [backend]
+
+  infisical-redis:
+    image: redis
+    container_name: infisical-dev-redis
+    restart: always
+    env_file: src/telegram_user_app_service/.infisical.env
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis_data:/data
+    networks: [backend]
+
+  infisical-db:
+    image: postgres:18.3-alpine3.23
+    container_name: infisical-db
+    restart: always
+    env_file: src/telegram_user_app_service/.infisical.env
+    volumes:
+      - infisical_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    networks: [backend]
+
+  master-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_master
+    command: "master -ip=master-seaweedfs -mdir=/data"
+    restart: unless-stopped
+    ports:
+      - "9333:9333"
+    volumes:
+      - seaweed_master_data:/data
+    networks: [backend]
+
+  volume-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_volume
+    command: "volume -mserver=master-seaweedfs:9333 -port=8088 -ip=volume-seaweedfs -dir=/data -max=8"
+    restart: unless-stopped
+    depends_on:
+      - master-seaweedfs
+    ports:
+      - "8088:8088"
+    volumes:
+      - seaweed_volume_data:/data
+    networks: [backend]
+
+  filer-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_filer
+    command: "filer -master=master-seaweedfs:9333"
+    restart: unless-stopped
+    depends_on:
+      - master-seaweedfs
+    ports:
+      - "8888:8888"
+    networks: [backend]
+
+  s3-seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs_s3
+    command: "s3 -filer=filer-seaweedfs:8888"
+    restart: unless-stopped
+    depends_on:
+      - filer-seaweedfs
+    ports:
+      - "8333:8333"
+    # The S3 gateway starts listening a moment after the container reports
+    # "started", so dependents that only wait for service_started can lose their
+    # first request with "Cannot connect to host s3-seaweedfs:8333".
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8333/"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks: [backend]
+
+  news-collection-api:
+    <<: *app-common
+    build:
+      <<: *app-build
+      args:
+        SERVICE: news_collection_service
+    image: ai-trading-bot/news-collection:latest
+    container_name: news-collection-api
+    command: ["run-fastapi"]
+    ports:
+      - "8081:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      s3-seaweedfs:
+        condition: service_healthy
+
+  news-collection-worker:
+    <<: *app-common
+    build:
+      <<: *app-build
+      args:
+        SERVICE: news_collection_service
+    image: ai-trading-bot/news-collection:latest
+    container_name: news-collection-worker
+    command: ["run-mq-worker"]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      s3-seaweedfs:
+        condition: service_healthy
+
+  news-analysis-api:
+    <<: *app-common
+    build:
+      <<: *app-build
+      args:
+        SERVICE: news_analysis_service
+    image: ai-trading-bot/news-analysis:latest
+    container_name: news-analysis-api
+    command: ["run-fastapi"]
+    ports:
+      - "8082:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  news-analysis-worker:
+    <<: *app-common
+    build:
+      <<: *app-build
+      args:
+        SERVICE: news_analysis_service
+    image: ai-trading-bot/news-analysis:latest
+    container_name: news-analysis-worker
+    command: ["run-mq-worker"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  telegram-migrate:
+    build:
+      <<: *app-build
+      args:
+        SERVICE: telegram_user_app_service
+    image: ai-trading-bot/telegram-user-app:latest
+    container_name: telegram-migrate
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    environment:
+      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
+    depends_on:
+      user-db:
+        condition: service_healthy
+      infisical-backend:
+        condition: service_healthy
+    networks: [backend]
+
+  telegram-api:
+    <<: *app-common
+    build:
+      <<: *app-build
+      args:
+        SERVICE: telegram_user_app_service
+    image: ai-trading-bot/telegram-user-app:latest
+    container_name: telegram-api
+    command: ["run-fastapi"]
+    ports:
+      - "8083:8080"
+    environment:
+      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      user-db:
+        condition: service_healthy
+      infisical-backend:
+        condition: service_healthy
+      telegram-migrate:
+        condition: service_completed_successfully
+
+  telegram-worker:
+    <<: *app-common
+    build:
+      <<: *app-build
+      args:
+        SERVICE: telegram_user_app_service
+    image: ai-trading-bot/telegram-user-app:latest
+    container_name: telegram-worker
+    command: ["run-mq-worker"]
+    environment:
+      - __INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET:-}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      user-db:
+        condition: service_healthy
+      infisical-backend:
+        condition: service_healthy
+      telegram-migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pg_data:
+    driver: local
+  infisical_pg_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  seaweed_master_data:
+  seaweed_volume_data:
+
+networks:
+  backend:
+    driver: bridge

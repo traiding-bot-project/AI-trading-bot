@@ -64,16 +64,13 @@ def make_structured_response_payload() -> dict[str, object]:
         "source": "Market Wire",
         "published_at": "2026-07-08T10:00:00Z",
         "summary": "Semiconductor shares rose after upbeat demand commentary.",
-        "market_takeaways": [
+        "mentioned_companies": [
             {
-                "impact": "Semiconductor suppliers may see stronger near-term demand.",
-                "sector": "Semiconductors",
-                "sentiment": "positive",
+                "name": "Example Semi",
+                "context": "Named as one of the suppliers whose shares rose after the demand commentary.",
             },
         ],
-        "mentioned_companies": ["Example Semi"],
         "affected_sectors": ["Semiconductors", "Technology"],
-        "significance": "high",
     }
 
 
@@ -213,7 +210,7 @@ def test_generate_completion_builds_qwen_request_and_parses_structured_response(
     """``generate_completion`` sends a json_schema-constrained chat request and parses the structured reply.
 
     The faked backend returns the assistant message as a JSON string; the service
-    must decode it into the typed news-analysis response (title, market takeaways,
+    must decode it into the typed news-analysis response (title, mentioned companies,
     affected sectors, etc.).
     """
     monkeypatch.setattr(qwen_module, "settings", make_settings())
@@ -250,7 +247,7 @@ def test_generate_completion_builds_qwen_request_and_parses_structured_response(
     )
 
     assert result.response.title == structured_payload["title"]
-    assert result.response.market_takeaways[0].sector == "Semiconductors"
+    assert result.response.mentioned_companies[0].name == "Example Semi"
     assert result.response.affected_sectors == ["Semiconductors", "Technology"]
 
 

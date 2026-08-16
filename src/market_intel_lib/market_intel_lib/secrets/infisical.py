@@ -3,9 +3,10 @@
 from logging import getLogger
 
 from infisical_sdk import InfisicalSDKClient
+
 from market_intel_lib.models.infisical import InfisicalSecretsKeys
-from market_intel_lib.settings import settings
 from market_intel_lib.models.settings import InfiscalSettings
+from market_intel_lib.settings import settings
 from market_intel_lib.utils.get_env_var import get_env_var
 from market_intel_lib.utils.get_resource_url import get_resource_url
 

@@ -150,6 +150,19 @@ class InfiscalSettings(StrictBaseModel):
     ]
 
 
+class S3Settings(StrictBaseModel):
+    """Settings for the S3-compatible object storage endpoint."""
+
+    endpoint: Annotated[
+        str,
+        Field(
+            ...,
+            title="Endpoint",
+            description="Base URL of the S3-compatible storage (e.g. SeaweedFS).",
+        ),
+    ]
+
+
 class Settings(StrictBaseModel):
     """Main settings model for the Notification Service microservice."""
 
@@ -162,4 +175,9 @@ class Settings(StrictBaseModel):
         ...,
         title="Infisical settings",
         description="Configuration for the Infisical secret management service.",
+    )
+    s3: S3Settings = Field(
+        ...,
+        title="S3 settings",
+        description="Configuration for the S3-compatible object storage.",
     )

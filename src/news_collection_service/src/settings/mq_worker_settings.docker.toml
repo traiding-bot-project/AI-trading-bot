@@ -1,0 +1,21 @@
+# Docker/compose variant. Only the broker host differs from mq_worker_settings.toml.
+[connector]
+host = "rabbitmq"
+port = 5672
+virtual_host = "/"
+heartbeat = 600
+
+[exchange]
+name = "news_analysis"
+type = "direct"
+durable = true
+auto_delete = false
+
+[[send_queues]]
+name = "news_analysis_tasks"
+durable = true
+auto_delete = false
+exclusive = false
+routing_key = "tasks"
+confirm = false
+delivery_mode = 2

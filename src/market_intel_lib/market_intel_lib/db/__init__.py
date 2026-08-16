@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
 from market_intel_lib.db.subscriptions.postgres_subscription_token_repository import (
     PostgresSubscriptionTokenRepository,
 )

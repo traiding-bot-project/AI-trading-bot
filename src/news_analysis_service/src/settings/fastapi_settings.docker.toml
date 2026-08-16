@@ -1,0 +1,4 @@
+# Docker/compose variant. Must bind 0.0.0.0, not 127.0.0.1: a container-local
+# loopback bind is unreachable from other containers and from the published port.
+host = "0.0.0.0"
+port = 8080

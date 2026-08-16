@@ -113,9 +113,14 @@ class QwenService:
             },
         }
 
+        messages: list[ChatMessage] = []
+        if request.system_prompt:
+            messages.append(ChatMessage(role=ChatMessageRole.SYSTEM, content=request.system_prompt))
+        messages.append(ChatMessage(role=ChatMessageRole.USER, content=request.prompt))
+
         request_body = QwenCompletionRequest(
             model=request_model,
-            messages=[ChatMessage(role=ChatMessageRole.USER, content=request.prompt)],
+            messages=messages,
             response_format=response_format,
         )
 

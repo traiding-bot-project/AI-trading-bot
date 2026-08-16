@@ -1,0 +1,24 @@
+# Docker/compose variant of the shared-library settings.
+# Baked over settings.toml during the image build (see src/Dockerfile).
+[infisical.connection]
+url_schema = "http"
+host = "infisical-backend"
+port = 8080
+
+[infisical.auth]
+client_id = "e1e2f33c-cb15-4316-8a41-88c0ae998903"
+
+[infisical.project]
+project_id = "c3847f48-85fa-42f3-8e19-82b99a6c7939"
+env_slug = "dev"
+secret_path = "/"
+
+[database]
+url_schema = "postgresql+asyncpg"
+host = "user-db"
+port = 5432
+database = "telegram_user_app_db"
+username = "admin"
+
+[s3]
+endpoint = "http://s3-seaweedfs:8333"

@@ -7,4 +7,5 @@ MQ_WORKER_SETTINGS_PATH = f"{BASE_SETTINGS_PATH}/mq_worker_settings.toml"
 
 SERVICE_CLIENT_SESSION_TIMEOUT = 60 * 5
 
-ANALYZE_NEWS_PROMPT = "src/prompts/analyze_news.md"
+ANALYZE_NEWS_SYSTEM_PROMPT = "src/prompts/analyze_news_system.md"
+ANALYZE_NEWS_USER_PROMPT = "src/prompts/analyze_news_user.md"

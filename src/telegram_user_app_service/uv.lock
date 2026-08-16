@@ -176,16 +176,16 @@ wheels = [
 
 [[package]]
 name = "alembic"
-version = "1.18.4"
+version = "1.19.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mako" },
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/94/13/8b084e0f2efb0275a1d534838844926f798bd766566b1375174e2448cd31/alembic-1.18.4.tar.gz", hash = "sha256:cb6e1fd84b6174ab8dbb2329f86d631ba9559dd78df550b57804d607672cedbc", size = 2056725, upload-time = "2026-02-10T16:00:47.195Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/16/2b/e4153978368de59918115c9e01d3ebf58a558a7285efa7e960c383c4b59a/alembic-1.19.1.tar.gz", hash = "sha256:e0fca0518118c78acc493e31bcb5402f190057aaf6df8b5b95ce94c4789cf648", size = 2070816, upload-time = "2026-08-08T16:32:01.565Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/29/6533c317b74f707ea28f8d633734dbda2119bbadfc61b2f3640ba835d0f7/alembic-1.18.4-py3-none-any.whl", hash = "sha256:a5ed4adcf6d8a4cb575f3d759f071b03cd6e5c7618eb796cb52497be25bfe19a", size = 263893, upload-time = "2026-02-10T16:00:49.997Z" },
+    { url = "https://files.pythonhosted.org/packages/20/89/e62cc37b69ad357cc8ecd6e7367f5245f523d3cbb338a66197212bdf6749/alembic-1.19.1-py3-none-any.whl", hash = "sha256:b39018cb3d9413a19cbd54cf3c02ad33998641f0538eb77413a488a21c3e14be", size = 265946, upload-time = "2026-08-08T16:32:03.153Z" },
 ]
 
 [[package]]
@@ -629,14 +629,14 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.51" },
     { name = "types-aioboto3", specifier = ">=15.5.0" },
-    { name = "types-aiobotocore-s3", specifier = ">=3.7.0" },
+    { name = "types-aiobotocore-s3", specifier = ">=3.9.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "mypy", specifier = ">=2.3.0" },
     { name = "pytest", specifier = ">=9.1.1" },
-    { name = "ruff", specifier = ">=0.15.21" },
+    { name = "ruff", specifier = ">=0.16.2" },
 ]
 
 [[package]]
@@ -1057,7 +1057,7 @@ rabbitmq = [
 
 [package.metadata]
 requires-dist = [
-    { name = "alembic", specifier = ">=1.18.4" },
+    { name = "alembic", specifier = ">=1.19.1" },
     { name = "asyncpg", specifier = ">=0.31.0" },
     { name = "market-intel-lib", directory = "../market_intel_lib" },
     { name = "psycopg2-binary", specifier = ">=2.9.12" },
@@ -1104,11 +1104,11 @@ wheels = [
 
 [[package]]
 name = "types-aiobotocore-s3"
-version = "3.7.0"
+version = "3.9.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/94/ce/5b7baa06cde79ab5f083f56f060ccd2b60f6249127d70bbb8a37aafbdcd4/types_aiobotocore_s3-3.7.0.tar.gz", hash = "sha256:6ec738853dbba9133707991b98ea4dab19f7c62e02b3cca016e6cd8e3d684576", size = 77662, upload-time = "2026-05-10T03:17:35.088Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/d8/50676b92e2f470f483df68b4675e12407e8a0403c0596d378a692f249847/types_aiobotocore_s3-3.9.0.tar.gz", hash = "sha256:bf6978aa30cd2ae5b49cfd4e6afc2d8996ec48667df4e03dcb56d7ae6d7b04e8", size = 79454, upload-time = "2026-08-02T03:03:37.391Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e9/ac/67240c3804a3e1c1e8f0f402155d7ed5351faf7a2085136083e5ca3f26b8/types_aiobotocore_s3-3.7.0-py3-none-any.whl", hash = "sha256:5dbb5479ece3e1aceaccac224fc3dd1ab7d912c4457419bd19e88a0a5b3844fc", size = 85450, upload-time = "2026-05-10T03:17:33.061Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/78/2a60987f59ccd7e6c3fc3b7da0723c12d8523946f712d407a2401a7a6b72/types_aiobotocore_s3-3.9.0-py3-none-any.whl", hash = "sha256:39691b6336bd5b32d683dd236a262ded628f1ddb3d83aa6b30be082eae94d5bd", size = 87373, upload-time = "2026-08-02T03:03:35.529Z" },
 ]
 
 [[package]]

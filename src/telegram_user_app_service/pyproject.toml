@@ -29,7 +29,7 @@ fastapi = [
     "uvicorn>=0.50.2",
 ]
 rabbitmq = [
-    "aio-pika>=9.6.2",
+    "aio-pika>=10.0.1",
 ]
 
 [project.urls]
